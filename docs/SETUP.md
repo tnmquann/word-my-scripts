@@ -19,7 +19,7 @@ This guide covers:
  ┌────────────────────────────┐              ┌─────────────────────────────┐
  │ Ribbon: MY_SCRIPTS tab     │  loads       │ commands.html + commands-*.js│
  │  └ ĐGNL menu → 5 items  ───┼─────────────▶│ dialog.html  + dialog-*.js  │
- │                            │              │ about.html, assets/*.png    │
+ │                            │              │ start/author.html, assets/* │
  │ HKCU\…\WEF\Developer       │              │ manifest.xml, install.ps1   │
  │   {add-in id} = manifest   │              └─────────────────────────────┘
  └────────────────────────────┘
@@ -30,11 +30,11 @@ This guide covers:
 - **runCommand** (`src/runtime/runCommand.js`): wraps every handler. It does four things:
   - Runs the handler inside `Word.run` and measures how long it takes.
   - Turns `OfficeExtension.Error` into readable text (message, code, `debugInfo.errorLocation`).
-  - Opens `dialog.html` with `displayDialogAsync`, passing the result in the query string.
+  - Opens `dialog.html` with `displayDialogAsync`, passing the result in the query string: a summary capped at 600 characters, plus optional technical details capped at 400 characters and shown collapsed. Known error codes are mapped to short Vietnamese messages. The dialog stays open until the user closes it.
   - Always calls `event.completed()`.
 
   A module-level `busy` flag drops re-entrant clicks while a command is still running.
-- **Author pane**: the *Thông tin → Tác giả* button (`ShowTaskpane`) opens `about.html`. Its author card is filled at build time from the `author` block in `addin.config.json`, with values HTML-escaped. That block mirrors the public GitHub profile of `tnmquann`. To refresh it, run `gh api users/tnmquann`, update the block, then rebuild and push. The avatar is loaded from `avatars.githubusercontent.com`.
+- **Author pane**: the *Thông tin → Tác giả* button (`ShowTaskpane`) opens `author.html`. It is the only place the author card is shown. The manifest's default `SourceLocation` is `start.html`, a minimal welcome page without author information, because Word may open that page right after the add-in is added. Its author card is filled at build time from the `author` block in `addin.config.json`, with values HTML-escaped. That block mirrors the public GitHub profile of `tnmquann`. To refresh it, run `gh api users/tnmquann`, update the block, then rebuild and push. The avatar is loaded from `avatars.githubusercontent.com`.
 - **Registration**: the installer writes a per-user registry value:
 
   ```

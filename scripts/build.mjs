@@ -28,7 +28,8 @@ const ENTRIES = {
 const PAGES = {
   "commands.html": "src/runtime/commands.html",
   "dialog.html": "src/ui/dialog/dialog.html",
-  "about.html": "src/ui/about/about.html",
+  "start.html": "src/ui/start/start.html",
+  "author.html": "src/ui/author/author.html",
 };
 
 const esbuildOptions = {

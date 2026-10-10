@@ -6,32 +6,66 @@
     <title>MY_SCRIPTS</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
     <style>
-      :root { --ok: #107c10; --err: #c50f1f; --fg: #242424; --muted: #616161; --bg: #ffffff; }
+      :root {
+        --fg: #1f1f1f; --muted: #6b6b6b; --line: #e6e6e6; --bg: #ffffff; --soft: #f6f7f9;
+        --ok: #0f7b3e; --ok-soft: #e8f5ee; --err: #c42b1c; --err-soft: #fdecea;
+        --accent: #2b6cb0; --accent-soft: #eef4fb;
+      }
       * { box-sizing: border-box; }
       html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
-        font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
-      main { display: flex; flex-direction: column; height: 100%; padding: 14px 16px; gap: 10px; }
-      header { display: flex; align-items: center; gap: 10px; }
-      .badge { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
-        color: #fff; font-weight: 700; flex: none; }
-      .ok .badge { background: var(--ok); }
-      .err .badge { background: var(--err); }
-      h1 { font-size: 15px; margin: 0; font-weight: 600; }
-      #msg { flex: 1; overflow: auto; white-space: pre-wrap; margin: 0; }
-      footer { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
-      button { font: inherit; padding: 4px 16px; border: 1px solid #d1d1d1; border-radius: 4px; background: #fff; cursor: pointer; }
-      button:hover { background: #f5f5f5; }
-      #upd { display: none; padding: 8px 10px; border-radius: 6px; background: #eef4fb; border: 1px solid #c7dbf2; font-size: 13px; }
-      #upd button { margin-top: 6px; background: #2b6cb0; color: #fff; border-color: #2b6cb0; }
-      #upd button:hover { background: #245a94; }
+        font: 14px/1.5 Aptos, "Aptos Display", Arial, sans-serif; }
+      main { display: flex; flex-direction: column; height: 100%; padding: 18px 20px 14px; gap: 14px; }
+
+      header { display: flex; align-items: center; gap: 12px; }
+      .icon { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+      .icon svg { width: 20px; height: 20px; }
+      .ok .icon { background: var(--ok-soft); color: var(--ok); }
+      .err .icon { background: var(--err-soft); color: var(--err); }
+      h1 { font-size: 16px; font-weight: 600; margin: 0; }
+      .status { font-size: 12px; color: var(--muted); }
+
+      #body { flex: 1; overflow: auto; }
+      ul#lines { list-style: none; margin: 0; padding: 0; }
+      ul#lines li { padding: 7px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+      ul#lines li:last-child { border-bottom: 0; }
+      .err ul#lines li:first-child { font-weight: 600; }
+
+      details { margin-top: 10px; font-size: 12px; color: var(--muted); }
+      summary { cursor: pointer; user-select: none; }
+      details pre { margin: 6px 0 0; padding: 8px 10px; background: var(--soft); border-radius: 6px;
+        white-space: pre-wrap; overflow-wrap: anywhere; max-height: 90px; overflow: auto;
+        font: 11px/1.45 Consolas, "Cascadia Mono", monospace; }
+
+      #upd { display: none; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 8px;
+        background: var(--accent-soft); font-size: 13px; }
+      #upd span { flex: 1; }
+
+      footer { display: flex; justify-content: flex-end; gap: 8px; }
+      button { font: inherit; font-size: 13px; padding: 6px 18px; border-radius: 6px; cursor: pointer;
+        border: 1px solid #d0d0d0; background: #fff; color: var(--fg); }
+      button:hover { background: var(--soft); }
+      button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+      button.primary:hover { background: #245a94; }
     </style>
   </head>
   <body>
     <main id="root">
-      <header><div class="badge" id="badge"></div><h1 id="title"></h1></header>
-      <pre id="msg"></pre>
-      <div id="upd"><span id="updText"></span><br /><button id="updBtn" type="button">Cập nhật</button></div>
-      <footer><span id="meta"></span><button id="close" type="button">Đóng</button></footer>
+      <header>
+        <div class="icon" id="icon"></div>
+        <div>
+          <h1 id="title"></h1>
+          <div class="status" id="status"></div>
+        </div>
+      </header>
+      <div id="body">
+        <ul id="lines"></ul>
+        <details id="more" hidden>
+          <summary>Chi tiết kỹ thuật</summary>
+          <pre id="details"></pre>
+        </details>
+      </div>
+      <div id="upd"><span id="updText"></span><button id="updBtn" type="button" class="primary">Cập nhật</button></div>
+      <footer><button id="close" type="button">Đóng</button></footer>
     </main>
     <script src="{{dialog.js}}"></script>
   </body>

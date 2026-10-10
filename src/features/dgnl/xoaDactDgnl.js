@@ -101,7 +101,7 @@ export async function xoaDactDgnl(context) {
     const again = await scan(context);
     const { ok, fail } = await deleteSlow(context, again.it, again.blocks);
     lines.push(`Xoá từng khối: thành công ${ok}, lỗi ${fail.length}.`);
-    if (fail.length) lines.push(`Khối lỗi (chỉ số đoạn): ${JSON.stringify(fail.slice(0, 10))}`);
+    if (fail.length) console.warn("xoaDactDgnl failed blocks (paragraph indices)", fail);
   }
 
   // Kiểm tra lại
@@ -109,6 +109,6 @@ export async function xoaDactDgnl(context) {
   p2.load("items/text");
   await context.sync();
   const left = p2.items.filter((p) => p.text.trim() === MARKER).length;
-  lines.push(`Đoạn còn lại: ${p2.items.length} | Còn dòng "${MARKER}": ${left}`);
+  lines.push(left ? `⚠ Còn ${left} dòng "${MARKER}" chưa xoá được.` : `Không còn dòng "${MARKER}" nào.`);
   return lines.join("\n");
 }

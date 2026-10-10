@@ -57,7 +57,7 @@ If you use the command on a file with a different layout, preview the blocks fir
 
 ## Output
 
-`Tìm thấy N khối đáp án.`, followed by `Đã xoá N khối (gồm T bảng).` (or the fallback statistics), followed by `Đoạn còn lại: P | Còn dòng "Lời giải": 0`.
+`Tìm thấy N khối đáp án.`, followed by `Đã xoá N khối (gồm T bảng).` (or the fallback statistics), followed by `Không còn dòng "Lời giải" nào.` (or a warning with the number left).
 
 ## Limitations
 
@@ -67,5 +67,5 @@ If you use the command on a file with a different layout, preview the blocks fir
 ## Test checklist (run on a copy)
 
 - [ ] Every `Lời giải` block is removed, including its tables and images, and the next question and lead-in stay intact.
-- [ ] The dialog reports `Còn dòng "Lời giải": 0`.
+- [ ] The dialog reports `Không còn dòng "Lời giải" nào.`
 - [ ] On a large file (≥ 100 blocks), the command finishes in a few seconds. The original script took about 3 round-trips per block.

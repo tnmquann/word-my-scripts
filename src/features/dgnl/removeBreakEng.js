@@ -251,7 +251,7 @@ export async function removeBreakEng(context) {
   await context.sync();
   const lines = [`Đã tắt "Keep with next" ở ${done} đoạn.`];
   if (skipped) lines.push(`Bỏ qua ${skipped} đoạn có field/section break/track changes (sửa tay nếu cần).`);
-  if (failed) lines.push(`⚠ Lỗi ở ${failed} đoạn (xem console).`);
+  if (failed) lines.push(`⚠ Không sửa được ${failed} đoạn.`);
   if (after.items.length !== N) {
     lines.push(`⚠ Số đoạn thay đổi ${N} → ${after.items.length}, hãy kiểm tra lại (Ctrl+Z để hoàn tác).`);
   }

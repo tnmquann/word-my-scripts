@@ -18,7 +18,7 @@
   <Description DefaultValue="Bộ công cụ tự động hoá Word (Office JS), chia theo nhóm chức năng."/>
   <IconUrl DefaultValue="{{BASE_URL}}assets/addin-32.png"/>
   <HighResolutionIconUrl DefaultValue="{{BASE_URL}}assets/addin-64.png"/>
-  <SupportUrl DefaultValue="{{BASE_URL}}about.html"/>
+  <SupportUrl DefaultValue="{{BASE_URL}}author.html"/>
   <AppDomains>
     <AppDomain>{{ORIGIN}}</AppDomain>
   </AppDomains>
@@ -31,7 +31,7 @@
     </Sets>
   </Requirements>
   <DefaultSettings>
-    <SourceLocation DefaultValue="{{BASE_URL}}about.html"/>
+    <SourceLocation DefaultValue="{{BASE_URL}}start.html"/>
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
 
@@ -214,7 +214,7 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="{{BASE_URL}}commands.html?mv={{VERSION}}"/>
-        <bt:Url id="About.Url" DefaultValue="{{BASE_URL}}about.html"/>
+        <bt:Url id="About.Url" DefaultValue="{{BASE_URL}}author.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Tab.Label" DefaultValue="{{TAB_LABEL}}"/>

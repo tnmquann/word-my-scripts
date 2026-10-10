@@ -7,7 +7,7 @@ MY_SCRIPTS is a personal collection of Word automation commands, delivered as an
 | Group (ribbon) | Scope | Code | Specs |
 | --- | --- | --- | --- |
 | **ĐGNL** | Clean-up tools for exam documents of the Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT). *ĐGNL* is the Vietnamese abbreviation for this test. | [src/features/dgnl/](src/features/dgnl/) | [docs/specs/dgnl/](docs/specs/dgnl/) |
-| **Thông tin** | *Tác giả*: task pane with author information from the GitHub profile, the version and the tool list. *Kiểm tra cập nhật*: checks for a newer version and launches the updater. | [src/ui/about/](src/ui/about/), [src/runtime/update.js](src/runtime/update.js) | [docs/SETUP.md, Auto-update](docs/SETUP.md#auto-update) |
+| **Thông tin** | *Tác giả*: task pane with author information from the GitHub profile, the version and the tool list. *Kiểm tra cập nhật*: checks for a newer version and launches the updater. | [src/ui/author/](src/ui/author/), [src/runtime/update.js](src/runtime/update.js) | [docs/SETUP.md, Auto-update](docs/SETUP.md#auto-update) |
 
 ```
 MY_SCRIPTS (tab)
@@ -25,7 +25,7 @@ MY_SCRIPTS (tab)
 
 Ribbon labels and result messages are in Vietnamese. To add a command or a whole new group, see [docs/SETUP.md § 6](docs/SETUP.md#6-adding-a-new-command).
 
-Each command runs inside a single `Word.run` batch. When it finishes, a small dialog shows the result. On success the dialog closes by itself after 3.5 s. On failure, or when an update is available (a **Cập nhật** banner is shown), it stays open until you close it.
+Each command runs inside a single `Word.run` batch. When it finishes, a small dialog shows the result. The dialog never closes on its own: you close it when you are done reading. It shows a short summary, with technical error details collapsed under *Chi tiết kỹ thuật*, plus a **Cập nhật** banner when a newer version exists. Text uses Aptos, with Arial as the fallback.
 
 ## Quick start
 
@@ -50,7 +50,7 @@ For the full setup, release and troubleshooting guide, see **[docs/SETUP.md](doc
 │   └── manifest.template.xml  # ribbon definition (tab → groups → menus → items)
 ├── src/
 │   ├── runtime/               # FunctionFile (commands.html), command registration, runCommand wrapper, update check
-│   ├── ui/                    # result dialog + about page (manifest SourceLocation)
+│   ├── ui/                    # result dialog, start page (SourceLocation), author pane
 │   └── features/<group>/      # one folder per ribbon group: index.js registry + one module per command
 ├── assets/icons/              # generated PNG icons (16/32/80 px)
 ├── installer/                 # install.ps1 / uninstall.ps1 / updater.ps1 / *.cmd wrappers
