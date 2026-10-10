@@ -109,7 +109,27 @@ Open Word. The **MY_SCRIPTS** tab appears on the ribbon.
 | `-ManifestUrl <url>` | Download the manifest from this URL (defaults to the prod Pages URL) |
 | `-ClearCache` | Clear the Office add-in web cache `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` (Word must be closed) |
 
-To uninstall, run `Uninstall.cmd`, or `installer\uninstall.ps1 [-Dev | -Id <guid> | -All]`, then restart Word.
+### Uninstalling
+
+Close Word first, then use any one of the options below. Each option removes the per-user registry value and the copied manifest. Restart Word afterwards and the **MY_SCRIPTS** tab is gone.
+
+| Option | Command |
+| --- | --- |
+| One-liner (prod add-in) | `irm https://tnmquann.github.io/word-my-scripts/uninstall.ps1 \| iex` |
+| Portable package | double-click `Uninstall.cmd` in the extracted release folder |
+| From the repository, prod | `powershell -ExecutionPolicy Bypass -File installer\uninstall.ps1` |
+| From the repository, dev build | `npm run unload:dev` (same as `uninstall.ps1 -Dev`) |
+| Everything this installer registered (prod + dev) | `uninstall.ps1 -All` |
+| A specific add-in ID | `uninstall.ps1 -Id <guid>` |
+
+What gets removed:
+
+- `HKCU\Software\Microsoft\Office\16.0\WEF\Developer\<add-in GUID>`
+- `%LOCALAPPDATA%\MY_SCRIPTS\manifests\<add-in GUID>.xml`
+
+Manual removal, if the scripts cannot run: delete the registry value above in `regedit`, delete the `%LOCALAPPDATA%\MY_SCRIPTS` folder, and restart Word. To also discard cached web files, delete the contents of `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` while Word is closed. This clears the cache of all web add-ins, which re-download on next use.
+
+Uninstalling does not touch your documents, and the GitHub Pages site stays online.
 
 ---
 
@@ -140,6 +160,7 @@ Recommended test procedure: keep a set of copies of real exam files, and never t
    git tag v1.1.0; git push origin v1.1.0
    ```
 
+   A tag with a suffix (for example `v1.1.0-beta.1`) is published as a **pre-release**.
    `.github/workflows/release.yml` builds `MY_SCRIPTS-v1.1.0.zip` on `windows-latest` and attaches it to a GitHub Release. To build the package locally, run `npm run release`.
 4. Users need to re-run the installer only if the manifest changed.
 

@@ -21,6 +21,7 @@ Each command runs inside a single `Word.run` batch. When it finishes, a small di
 | --- | --- |
 | Install on a new PC (no Node needed) | `irm https://tnmquann.github.io/word-my-scripts/install.ps1 \| iex` |
 | Or install from the release zip | unzip `MY_SCRIPTS-vX.Y.Z.zip` → double-click `Install.cmd` |
+| Uninstall (no Node needed) | `irm https://tnmquann.github.io/word-my-scripts/uninstall.ps1 \| iex`, or `Uninstall.cmd` from the release zip; then restart Word |
 | Production build | `npm run build` → `dist/` |
 | Local dev server (HTTPS, watch) | `npm run certs` (once), `npm run dev`, `npm run sideload:dev` |
 | Portable installer package | `npm run release` → `release/` |

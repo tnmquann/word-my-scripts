@@ -4,14 +4,16 @@
 
 .DESCRIPTION
   Add-in ID is taken from (in order): -Id, manifest.xml next to this script,
-  or addin.config.json in the repo (use -Dev for the dev build, otherwise prod).
+  addin.config.json in the repo (use -Dev for the dev build, otherwise prod),
+  or the prod ID baked in at build time (hosted copy: irm <baseUrl>uninstall.ps1 | iex).
   -All removes every manifest registered from %LOCALAPPDATA%\MY_SCRIPTS.
 #>
 [CmdletBinding()]
 param(
   [string]$Id,
   [switch]$Dev,
-  [switch]$All
+  [switch]$All,
+  [string]$DefaultId = '{{ID}}'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -34,6 +36,7 @@ if ($All) {
     $ids = @($(if ($Dev) { $cfg.dev.id } else { $cfg.prod.id }))
   }
 }
+if (-not $ids -and $DefaultId -notlike '*{{*') { $ids = @($DefaultId) }
 if (-not $ids) { throw 'Could not determine the add-in ID. Pass -Id <guid> or -All.' }
 
 foreach ($i in $ids) {

@@ -85,6 +85,7 @@ async function writeStatic(names) {
   }
   // Hosted installer: `irm <BASE_URL>install.ps1 | iex`
   await fs.writeFile(path.join(OUT, "install.ps1"), fill(await fs.readFile(r("installer/install.ps1"), "utf8"), vars));
+  await fs.writeFile(path.join(OUT, "uninstall.ps1"), fill(await fs.readFile(r("installer/uninstall.ps1"), "utf8"), vars));
   await fs.writeFile(path.join(OUT, ".nojekyll"), "");
   await fs.writeFile(
     path.join(OUT, "version.json"),
