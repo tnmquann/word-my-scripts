@@ -1,9 +1,9 @@
 // Kiểm tra cập nhật.
 // - Phiên bản manifest đang cài: manifest gắn ?mv=<Version> vào URL của FunctionFile (commands.html).
 // - Phiên bản mới nhất: version.json trên GitHub Pages (không cache).
-// - Cài đặt: mở giao thức myscripts:update -> updater.ps1 (do install.ps1 đăng ký) hỏi user rồi cài.
+// - Cài đặt: mở update.html (https) trong trình duyệt -> trang đó gọi myscripts:update -> updater.ps1
+//   (do install.ps1 đăng ký) hỏi user rồi cài. openBrowserWindow chỉ nhận http(s), không mở được myscripts: trực tiếp.
 
-const UPDATE_URI = "myscripts:update";
 let cached = null;
 
 const parse = (v) => String(v || "0").split(".").map((n) => parseInt(n, 10) || 0);
@@ -32,8 +32,9 @@ export async function getUpdateInfo(force = false) {
   return cached;
 }
 
-/** Mở trình cập nhật (updater.ps1 qua giao thức myscripts:). Trả về false nếu không mở được. */
+/** Mở trang update.html trong trình duyệt mặc định. Trả về false nếu không mở được. */
 export function launchUpdater() {
+  const UPDATE_URI = new URL("update.html", location.href).toString();
   try {
     if (Office.context.requirements.isSetSupported("OpenBrowserWindowApi", "1.1")) {
       Office.context.ui.openBrowserWindow(UPDATE_URI);
@@ -53,6 +54,6 @@ export async function checkUpdate() {
   if (!info.latest) throw new Error("Không kiểm tra được bản cập nhật (mất mạng?).");
   if (!info.installed) return `Phiên bản mới nhất: v${info.latest}.`;
   return info.available
-    ? `Có bản mới: v${info.latest} (đang dùng v${info.installed}).\nBấm "Cập nhật" để cài.`
+    ? `Đang dùng v${info.installed}.`
     : `Bạn đang dùng bản mới nhất (v${info.installed}).`;
 }

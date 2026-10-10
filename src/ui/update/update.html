@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cập nhật MY_SCRIPTS</title>
+    <!-- Mở trong trình duyệt từ nút "Cập nhật" của add-in (Office.context.ui.openBrowserWindow chỉ nhận https).
+         Trang này gọi giao thức myscripts:update -> updater.ps1 (do install.ps1 đăng ký) và có hướng dẫn dự phòng. -->
+    <style>
+      :root { --fg: #1f1f1f; --muted: #6b6b6b; --line: #e6e6e6; --accent: #2b579a; --soft: #f5f6f8; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--soft); color: var(--fg); font: 15px/1.55 Aptos, "Aptos Display", Arial, sans-serif; }
+      main { max-width: 560px; margin: 48px auto; padding: 28px 28px 22px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+      h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+      .muted { color: var(--muted); font-size: 13px; }
+      ol { padding-left: 20px; margin: 16px 0; }
+      li { margin: 6px 0; }
+      .btn { display: inline-block; padding: 8px 18px; border-radius: 6px; background: var(--accent); color: #fff; text-decoration: none; font-size: 14px; border: 0; cursor: pointer; font-family: inherit; }
+      .btn.secondary { background: #fff; color: var(--fg); border: 1px solid #d0d0d0; }
+      .alt { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
+      code { display: block; margin: 8px 0; padding: 10px 12px; background: var(--soft); border-radius: 6px; font: 12.5px/1.5 Consolas, "Cascadia Mono", monospace; overflow-wrap: anywhere; }
+      @media (max-width: 600px) { main { margin: 16px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Cập nhật MY_SCRIPTS</h1>
+      <div class="muted">Phiên bản mới nhất: v{{version}}</div>
+      <ol>
+        <li>Trình duyệt hỏi <b>“Mở Windows PowerShell?”</b> → chọn <b>Mở / Open</b>.</li>
+        <li>Trình cập nhật hỏi có cài bản mới không → chọn <b>Yes</b>.</li>
+        <li>Lưu và <b>đóng Word</b> khi được yêu cầu, rồi bấm OK.</li>
+        <li>Chờ thông báo <b>“Đã cập nhật”</b>, sau đó mở lại Word.</li>
+      </ol>
+      <a class="btn" id="open" href="myscripts:update">Mở trình cập nhật</a>
+
+      <div class="alt">
+        <div class="muted">Không thấy gì xảy ra? Đóng Word, mở <b>PowerShell</b> và chạy lệnh sau:</div>
+        <code id="cmd">irm {{BASE_URL}}install.ps1 | iex</code>
+        <button class="btn secondary" id="copy" type="button">Sao chép lệnh</button>
+      </div>
+    </main>
+    <script>
+      setTimeout(() => { location.href = "myscripts:update"; }, 400);
+      document.getElementById("copy").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(document.getElementById("cmd").textContent);
+          document.getElementById("copy").textContent = "Đã sao chép";
+        } catch (e) { /* trình duyệt chặn clipboard */ }
+      });
+    </script>
+  </body>
+</html>

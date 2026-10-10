@@ -111,7 +111,10 @@ function showResult({ title, summary, details, ok, seconds, update }) {
           if (canMessageChild) dialog.messageChild(JSON.stringify(payload));
           return;
         }
-        if (msg === "update") launchUpdater();
+        if (msg === "update") {
+          launchUpdater(); // giữ popup mở: dialog tự hiện trạng thái "đã mở trình cập nhật"
+          return;
+        }
         finish();
       });
       dialog.addEventHandler(Office.EventType.DialogEventReceived, finish); // người dùng bấm X

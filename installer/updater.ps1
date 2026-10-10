@@ -21,9 +21,24 @@ $BaseUrl = '{{BASE_URL}}'
 $AddinId = '{{ID}}'
 $Title = 'MY_SCRIPTS – Cập nhật'
 
+$LogFile = Join-Path $env:LOCALAPPDATA 'MY_SCRIPTS\updater.log'
+function Write-Log($msg) {
+  try {
+    New-Item -ItemType Directory -Force -Path (Split-Path $LogFile) | Out-Null
+    Add-Content -LiteralPath $LogFile -Value ("{0:yyyy-MM-dd HH:mm:ss}  {1}" -f (Get-Date), $msg) -Encoding UTF8
+  } catch { }
+}
+Write-Log ("start (AtLogon={0}, args={1})" -f [bool]$AtLogon, ($Rest -join ' '))
+
 Add-Type -AssemblyName System.Windows.Forms
+# Hộp thoại luôn nằm trên cùng (tiến trình chạy ẩn nên MessageBox thường bị Word che mất)
 function Show-Box($text, $buttons = 'OK', $icon = 'Information') {
-  [System.Windows.Forms.MessageBox]::Show($text, $Title, $buttons, $icon)
+  $owner = New-Object System.Windows.Forms.Form -Property @{ TopMost = $true; ShowInTaskbar = $false; WindowState = 'Minimized' }
+  try {
+    [System.Windows.Forms.MessageBox]::Show($owner, $text, $Title, $buttons, $icon)
+  } finally {
+    $owner.Dispose()
+  }
 }
 
 # Chỉ chạy 1 phiên cùng lúc
@@ -48,9 +63,11 @@ try {
     $info = Invoke-RestMethod -Uri ("{0}version.json?t={1}" -f $BaseUrl, [DateTime]::UtcNow.Ticks) -UseBasicParsing -TimeoutSec 15
   } catch {
     if (-not $AtLogon) { Show-Box "Không kiểm tra được bản cập nhật (mất mạng?).`n`n$($_.Exception.Message)" 'OK' 'Warning' | Out-Null }
+    Write-Log "version check failed: $($_.Exception.Message)"
     exit 1
   }
   $latest = [version]("{0}.0" -f $info.version)
+  Write-Log "installed=$installed latest=$latest"
 
   if ($latest -le $installed) {
     if (-not $AtLogon) { Show-Box "Bạn đang dùng bản mới nhất (v$($info.version))." | Out-Null }
@@ -60,6 +77,7 @@ try {
   # ---- Hỏi người dùng ----
   $cur = if ($installed.Major -eq 0) { 'chưa cài' } else { "v$($installed.Major).$($installed.Minor).$($installed.Build)" }
   $answer = Show-Box ("Có bản MY_SCRIPTS mới: v{0} (đang dùng: {1}).`n`nCài đặt ngay? Word cần được đóng để hoàn tất." -f $info.version, $cur) 'YesNo' 'Question'
+  Write-Log "user answer: $answer"
   if ($answer -ne 'Yes') { exit 0 }
 
   # ---- Đợi đóng Word ----
@@ -77,8 +95,10 @@ try {
   } finally {
     Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
   }
+  Write-Log "updated to $($info.version)"
   Show-Box "Đã cập nhật MY_SCRIPTS lên v$($info.version).`nMở lại Word để sử dụng.`n`nNếu không thấy tab MY_SCRIPTS: Home > Add-ins > Advanced > DEVELOPER ADD-INS > MY_SCRIPTS > Add." | Out-Null
 } catch {
+  Write-Log "error: $($_.Exception.Message)"
   Show-Box "Cập nhật thất bại:`n`n$($_.Exception.Message)" 'OK' 'Error' | Out-Null
   exit 1
 } finally {

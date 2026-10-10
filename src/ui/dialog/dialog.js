@@ -39,7 +39,12 @@ if (q.has("t")) render(Object.fromEntries(q.entries()));
 
 Office.onReady(() => {
   $("close").addEventListener("click", () => Office.context.ui.messageParent("close"));
-  $("updBtn").addEventListener("click", () => Office.context.ui.messageParent("update"));
+  $("updBtn").addEventListener("click", () => {
+    $("updBtn").disabled = true;
+    $("updBtn").textContent = "Đã mở";
+    $("updText").textContent = "Đã mở trang cập nhật trong trình duyệt. Làm theo hướng dẫn ở đó; trình cập nhật sẽ báo khi xong.";
+    Office.context.ui.messageParent("update");
+  });
   if (!q.has("t")) {
     Office.context.ui.addHandlerAsync(Office.EventType.DialogParentMessageReceived, (arg) => {
       try {

@@ -30,6 +30,7 @@ const PAGES = {
   "dialog.html": "src/ui/dialog/dialog.html",
   "start.html": "src/ui/start/start.html",
   "author.html": "src/ui/author/author.html",
+  "update.html": "src/ui/update/update.html",
 };
 
 const esbuildOptions = {
