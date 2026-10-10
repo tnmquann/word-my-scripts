@@ -85,7 +85,7 @@ if (-not $NoUpdater) {
     # Check at Windows logon
     New-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'MY_SCRIPTS Updater' `
       -Value "$cmd -AtLogon" -PropertyType String -Force | Out-Null
-    # myscripts:update protocol (used by the add-in's "Cập nhật" button)
+    # myscripts:update protocol (used by the add-in update button)
     $proto = 'HKCU:\Software\Classes\myscripts'
     New-Item -Path "$proto\shell\open\command" -Force | Out-Null
     Set-ItemProperty -Path $proto -Name '(default)' -Value 'URL:MY_SCRIPTS updater'

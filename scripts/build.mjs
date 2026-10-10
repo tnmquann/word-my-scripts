@@ -88,10 +88,14 @@ async function writeStatic(names) {
     if (f.endsWith(".png")) await fs.copyFile(r("assets/icons", f), path.join(OUT, "assets", f));
   }
   // Hosted installer: `irm <BASE_URL>install.ps1 | iex`
-  // PowerShell scripts: UTF-8 with BOM so Windows PowerShell 5.1 reads Vietnamese text correctly
-  for (const ps1 of ["install.ps1", "uninstall.ps1", "updater.ps1"]) {
-    const text = fill(await fs.readFile(r("installer", ps1), "utf8"), vars);
-    await fs.writeFile(path.join(OUT, ps1), "﻿" + text.replace(/^﻿/, ""));
+  // PowerShell scripts.
+  // - install.ps1 / uninstall.ps1 are run via `irm <url> | iex`: irm keeps a BOM as U+FEFF in the string,
+  //   which breaks parsing -> must be ASCII-only and written WITHOUT BOM.
+  // - updater.ps1 contains Vietnamese and is run with -File on Windows PowerShell 5.1 -> UTF-8 WITH BOM.
+  for (const [ps1, bom] of [["install.ps1", false], ["uninstall.ps1", false], ["updater.ps1", true]]) {
+    const text = fill(await fs.readFile(r("installer", ps1), "utf8"), vars).replace(/^\uFEFF/, "");
+    if (!bom && /[^\x00-\x7f]/.test(text)) throw new Error(`${ps1} must be ASCII-only (it is run via irm | iex)`);
+    await fs.writeFile(path.join(OUT, ps1), (bom ? "\uFEFF" : "") + text);
   }
   await fs.writeFile(path.join(OUT, ".nojekyll"), "");
   await fs.writeFile(
