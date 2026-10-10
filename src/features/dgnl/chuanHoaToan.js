@@ -5,8 +5,10 @@
 // - Canh giữa hình ảnh / bảng trong đoạn dữ kiện
 // Chạy lại nhiều lần không làm hỏng kết quả cũ.
 
-const reRange = /câu(?:\s+hỏi)?\s*(\d+)\s*[-–]\s*(\d+)/i; // "câu hỏi 73-74"
-const reDone = /câu\s*(\d+)\s*đến\s*câu\s*(\d+)/i; // đã chuẩn hoá rồi
+// Khoảng câu, chấp nhận các dạng:
+//   "câu hỏi 73-74", "câu 73 – 74", "câu 73 đến câu 74" (đã chuẩn),
+//   "các câu hỏi từ 72 đến 74", "câu hỏi từ 72 - 74"
+const reRange = /câu(?:\s+hỏi)?\s*(?:từ\s*)?(\d+)\s*(?:[-–]|đến)\s*(?:câu\s*)?(\d+)/i;
 const reStart = /^\s*(Dựa vào|Trả lời)/i;
 // Dòng dẫn đã ở dạng chuẩn (sau bước 1, hoặc vốn đã đúng)
 const reCanonical = /^\s*Dựa vào thông tin dưới đây để trả lời từ câu \d+ đến câu \d+/i;
@@ -38,7 +40,7 @@ export async function chuanHoaToan(context) {
   const getRange = (j) => {
     const t = items[j].text;
     if (isQuestion(j) || !reStart.test(t) || t.length > 120) return null;
-    return t.match(reRange) || t.match(reDone);
+    return t.match(reRange);
   };
 
   let headers = 0;
@@ -67,23 +69,38 @@ export async function chuanHoaToan(context) {
   }
   await context.sync();
 
-  // 3) Sau khi chuẩn hoá: đưa MỌI dòng dẫn đúng mẫu (kể cả dòng vốn đã đúng, không cần replace) về indent 0.
+  // 3) Sau khi chuẩn hoá: mọi dòng dẫn đúng mẫu (kể cả dòng vốn đã đúng, không cần replace)
+  //    + toàn bộ đoạn ngay bên dưới, đến trước dòng "Câu N." (auto numbering) -> indent 0.
   //    Chạy sau sync để áp lên đoạn đã được insertText("Replace") ghi lại.
   const after = context.document.body.paragraphs;
   after.load("items/text");
   await context.sync();
+  const ps = after.items;
+  const lis2 = ps.map((p) => {
+    const l = p.listItemOrNullObject;
+    l.load("isNullObject,listString");
+    return l;
+  });
+  await context.sync();
+  const isQ = (j) => !lis2[j].isNullObject && /^Câu/i.test(lis2[j].listString || "");
+
+  let blocks = 0;
   let indented = 0;
-  for (const p of after.items) {
-    if (!reCanonical.test(p.text)) continue;
-    p.leftIndent = 0;
-    p.firstLineIndent = 0;
-    indented++;
+  for (let i = 0; i < ps.length; i++) {
+    if (!reCanonical.test(ps[i].text)) continue;
+    blocks++;
+    for (let j = i; j < ps.length; j++) {
+      if (j > i && (isQ(j) || reCanonical.test(ps[j].text))) break;
+      ps[j].leftIndent = 0;
+      ps[j].firstLineIndent = 0;
+      indented++;
+    }
   }
   if (indented) await context.sync();
 
-  if (!headers && !indented) return "Không tìm thấy dòng dẫn \"Dựa vào … câu X-Y\" nào.";
+  if (!headers && !blocks) return "Không tìm thấy dòng dẫn \"Dựa vào … câu X-Y\" nào.";
   return [
     `Đã xử lý ${headers} dòng dẫn (viết lại ${changed} dòng).`,
-    `Đưa ${indented} dòng dẫn về lề trái 0.`,
+    `Đưa ${indented} đoạn (dòng dẫn + dữ kiện) về lề trái 0.`,
   ].join("\n");
 }

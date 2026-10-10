@@ -4,6 +4,14 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [1.4.4] - 2026-10-10
+
+### Changed
+- **Chuẩn hoá Toán ĐGNL**: the indent pass now also resets the **whole stimulus below each lead-in** to left indent 0 and first-line indent 0. A stimulus is every paragraph up to the next auto-numbered `Câu N.` question or the next lead-in.
+
+### Fixed
+- Lead-ins worded as `…trả lời các câu hỏi từ 72 đến 74` were not recognized, so they were neither normalized nor un-indented. The range pattern now accepts `(các) câu (hỏi) (từ) X –/-/đến (câu) Y`.
+
 ## [1.4.3] - 2026-10-10
 
 ### Changed
