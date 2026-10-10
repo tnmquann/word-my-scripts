@@ -80,7 +80,11 @@ async function writeStatic(names) {
   for (const [out, src] of Object.entries(PAGES)) {
     await fs.writeFile(path.join(OUT, out), fill(await fs.readFile(r(src), "utf8"), vars));
   }
-  const manifest = fill(await fs.readFile(r("manifest/manifest.template.xml"), "utf8"), vars);
+  // Icon URLs get ?v=<version>: Office caches ribbon images by URL, so new icons only show when the URL changes.
+  const manifest = fill(await fs.readFile(r("manifest/manifest.template.xml"), "utf8"), vars).replace(
+    /(assets\/[\w-]+\.png)"/g,
+    `$1?v=${pkg.version}"`
+  );
   const left = manifest.match(/\{\{\s*[\w.]+\s*\}\}/g);
   if (left) throw new Error(`Unfilled manifest placeholders: ${left.join(", ")}`);
   await fs.writeFile(path.join(OUT, "manifest.xml"), manifest);
