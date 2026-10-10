@@ -78,3 +78,9 @@ Generated folders, which git ignores: `dist/` (prod build), `dist-dev/` (dev bui
 - Word for Windows (Microsoft 365, or Word 2019 and later). The manifest requires `WordApi 1.3`.
 - Internet access at runtime, because the add-in's web assets are served from GitHub Pages.
 - Development only: Node.js 20 or later and npm.
+
+## License
+
+Copyright (C) 2026 TON NGOC MINH QUAN.
+
+This program is free software: you can redistribute it and/or modify it under the terms of the **GNU General Public License version 3**, or (at your option) any later version, as published by the Free Software Foundation. It is distributed in the hope that it will be useful, but **without any warranty**. See [LICENSE](LICENSE) for the full text. The SPDX identifier is `GPL-3.0-or-later`.

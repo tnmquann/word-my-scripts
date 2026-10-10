@@ -23,6 +23,7 @@ await fs.copyFile(r("dist", "manifest.xml"), path.join(dir, "manifest.xml"));
 await fs.copyFile(r("dist", "install.ps1"), path.join(dir, "install.ps1"));
 await fs.copyFile(r("dist", "uninstall.ps1"), path.join(dir, "uninstall.ps1"));
 await fs.copyFile(r("dist", "updater.ps1"), path.join(dir, "updater.ps1"));
+await fs.writeFile(path.join(dir, "LICENSE.txt"), crlf(await fs.readFile(r("LICENSE"), "utf8")));
 for (const f of ["Install.cmd", "Uninstall.cmd"]) {
   await fs.writeFile(path.join(dir, f), crlf(await fs.readFile(r("installer", f), "utf8")));
 }
