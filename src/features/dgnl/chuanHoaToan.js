@@ -1,6 +1,6 @@
 // Chuẩn hoá Toán ĐGNL  (spec: docs/specs/dgnl/Chuan_Hoa_Toan.md)
 // - Dòng dẫn "Dựa vào ... trả lời câu hỏi X-Y"
-//   -> "Dựa vào thông tin dưới đây để trả lời từ câu X đến câu Y" (in đậm)
+//   -> "Dựa vào thông tin dưới đây để trả lời các câu hỏi từ X đến Y" (in đậm)
 // - Indent left 0 cho dòng dẫn và đoạn dữ kiện (đến trước "Câu N.")
 // - Canh giữa hình ảnh / bảng trong đoạn dữ kiện
 // Chạy lại nhiều lần không làm hỏng kết quả cũ.
@@ -11,7 +11,8 @@
 const reRange = /câu(?:\s+hỏi)?\s*(?:từ\s*)?(\d+)\s*(?:[-–]|đến)\s*(?:câu\s*)?(\d+)/i;
 const reStart = /^\s*(Dựa vào|Trả lời)/i;
 // Dòng dẫn đã ở dạng chuẩn (sau bước 1, hoặc vốn đã đúng)
-const reCanonical = /^\s*Dựa vào thông tin dưới đây để trả lời từ câu \d+ đến câu \d+/i;
+// (dạng chuẩn từ 1.4.4-beta.2: "…các câu hỏi từ X đến Y"; vẫn nhận dạng cũ "…từ câu X đến câu Y")
+const reCanonical = /^\s*Dựa vào thông tin dưới đây để trả lời (?:các câu hỏi từ \d+ đến \d+|từ câu \d+ đến câu \d+)/i;
 
 export async function chuanHoaToan(context) {
   const paras = context.document.body.paragraphs;
@@ -51,9 +52,11 @@ export async function chuanHoaToan(context) {
     headers++;
 
     // 1) Viết lại dòng dẫn (giữ in đậm)
-    const newText = `Dựa vào thông tin dưới đây để trả lời từ câu ${m[1]} đến câu ${m[2]}`;
+    const newText = `Dựa vào thông tin dưới đây để trả lời các câu hỏi từ ${m[1]} đến ${m[2]}`;
     if (items[i].text !== newText) {
-      items[i].insertText(newText, "Replace");
+      // Chỉ thay phần nội dung, GIỮ dấu ¶ — paragraph.insertText(.., "Replace") xoá cả ¶
+      // làm dòng dẫn dính vào đoạn bên dưới (lỗi 1.4.4).
+      items[i].getRange("Content").insertText(newText, "Replace");
       changed++;
     }
     items[i].font.bold = true;

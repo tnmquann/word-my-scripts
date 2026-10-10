@@ -4,6 +4,16 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [1.4.4-beta.2] - 2026-10-10
+
+Small patch on top of 1.4.4. The add-in version stays 1.4.4, because this is a code-only change and installed machines pick it up automatically.
+
+### Fixed
+- **Chuẩn hoá Toán ĐGNL**: after rewriting a lead-in, the paragraph below was pulled up onto the same line (for example `…từ 53 - 56Một nhóm bạn…`). `Paragraph.insertText(…, "Replace")` also replaced the paragraph mark. Only the paragraph content is replaced now, and the paragraph mark is kept.
+
+### Changed
+- **Chuẩn hoá Toán ĐGNL**: the canonical lead-in is now `Dựa vào thông tin dưới đây để trả lời các câu hỏi từ X đến Y`. Lines in the previous form (`…từ câu X đến câu Y`) are still recognized and are rewritten to the new form.
+
 ## [1.4.4] - 2026-10-10
 
 ### Changed

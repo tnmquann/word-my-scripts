@@ -15,7 +15,9 @@ In the Math section of Vietnam National University Ho Chi Minh City Academic Com
 
 1. Rewrites every lead-in to the canonical form
 
-   `Dựa vào thông tin dưới đây để trả lời từ câu X đến câu Y`
+   `Dựa vào thông tin dưới đây để trả lời các câu hỏi từ X đến Y`
+
+   This form applies since 1.4.4-beta.2. The earlier form `…trả lời từ câu X đến câu Y` is still recognized and is rewritten to the new one.
 
    and makes it bold.
 2. Removes the indentation from the lead-in and from the stimulus paragraphs that follow it.
@@ -40,13 +42,13 @@ For each lead-in `i` and every paragraph `j` in its scope:
 
 | Target | Change |
 | --- | --- |
-| Lead-in text | `insertText(canonical, "Replace")`, but only when the text differs |
+| Lead-in text | `getRange("Content").insertText(canonical, "Replace")`, but only when the text differs. Only the content is replaced, so the paragraph mark (¶) is kept. Replacing the whole paragraph also removed the mark and pulled the next paragraph up (fixed in 1.4.4-beta.2). |
 | Lead-in font | `bold = true` |
 | `j` | `leftIndent = 0`, `firstLineIndent = 0` |
 | `j` containing ≥ 1 inline picture | `alignment = "Centered"` |
 | `j` inside a table | parent `table.alignment = "Centered"` |
 
-**Indent pass (since 1.4.3; stimulus included since 1.4.4).** After the writes above are synced, the command reloads all paragraphs and their list items. For **every** paragraph that matches the canonical form `/^\s*Dựa vào thông tin dưới đây để trả lời từ câu \d+ đến câu \d+/i`, it sets `leftIndent = 0` and `firstLineIndent = 0` on that lead-in and on **every paragraph below it**. The pass stops at the next auto-numbered question (a list item whose `listString` starts with `Câu`) or at the next canonical lead-in. This covers lines that were just rewritten and lines that already matched (so were not replaced). Running it as a separate phase guarantees that the indent applies to the paragraph *after* `insertText("Replace")` has rewritten it.
+**Indent pass (since 1.4.3; stimulus included since 1.4.4).** After the writes above are synced, the command reloads all paragraphs and their list items. For **every** paragraph that matches the canonical form `/^\s*Dựa vào thông tin dưới đây để trả lời (?:các câu hỏi từ \d+ đến \d+|từ câu \d+ đến câu \d+)/i`, it sets `leftIndent = 0` and `firstLineIndent = 0` on that lead-in and on **every paragraph below it**. The pass stops at the next auto-numbered question (a list item whose `listString` starts with `Câu`) or at the next canonical lead-in. This covers lines that were just rewritten and lines that already matched (so were not replaced). Running it as a separate phase guarantees that the indent applies to the paragraph *after* `insertText("Replace")` has rewritten it.
 
 ## Execution profile
 
@@ -75,5 +77,6 @@ The command needs 6 round-trips in total:
 - [ ] A solution line such as `Dựa vào BBT suy ra…` is left untouched.
 - [ ] A figure or table in the stimulus is centered, and the question lines keep their hanging indent.
 - [ ] A second run reports `viết lại 0 dòng`.
-- [ ] `…trả lời các câu hỏi từ 72 đến 74` is rewritten to `…trả lời từ câu 72 đến câu 74`. The stimulus below it (for example `Cho hàm số y = …`) moves to left indent 0, and the following auto-numbered `Câu 72.` keeps its hanging indent.
+- [ ] After the rewrite, the lead-in is still its own paragraph: the stimulus below is **not** pulled up onto the lead-in line.
+- [ ] `Dựa vào các thông tin được cung cấp dưới đây để trả lời các câu từ 53 - 56` is rewritten to `Dựa vào thông tin dưới đây để trả lời các câu hỏi từ 53 đến 56`, and a line already in that form is left unchanged. The stimulus below it (for example `Cho hàm số y = …`) moves to left indent 0, and the following auto-numbered `Câu 72.` keeps its hanging indent.
 - [ ] Every canonical lead-in ends up at left indent 0 and first-line indent 0. This includes a line that already had the canonical text but was indented, which is fixed even though its text is not replaced.
