@@ -118,3 +118,7 @@ if ($wordRunning) {
 } else {
   Write-Host 'Open Word: the MY_SCRIPTS tab will appear on the ribbon.'
 }
+Write-Host ''
+Write-Host 'FIRST TIME ONLY: if the MY_SCRIPTS tab is not visible, in Word go to' -ForegroundColor Yellow
+Write-Host '  Home > Add-ins > Advanced (My Add-ins) > DEVELOPER ADD-INS > MY_SCRIPTS > Add' -ForegroundColor Yellow
+Write-Host 'The tab then stays on the ribbon.' -ForegroundColor Yellow

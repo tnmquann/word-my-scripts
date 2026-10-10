@@ -102,6 +102,8 @@ powershell -ExecutionPolicy Bypass -File installer\install.ps1 -ManifestPath dis
 
 Open Word. The **MY_SCRIPTS** tab appears on the ribbon.
 
+**First run on recent Word builds** (seen on 16.0.20606): Word registers the add-in but may not activate it on its own. If the tab is missing, go to **Home → Add-ins → Advanced** (or *My Add-ins*), open **DEVELOPER ADD-INS**, select **MY_SCRIPTS** and click **Add**. You only need to do this once per machine. The tab then persists across restarts and updates.
+
 `install.ps1` takes these switches:
 
 | Parameter | Meaning |
@@ -237,7 +239,7 @@ Guidelines for command code:
 
 | Symptom | Cause / fix |
 | --- | --- |
-| Tab does not appear | Word was open during the install. Close all `WINWORD.exe` processes and reopen Word. Check that `HKCU\Software\Microsoft\Office\16.0\WEF\Developer` contains the GUID. |
+| Tab does not appear | First check **Home → Add-ins → Advanced → DEVELOPER ADD-INS**. If MY_SCRIPTS is listed there, click **Add** (a one-time activation needed on recent Word builds). Otherwise, Word was open during the install. Close all `WINWORD.exe` processes and reopen Word. Check that `HKCU\Software\Microsoft\Office\16.0\WEF\Developer` contains the GUID. |
 | Tab appears but buttons do nothing or show an error | The Pages site is unreachable (offline, or Pages not deployed yet). Open `<baseUrl>commands.html` in a browser. |
 | Old behaviour after a deploy | Office has cached the HTML. Close Word, then run `install.ps1 -ClearCache`. |
 | Manifest changes are not picked up | Re-run the installer, which copies the new manifest, then restart Word. If that doesn't help, also use `-ClearCache`. |
