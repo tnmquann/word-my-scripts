@@ -4,6 +4,15 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [1.4.4-beta.3] - 2026-10-10
+
+### Fixed
+- Code updates did not apply until Word was fully restarted, because Word keeps the add-in's command runtime in memory for the whole session.
+
+### Changed
+- The commands are now a separate bundle (`features-<hash>.js`). On every button click, the runtime checks `version.json` (uncached, about 3 s timeout). If a newer bundle is deployed, it loads it before running the command. **From this version on, patches apply on the next click, without restarting Word.**
+- This one update still needs a single full Word restart (close every Word window), because it replaces the runtime itself.
+
 ## [1.4.4-beta.2] - 2026-10-10
 
 Small patch on top of 1.4.4. The add-in version stays 1.4.4, because this is a code-only change and installed machines pick it up automatically.

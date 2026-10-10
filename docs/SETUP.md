@@ -26,7 +26,11 @@ This guide covers:
 ```
 
 - **Manifest** (`manifest/manifest.template.xml`): an add-in-only XML manifest that defines a `CustomTab` → `Group` → `Menu` with five `ExecuteFunction` items. `scripts/build.mjs` fills in the placeholders from `addin.config.json` and `package.json`.
-- **FunctionFile** (`commands.html`): a page without UI. Word loads it when a ribbon button is clicked. `src/runtime/commands.js` collects the command registries of all feature groups (`src/features/<group>/index.js`) and binds each `<FunctionName>` to its handler with `Office.actions.associate`. Duplicate names across groups throw an error at load time.
+- **FunctionFile** (`commands.html`): a page without UI. Word loads it when a ribbon button is clicked. The page loads two bundles:
+
+- **features** (`src/features/index.js` → `features-<hash>.js`): the registries of all feature groups, exposed as `window.__MY_SCRIPTS_FEATURES__`.
+- **runtime** (`src/runtime/commands.js`): binds every `<FunctionName>` with `Office.actions.associate`. Duplicate names across groups throw an error at load time.
+- **Hot reload**: Word keeps this page in memory for the whole session. Before each feature command, `src/runtime/loader.js` therefore fetches `version.json` (no-store, 3 s timeout). If its `features` file name differs from the loaded one, it injects the new bundle and then runs the command from the newest registry. Feature fixes apply on the next click without a Word restart. Changes to the runtime, the dialog or the manifest still require a restart or reinstall.
 - **runCommand** (`src/runtime/runCommand.js`): wraps every handler. It does four things:
   - Runs the handler inside `Word.run` and measures how long it takes.
   - Turns `OfficeExtension.Error` into readable text (message, code, `debugInfo.errorLocation`).
@@ -218,7 +222,7 @@ src/features/<group>/
 
 **Adding a new group**
 
-1. Create `src/features/<group>/index.js` exporting the registry, and add it to `GROUPS` in `src/runtime/commands.js`.
+1. Create `src/features/<group>/index.js` exporting the registry, and add it to `GROUPS` in `src/features/index.js`.
 2. In the manifest, add a new `<Group>` inside `<CustomTab>`, containing a `<Control xsi:type="Menu">` (or `Button` controls), plus its resources.
 3. Create `docs/specs/<group>/` and list the group in `README.md`.
 

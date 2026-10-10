@@ -23,6 +23,7 @@ const BASE_URL = env.baseUrl.endsWith("/") ? env.baseUrl : env.baseUrl + "/";
 
 const ENTRIES = {
   commands: "src/runtime/commands.js",
+  features: "src/features/index.js", // hot-reloaded per click via version.json "features"
   dialog: "src/ui/dialog/dialog.js",
 };
 const PAGES = {
@@ -106,7 +107,8 @@ async function writeStatic(names) {
   await fs.writeFile(path.join(OUT, ".nojekyll"), "");
   await fs.writeFile(
     path.join(OUT, "version.json"),
-    JSON.stringify({ version: pkg.version, builtAt: new Date().toISOString() }, null, 2)
+    // "features": current features bundle; the runtime loads it on the next click if it differs
+    JSON.stringify({ version: pkg.version, features: names["features.js"], builtAt: new Date().toISOString() }, null, 2)
   );
 }
 
