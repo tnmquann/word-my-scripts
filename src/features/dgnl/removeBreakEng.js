@@ -1,4 +1,4 @@
-// Fix lỗi break dòng T.Anh  (spec: docs/specs/DGNL/Remove_Break_Eng.md)
+// Fix lỗi break dòng T.Anh  (spec: docs/specs/dgnl/Remove_Break_Eng.md)
 // Gỡ "Keep with next" thừa khiến Word đẩy cả khối sang trang sau, để lại khoảng trắng lớn.
 //
 // Giữ nguyên (không đụng tới):

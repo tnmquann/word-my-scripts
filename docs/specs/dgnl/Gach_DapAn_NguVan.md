@@ -4,7 +4,7 @@
 | --- | --- |
 | Ribbon | MY_SCRIPTS → ĐGNL → **Gạch chân đáp án Ngữ Văn** |
 | Action | `gachDapAnNguVan` |
-| Module | `src/functions/dgnl/gachDapAnNguVan.js` |
+| Module | `src/features/dgnl/gachDapAnNguVan.js` |
 | API sets | WordApi 1.3 (`listItemOrNullObject`, `Paragraph.search`, `Range.search`) |
 | Destructive | **Yes**. It deletes paragraphs. |
 | Idempotent | Yes. A processed section no longer matches, so a second run reports 0. |

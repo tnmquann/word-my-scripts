@@ -2,7 +2,7 @@
   "name": "my-scripts-word-addin",
   "version": "1.0.0",
   "private": true,
-  "description": "Word add-in (Office JS) - tab MY_SCRIPTS: các công cụ xử lý đề ĐGNL",
+  "description": "MY_SCRIPTS: Word add-in (Office JS) - a growing collection of document automation commands, organized by ribbon group",
   "license": "UNLICENSED",
   "scripts": {
     "build": "node scripts/build.mjs",

@@ -1,4 +1,4 @@
-// Chuẩn hoá Toán ĐGNL  (spec: docs/specs/DGNL/Chuan_Hoa_Toan.md)
+// Chuẩn hoá Toán ĐGNL  (spec: docs/specs/dgnl/Chuan_Hoa_Toan.md)
 // - Dòng dẫn "Dựa vào ... trả lời câu hỏi X-Y"
 //   -> "Dựa vào thông tin dưới đây để trả lời từ câu X đến câu Y" (in đậm)
 // - Indent left 0 cho dòng dẫn và đoạn dữ kiện (đến trước "Câu N.")

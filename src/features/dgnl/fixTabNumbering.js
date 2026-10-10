@@ -1,4 +1,4 @@
-// Fix lỗi tab câu hỏi  (spec: docs/specs/DGNL/Fix_Tab_Numbering.md)
+// Fix lỗi tab câu hỏi  (spec: docs/specs/dgnl/Fix_Tab_Numbering.md)
 // - Gộp mọi dòng "Câu N." (list item ngoài bảng) vào danh sách của câu đầu tiên
 // - Canh đều hai bên + thụt lề treo
 // - Đánh số liên tục bắt đầu từ 1

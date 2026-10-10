@@ -4,7 +4,7 @@
 | --- | --- |
 | Ribbon | MY_SCRIPTS → ĐGNL → **Fix lỗi break dòng T.Anh** |
 | Action | `removeBreakEng` |
-| Module | `src/functions/dgnl/removeBreakEng.js` |
+| Module | `src/features/dgnl/removeBreakEng.js` |
 | API sets | WordApi 1.1 (`getOoxml`, `insertOoxml`), WordApi 1.3 (`getNextOrNullObject`), WordApi 1.5 optional (`getStyles`, `paragraphFormat.keepWithNext`) |
 | Destructive | No. It changes pagination flags only, but it rewrites the affected paragraphs via OOXML. |
 | Idempotent | Yes |

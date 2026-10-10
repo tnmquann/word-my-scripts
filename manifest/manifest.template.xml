@@ -3,7 +3,7 @@
   Manifest template. Placeholders are filled by scripts/build.mjs from addin.config.json + package.json:
     {{ID}} {{VERSION}} {{BASE_URL}} {{ORIGIN}} {{DISPLAY_NAME}} {{PROVIDER}} {{TAB_LABEL}}
   To add a ribbon button: add an <Item> to the menu + its resources, then register the
-  FunctionName in src/commands/commands.js.
+  FunctionName in src/features/<group>/index.js.
 -->
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -15,7 +15,7 @@
   <ProviderName>{{PROVIDER}}</ProviderName>
   <DefaultLocale>vi-VN</DefaultLocale>
   <DisplayName DefaultValue="{{DISPLAY_NAME}}"/>
-  <Description DefaultValue="Công cụ xử lý đề ĐGNL cho Word (Office JS)."/>
+  <Description DefaultValue="Bộ công cụ tự động hoá Word (Office JS), chia theo nhóm chức năng."/>
   <IconUrl DefaultValue="{{BASE_URL}}assets/addin-32.png"/>
   <HighResolutionIconUrl DefaultValue="{{BASE_URL}}assets/addin-64.png"/>
   <SupportUrl DefaultValue="{{BASE_URL}}about.html"/>

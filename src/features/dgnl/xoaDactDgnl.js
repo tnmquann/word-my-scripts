@@ -1,4 +1,4 @@
-// Xoá ĐACT ĐGNL  (spec: docs/specs/DGNL/Xoa_DACT_DGNL.md)
+// Xoá ĐACT ĐGNL  (spec: docs/specs/dgnl/Xoa_DACT_DGNL.md)
 // Xoá các khối đáp án chi tiết bắt đầu bằng dòng "Lời giải".
 // Khối kết thúc ngay trước: câu hỏi mới (thụt treo), đoạn dẫn/tiêu đề (lề trái 0)
 // hoặc dòng "Lời giải" kế tiếp. Bảng trong khối được xoá riêng trước (tránh GeneralException).

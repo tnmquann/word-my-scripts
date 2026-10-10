@@ -4,7 +4,7 @@
 | --- | --- |
 | Ribbon | MY_SCRIPTS → ĐGNL → **Xoá ĐACT ĐGNL** |
 | Action | `xoaDactDgnl` |
-| Module | `src/functions/dgnl/xoaDactDgnl.js` |
+| Module | `src/features/dgnl/xoaDactDgnl.js` |
 | API sets | WordApi 1.3 (`getRange`, `expandTo`, `Range.tables`) |
 | Destructive | **Yes**. It deletes content. Run it on a copy. |
 | Idempotent | Yes. After the first run there are no markers left. |

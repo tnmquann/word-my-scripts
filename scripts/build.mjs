@@ -22,13 +22,13 @@ const OUT = r(DEV ? "dist-dev" : "dist");
 const BASE_URL = env.baseUrl.endsWith("/") ? env.baseUrl : env.baseUrl + "/";
 
 const ENTRIES = {
-  commands: "src/commands/commands.js",
-  dialog: "src/dialog/dialog.js",
+  commands: "src/runtime/commands.js",
+  dialog: "src/ui/dialog/dialog.js",
 };
 const PAGES = {
-  "commands.html": "src/commands/commands.html",
-  "dialog.html": "src/dialog/dialog.html",
-  "about.html": "src/about/about.html",
+  "commands.html": "src/runtime/commands.html",
+  "dialog.html": "src/ui/dialog/dialog.html",
+  "about.html": "src/ui/about/about.html",
 };
 
 const esbuildOptions = {

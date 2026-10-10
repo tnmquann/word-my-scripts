@@ -4,7 +4,7 @@
 | --- | --- |
 | Ribbon | MY_SCRIPTS → ĐGNL → **Chuẩn hoá Toán ĐGNL** |
 | Action | `chuanHoaToan` |
-| Module | `src/functions/dgnl/chuanHoaToan.js` |
+| Module | `src/features/dgnl/chuanHoaToan.js` |
 | API sets | WordApi 1.3 (`listItemOrNullObject`, `parentTableOrNullObject`, `inlinePictures`) |
 | Destructive | No. It rewrites text and formatting only. |
 | Idempotent | Yes |

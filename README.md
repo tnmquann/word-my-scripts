@@ -1,6 +1,12 @@
 # MY_SCRIPTS — Word add-in (Office JS)
 
-A Word add-in that adds a **MY_SCRIPTS** ribbon tab. It automates clean-up tasks on exam documents for the Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT). Ribbon labels are in Vietnamese, and *ĐGNL* is the Vietnamese abbreviation for this test. The scripts run as Office JS ribbon commands (`ExecuteFunction`), and there is no task pane and no VBA.
+MY_SCRIPTS is a personal collection of Word automation commands, delivered as an Office JS add-in. It adds a **MY_SCRIPTS** ribbon tab. Each **feature group** on that tab bundles related commands, and new groups are added over time. Every command runs as an Office JS ribbon command (`ExecuteFunction`), with no task pane and no VBA.
+
+## Feature groups
+
+| Group (ribbon) | Scope | Code | Specs |
+| --- | --- | --- | --- |
+| **ĐGNL** | Clean-up tools for exam documents of the Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT). *ĐGNL* is the Vietnamese abbreviation for this test. | [src/features/dgnl/](src/features/dgnl/) | [docs/specs/dgnl/](docs/specs/dgnl/) |
 
 ```
 MY_SCRIPTS (tab)
@@ -12,6 +18,8 @@ MY_SCRIPTS (tab)
         ├── Fix lỗi break dòng T.Anh   → removeBreakEng
         └── Xoá ĐACT ĐGNL              → xoaDactDgnl
 ```
+
+Ribbon labels and result messages are in Vietnamese. To add a command or a whole new group, see [docs/SETUP.md § 6](docs/SETUP.md#6-adding-a-new-command).
 
 Each command runs inside a single `Word.run` batch. When it finishes, a small dialog shows the result. On success the dialog closes by itself after 3.5 s. On failure it stays open until you close it.
 
@@ -35,19 +43,17 @@ For the full setup, release and troubleshooting guide, see **[docs/SETUP.md](doc
 .
 ├── addin.config.json          # add-in IDs, display name, prod/dev base URLs
 ├── manifest/
-│   └── manifest.template.xml  # ribbon definition (tab / group / menu / items)
+│   └── manifest.template.xml  # ribbon definition (tab → groups → menus → items)
 ├── src/
-│   ├── commands/              # FunctionFile: commands.html + action registration
-│   ├── core/runCommand.js     # Word.run wrapper, timing, result dialog, error formatting
-│   ├── dialog/                # result dialog page
-│   ├── about/                 # SourceLocation page (required by manifest)
-│   └── functions/dgnl/        # one module per ribbon command
+│   ├── runtime/               # FunctionFile (commands.html), command registration, runCommand wrapper
+│   ├── ui/                    # result dialog + about page (manifest SourceLocation)
+│   └── features/<group>/      # one folder per ribbon group: index.js registry + one module per command
 ├── assets/icons/              # generated PNG icons (16/32/80 px)
 ├── installer/                 # install.ps1 / uninstall.ps1 / *.cmd wrappers
 ├── scripts/                   # build.mjs (esbuild), make-icons.mjs, release.mjs
 ├── docs/
 │   ├── SETUP.md               # setup, deployment, operations guide
-│   └── specs/DGNL/            # technical spec for each command
+│   └── specs/<group>/         # technical spec for each command, per group
 └── .github/workflows/         # Pages deploy (push to main) + release (tag v*)
 ```
 
@@ -55,11 +61,13 @@ Generated folders, which git ignores: `dist/` (prod build), `dist-dev/` (dev bui
 
 ## Command specs
 
-- [Chuan_Hoa_Toan.md](docs/specs/DGNL/Chuan_Hoa_Toan.md): normalizes the lead-in line of shared-stimulus question groups (Math).
-- [Fix_Tab_Numbering.md](docs/specs/DGNL/Fix_Tab_Numbering.md): merges question lists, applies hanging indent, renumbers questions from 1.
-- [Gach_DapAn_NguVan.md](docs/specs/DGNL/Gach_DapAn_NguVan.md): marks the correct option and removes redundant answer lines (Literature).
-- [Remove_Break_Eng.md](docs/specs/DGNL/Remove_Break_Eng.md): removes extra *Keep with next* flags that cause large page gaps (English).
-- [Xoa_DACT_DGNL.md](docs/specs/DGNL/Xoa_DACT_DGNL.md): deletes the detailed-solution blocks.
+### ĐGNL (V-ACT)
+
+- [Chuan_Hoa_Toan.md](docs/specs/dgnl/Chuan_Hoa_Toan.md): normalizes the lead-in line of shared-stimulus question groups (Math).
+- [Fix_Tab_Numbering.md](docs/specs/dgnl/Fix_Tab_Numbering.md): merges question lists, applies hanging indent, renumbers questions from 1.
+- [Gach_DapAn_NguVan.md](docs/specs/dgnl/Gach_DapAn_NguVan.md): marks the correct option and removes redundant answer lines (Literature).
+- [Remove_Break_Eng.md](docs/specs/dgnl/Remove_Break_Eng.md): removes extra *Keep with next* flags that cause large page gaps (English).
+- [Xoa_DACT_DGNL.md](docs/specs/dgnl/Xoa_DACT_DGNL.md): deletes the detailed-solution blocks.
 
 ## Requirements
 

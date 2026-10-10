@@ -1,4 +1,4 @@
-// Gạch chân đáp án Ngữ Văn  (spec: docs/specs/DGNL/Gach_DapAn_NguVan.md)
+// Gạch chân đáp án Ngữ Văn  (spec: docs/specs/dgnl/Gach_DapAn_NguVan.md)
 // - Tìm các khối: dòng "Lời giải" + dòng đáp án "X." ngay sau + phương án đúng phía trên
 // - Chữ cái đáp án đúng: đậm + gạch chân + đỏ
 // - Xoá dòng đáp án, phần giải thích lặp lại đề và "Lời giải" thừa

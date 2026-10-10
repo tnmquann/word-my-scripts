@@ -26,8 +26,8 @@ This guide covers:
 ```
 
 - **Manifest** (`manifest/manifest.template.xml`): an add-in-only XML manifest that defines a `CustomTab` → `Group` → `Menu` with five `ExecuteFunction` items. `scripts/build.mjs` fills in the placeholders from `addin.config.json` and `package.json`.
-- **FunctionFile** (`commands.html`): a page without UI. Word loads it when a ribbon button is clicked. `src/commands/commands.js` maps each `<FunctionName>` to a handler with `Office.actions.associate`.
-- **runCommand** (`src/core/runCommand.js`): wraps every handler. It does four things:
+- **FunctionFile** (`commands.html`): a page without UI. Word loads it when a ribbon button is clicked. `src/runtime/commands.js` collects the command registries of all feature groups (`src/features/<group>/index.js`) and binds each `<FunctionName>` to its handler with `Office.actions.associate`. Duplicate names across groups throw an error at load time.
+- **runCommand** (`src/runtime/runCommand.js`): wraps every handler. It does four things:
   - Runs the handler inside `Word.run` and measures how long it takes.
   - Turns `OfficeExtension.Error` into readable text (message, code, `debugInfo.errorLocation`).
   - Opens `dialog.html` with `displayDialogAsync`, passing the result in the query string.
@@ -168,15 +168,33 @@ Recommended test procedure: keep a set of copies of real exam files, and never t
 
 ## 6. Adding a new command
 
-1. Create `src/functions/<group>/<name>.js` exporting `async function <name>(context)`. It should:
+Commands are organized into **feature groups**. Each group maps to one ribbon group on the MY_SCRIPTS tab and lives in `src/features/<group>/`. Its specs live in `docs/specs/<group>/`.
+
+```
+src/features/<group>/
+├── index.js         # registry: { <FunctionName>: { label, run } }
+└── <command>.js     # one module per command
+```
+
+**Adding a command to an existing group**
+
+1. Create `src/features/<group>/<name>.js` exporting `async function <name>(context)`. It should:
    - Receive a `Word.RequestContext`.
    - Return a short summary string, which is shown in the dialog.
    - Throw an exception on hard failure.
-2. Register the function in `src/commands/commands.js`: `<name>: makeCommand("<ribbon label>", <name>)`.
-3. Add the ribbon entry in `manifest/manifest.template.xml`. For a new menu item, add an `<Item>`. For a new menu, add a new `<Group>` + `<Control xsi:type="Menu">`. Then add the matching `bt:Image`, `ShortStrings` and `LongStrings` resources. `FunctionName` must equal the key you registered in step 2.
-4. Add an icon design to `scripts/make-icons.mjs` and run `npm run icons`.
-5. Write `docs/specs/<group>/<Name>.md`.
-6. Run `npm run build && npm run validate`, then test with the dev add-in.
+2. Register the command in `src/features/<group>/index.js`: `<name>: { label: "<dialog title>", run: <name> }`.
+3. Add an `<Item>` to the group's menu in `manifest/manifest.template.xml`, together with the matching `bt:Image`, `ShortStrings` and `LongStrings` resources. `FunctionName` must equal the key from step 2. Keys must be unique across all groups.
+
+**Adding a new group**
+
+1. Create `src/features/<group>/index.js` exporting the registry, and add it to `GROUPS` in `src/runtime/commands.js`.
+2. In the manifest, add a new `<Group>` inside `<CustomTab>`, containing a `<Control xsi:type="Menu">` (or `Button` controls), plus its resources.
+3. Create `docs/specs/<group>/` and list the group in `README.md`.
+
+**For every new command or group**, also:
+- Add an icon design to `scripts/make-icons.mjs` and run `npm run icons`.
+- Write `docs/specs/<group>/<Name>.md`.
+- Run `npm run build && npm run validate`, then test with the dev add-in.
 
 Guidelines for command code:
 - Batch the work. Queue `load` calls and writes for all paragraphs, then `context.sync()` once per phase. Never call `sync` inside a per-paragraph loop unless you need to.

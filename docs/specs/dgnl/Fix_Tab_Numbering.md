@@ -4,7 +4,7 @@
 | --- | --- |
 | Ribbon | MY_SCRIPTS → ĐGNL → **Fix lỗi tab câu hỏi** |
 | Action | `fixTabNumbering` |
-| Module | `src/functions/dgnl/fixTabNumbering.js` |
+| Module | `src/features/dgnl/fixTabNumbering.js` |
 | API sets | WordApi 1.3 (`listItem`, `list`, `detachFromList`, `attachToList`, `setLevelStartingNumber`) |
 | Destructive | No. It changes list membership and paragraph formatting only. |
 | Idempotent | Yes |
