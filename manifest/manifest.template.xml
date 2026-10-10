@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Manifest template. Placeholders are filled by scripts/build.mjs from addin.config.json + package.json:
+    {{ID}} {{VERSION}} {{BASE_URL}} {{ORIGIN}} {{DISPLAY_NAME}} {{PROVIDER}} {{TAB_LABEL}}
+  To add a ribbon button: add an <Item> to the menu + its resources, then register the
+  FunctionName in src/commands/commands.js.
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
+  <Id>{{ID}}</Id>
+  <Version>{{VERSION}}</Version>
+  <ProviderName>{{PROVIDER}}</ProviderName>
+  <DefaultLocale>vi-VN</DefaultLocale>
+  <DisplayName DefaultValue="{{DISPLAY_NAME}}"/>
+  <Description DefaultValue="Công cụ xử lý đề ĐGNL cho Word (Office JS)."/>
+  <IconUrl DefaultValue="{{BASE_URL}}assets/addin-32.png"/>
+  <HighResolutionIconUrl DefaultValue="{{BASE_URL}}assets/addin-64.png"/>
+  <SupportUrl DefaultValue="{{BASE_URL}}about.html"/>
+  <AppDomains>
+    <AppDomain>{{ORIGIN}}</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Document"/>
+  </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="WordApi" MinVersion="1.3"/>
+    </Sets>
+  </Requirements>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="{{BASE_URL}}about.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <FunctionFile resid="Commands.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <CustomTab id="MyScripts.Tab">
+              <Group id="MyScripts.DGNL.Group">
+                <Label resid="DGNL.Group.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.DGNL.16"/>
+                  <bt:Image size="32" resid="Icon.DGNL.32"/>
+                  <bt:Image size="80" resid="Icon.DGNL.80"/>
+                </Icon>
+                <Control xsi:type="Menu" id="MyScripts.DGNL.Menu">
+                  <Label resid="DGNL.Menu.Label"/>
+                  <Supertip>
+                    <Title resid="DGNL.Menu.Label"/>
+                    <Description resid="DGNL.Menu.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.DGNL.16"/>
+                    <bt:Image size="32" resid="Icon.DGNL.32"/>
+                    <bt:Image size="80" resid="Icon.DGNL.80"/>
+                  </Icon>
+                  <Items>
+                    <Item id="MyScripts.DGNL.ChuanHoaToan">
+                      <Label resid="ChuanHoaToan.Label"/>
+                      <Supertip>
+                        <Title resid="ChuanHoaToan.Label"/>
+                        <Description resid="ChuanHoaToan.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.ChuanHoaToan.16"/>
+                        <bt:Image size="32" resid="Icon.ChuanHoaToan.32"/>
+                        <bt:Image size="80" resid="Icon.ChuanHoaToan.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>chuanHoaToan</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.DGNL.FixTabNumbering">
+                      <Label resid="FixTabNumbering.Label"/>
+                      <Supertip>
+                        <Title resid="FixTabNumbering.Label"/>
+                        <Description resid="FixTabNumbering.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.FixTabNumbering.16"/>
+                        <bt:Image size="32" resid="Icon.FixTabNumbering.32"/>
+                        <bt:Image size="80" resid="Icon.FixTabNumbering.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>fixTabNumbering</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.DGNL.GachDapAnNguVan">
+                      <Label resid="GachDapAnNguVan.Label"/>
+                      <Supertip>
+                        <Title resid="GachDapAnNguVan.Label"/>
+                        <Description resid="GachDapAnNguVan.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.GachDapAnNguVan.16"/>
+                        <bt:Image size="32" resid="Icon.GachDapAnNguVan.32"/>
+                        <bt:Image size="80" resid="Icon.GachDapAnNguVan.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>gachDapAnNguVan</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.DGNL.RemoveBreakEng">
+                      <Label resid="RemoveBreakEng.Label"/>
+                      <Supertip>
+                        <Title resid="RemoveBreakEng.Label"/>
+                        <Description resid="RemoveBreakEng.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.RemoveBreakEng.16"/>
+                        <bt:Image size="32" resid="Icon.RemoveBreakEng.32"/>
+                        <bt:Image size="80" resid="Icon.RemoveBreakEng.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>removeBreakEng</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.DGNL.XoaDactDgnl">
+                      <Label resid="XoaDactDgnl.Label"/>
+                      <Supertip>
+                        <Title resid="XoaDactDgnl.Label"/>
+                        <Description resid="XoaDactDgnl.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.XoaDactDgnl.16"/>
+                        <bt:Image size="32" resid="Icon.XoaDactDgnl.32"/>
+                        <bt:Image size="80" resid="Icon.XoaDactDgnl.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>xoaDactDgnl</FunctionName>
+                      </Action>
+                    </Item>
+                  </Items>
+                </Control>
+              </Group>
+              <Label resid="Tab.Label"/>
+            </CustomTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.DGNL.16" DefaultValue="{{BASE_URL}}assets/dgnl-16.png"/>
+        <bt:Image id="Icon.DGNL.32" DefaultValue="{{BASE_URL}}assets/dgnl-32.png"/>
+        <bt:Image id="Icon.DGNL.80" DefaultValue="{{BASE_URL}}assets/dgnl-80.png"/>
+        <bt:Image id="Icon.ChuanHoaToan.16" DefaultValue="{{BASE_URL}}assets/chuanHoaToan-16.png"/>
+        <bt:Image id="Icon.ChuanHoaToan.32" DefaultValue="{{BASE_URL}}assets/chuanHoaToan-32.png"/>
+        <bt:Image id="Icon.ChuanHoaToan.80" DefaultValue="{{BASE_URL}}assets/chuanHoaToan-80.png"/>
+        <bt:Image id="Icon.FixTabNumbering.16" DefaultValue="{{BASE_URL}}assets/fixTabNumbering-16.png"/>
+        <bt:Image id="Icon.FixTabNumbering.32" DefaultValue="{{BASE_URL}}assets/fixTabNumbering-32.png"/>
+        <bt:Image id="Icon.FixTabNumbering.80" DefaultValue="{{BASE_URL}}assets/fixTabNumbering-80.png"/>
+        <bt:Image id="Icon.GachDapAnNguVan.16" DefaultValue="{{BASE_URL}}assets/gachDapAnNguVan-16.png"/>
+        <bt:Image id="Icon.GachDapAnNguVan.32" DefaultValue="{{BASE_URL}}assets/gachDapAnNguVan-32.png"/>
+        <bt:Image id="Icon.GachDapAnNguVan.80" DefaultValue="{{BASE_URL}}assets/gachDapAnNguVan-80.png"/>
+        <bt:Image id="Icon.RemoveBreakEng.16" DefaultValue="{{BASE_URL}}assets/removeBreakEng-16.png"/>
+        <bt:Image id="Icon.RemoveBreakEng.32" DefaultValue="{{BASE_URL}}assets/removeBreakEng-32.png"/>
+        <bt:Image id="Icon.RemoveBreakEng.80" DefaultValue="{{BASE_URL}}assets/removeBreakEng-80.png"/>
+        <bt:Image id="Icon.XoaDactDgnl.16" DefaultValue="{{BASE_URL}}assets/xoaDactDgnl-16.png"/>
+        <bt:Image id="Icon.XoaDactDgnl.32" DefaultValue="{{BASE_URL}}assets/xoaDactDgnl-32.png"/>
+        <bt:Image id="Icon.XoaDactDgnl.80" DefaultValue="{{BASE_URL}}assets/xoaDactDgnl-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Commands.Url" DefaultValue="{{BASE_URL}}commands.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="Tab.Label" DefaultValue="{{TAB_LABEL}}"/>
+        <bt:String id="DGNL.Group.Label" DefaultValue="ĐGNL"/>
+        <bt:String id="DGNL.Menu.Label" DefaultValue="ĐGNL"/>
+        <bt:String id="ChuanHoaToan.Label" DefaultValue="Chuẩn hoá Toán ĐGNL"/>
+        <bt:String id="FixTabNumbering.Label" DefaultValue="Fix lỗi tab câu hỏi"/>
+        <bt:String id="GachDapAnNguVan.Label" DefaultValue="Gạch chân đáp án Ngữ Văn"/>
+        <bt:String id="RemoveBreakEng.Label" DefaultValue="Fix lỗi break dòng T.Anh"/>
+        <bt:String id="XoaDactDgnl.Label" DefaultValue="Xoá ĐACT ĐGNL"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="DGNL.Menu.Tip" DefaultValue="Các công cụ xử lý đề ĐGNL."/>
+        <bt:String id="ChuanHoaToan.Tip" DefaultValue="Chuẩn hoá dòng dẫn &quot;Dựa vào … câu X-Y&quot;, bỏ thụt lề đoạn dữ kiện, canh giữa hình và bảng."/>
+        <bt:String id="FixTabNumbering.Tip" DefaultValue="Gộp các dòng &quot;Câu N.&quot; vào một danh sách, canh đều, thụt lề treo 1,75 cm, đánh số liên tục từ 1."/>
+        <bt:String id="GachDapAnNguVan.Tip" DefaultValue="Gạch chân, tô đỏ chữ cái đáp án đúng. Xoá dòng đáp án và phần giải thích lặp lại đề dưới &quot;Lời giải&quot;."/>
+        <bt:String id="RemoveBreakEng.Tip" DefaultValue="Gỡ &quot;Keep with next&quot; thừa gây khoảng trắng lớn giữa câu hỏi và đáp án (đề Tiếng Anh)."/>
+        <bt:String id="XoaDactDgnl.Tip" DefaultValue="Xoá toàn bộ các khối đáp án chi tiết bắt đầu bằng &quot;Lời giải&quot;. Nên lưu bản sao trước khi chạy."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

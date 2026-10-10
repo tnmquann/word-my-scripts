@@ -1,56 +1,64 @@
-Lỗi này do Script Lab không cho dùng `await` ở cấp ngoài cùng. Bạn bọc code trong một hàm `async` rồi gọi hàm đó là được. Dưới đây là bản đã sửa, bạn thay toàn bộ nội dung tab **Script** bằng đoạn này:
+# Fix lỗi tab câu hỏi — unify question numbering and hanging indent
 
-```javascript
-async function fixCauHoi() {
-  const IND = 49.6; // thụt lề treo (pt)
+| | |
+| --- | --- |
+| Ribbon | MY_SCRIPTS → ĐGNL → **Fix lỗi tab câu hỏi** |
+| Action | `fixTabNumbering` |
+| Module | `src/functions/dgnl/fixTabNumbering.js` |
+| API sets | WordApi 1.3 (`listItem`, `list`, `detachFromList`, `attachToList`, `setLevelStartingNumber`) |
+| Destructive | No. It changes list membership and paragraph formatting only. |
+| Idempotent | Yes |
 
-  await Word.run(async (context) => {
-    const paras = context.document.body.paragraphs;
-    paras.load("items/isListItem,items/tableNestingLevel");
-    await context.sync();
+## Purpose
 
-    // Lấy các dòng đề "Câu N." (list item ngoài bảng, bỏ qua list kiểu "(1)")
-    const items = paras.items.filter(p => p.isListItem && p.tableNestingLevel === 0);
-    items.forEach(p => { p.listItem.load("listString"); p.list.load("id"); });
-    await context.sync();
-    const cau = items.filter(p => /^\D+\d+\.$/.test(p.listItem.listString.trim()));
-    if (!cau.length) { console.log("Không tìm thấy dòng 'Câu N.'"); return; }
+Exam files are often assembled from several sources. The `Câu N.` question lines then belong to several different Word lists. This causes:
 
-    // 1) Gộp tất cả vào danh sách của câu đầu tiên
-    const mainList = cau[0].list;
-    const mainId = cau[0].list.id;
-    const move = cau.filter(p => p.list.id !== mainId);
-    move.forEach(p => p.detachFromList());
-    await context.sync();
-    move.forEach(p => p.attachToList(mainId, 0));
-    await context.sync();
+- Numbering that restarts or skips.
+- Mismatched tab positions between the label and the text.
+- Inconsistent alignment.
 
-    // 2) Canh đều hai bên + thụt lề treo
-    cau.forEach(p => {
-      p.alignment = "Justified";
-      p.leftIndent = IND;
-      p.firstLineIndent = -IND;
-    });
-    await context.sync();
+This command merges every question line into one list and numbers the questions 1…N continuously. It also applies a uniform hanging-indent layout.
 
-    // 3) Đánh số liên tục bắt đầu từ 1
-    mainList.setLevelStartingNumber(0, 1);
-    await context.sync();
+## Detection
 
-    // 4) Kiểm tra
-    cau.forEach(p => p.listItem.load("listString"));
-    await context.sync();
-    const nums = cau.map(p => +p.listItem.listString.replace(/\D/g, ""));
-    const ok = nums.every((n, k) => n === k + 1);
-    console.log(`Đã xử lý ${cau.length} câu (gộp ${move.length}). Số liên tục 1..${nums.length}: ${ok}`);
-  });
-}
+A paragraph is a **question line** when:
 
-fixCauHoi().catch(e => console.error(e));
-```
+- `isListItem === true`;
+- `tableNestingLevel === 0` (it is not inside a table);
+- `listItem.listString.trim()` matches `/^\D+\d+\.$/`. For example `Câu 12.` matches, while `(1)`, `a)` and `1.` do not.
 
-Nếu Script Lab báo lỗi khác, bạn kiểm tra hai điều sau:
-- **Ngôn ngữ của tab Script:** chọn đúng JavaScript hoặc TypeScript.
-- **Thư viện:** để mặc định của Script Lab, không cần thêm gì.
+## Operations
 
-Bạn dán thông báo lỗi mới cho tôi nếu còn lỗi. Tôi thấy bạn vừa sửa vài đoạn đáp án, nhưng script không đụng đến các đoạn đó.
+1. **Merge.** The *main list* is the list of the first question line. Every question line in another list is moved into it. All of them are detached first, the batch is synced, and then each is attached with `attachToList(mainId, 0)` at level 0.
+2. **Layout.** Every question line is set to:
+
+   | Property | Value |
+   | --- | --- |
+   | `alignment` | `Justified` |
+   | `leftIndent` | `49.6 pt` (1.75 cm) |
+   | `firstLineIndent` | `-49.6 pt` (hanging indent) |
+
+3. **Renumber.** `mainList.setLevelStartingNumber(0, 1)`.
+4. **Verify.** The command reloads `listString` for every question line and checks that the numbers are exactly `1, 2, …, N`.
+
+## Configuration
+
+| Constant | Default | Meaning |
+| --- | --- | --- |
+| `IND` | `49.6` | Hanging indent in points |
+
+## Output
+
+`Đã xử lý N câu (gộp M câu vào danh sách chính).` followed by either `Số câu liên tục 1 → N.` or a warning that lists up to 10 positions where the numbering breaks, shown as `#position→actual`.
+
+## Limitations
+
+- Only level 0 is renumbered. Multi-level question lists are flattened to level 0.
+- A list item with a `Câu`-style label that is not a question, for example an example numbered `Ví dụ 1.`, matches the pattern too. Such lines are merged into the question list.
+
+## Test checklist
+
+- [ ] A file whose numbering restarts at 1 in the middle ends up numbered continuously 1…N.
+- [ ] The tab between `Câu N.` and the text has the same width on every line.
+- [ ] A `(1)`/`(2)` list inside a question keeps its own numbering.
+- [ ] A second run reports `gộp 0 câu` and `Số câu liên tục`.

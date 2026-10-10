@@ -1,102 +1,71 @@
-Dưới đây là script gộp từ các lần chạy trước. Tôi chưa chạy nguyên khối này một lần, nên bạn hãy thử trên bản sao của file trước.
+# Xoá ĐACT ĐGNL — delete detailed-solution blocks
 
-## Cách dùng
+| | |
+| --- | --- |
+| Ribbon | MY_SCRIPTS → ĐGNL → **Xoá ĐACT ĐGNL** |
+| Action | `xoaDactDgnl` |
+| Module | `src/functions/dgnl/xoaDactDgnl.js` |
+| API sets | WordApi 1.3 (`getRange`, `expandTo`, `Range.tables`) |
+| Destructive | **Yes**. It deletes content. Run it on a copy. |
+| Idempotent | Yes. After the first run there are no markers left. |
 
-1. Mở file Word, vào **Insert → Get Add-ins**, tìm và cài **Script Lab** (của Microsoft, miễn phí).
-2. Vào **Home → Script Lab → Code** để mở trình soạn thảo.
-3. Tạo script mới (**New**), chọn tab **Script**, xoá hết nội dung mẫu rồi dán đoạn dưới vào.
-4. **Lưu một bản sao file trước khi chạy.** Script xoá thẳng, và nếu tắt Track Changes thì khó hoàn tác từng bước.
-5. Nhấn **Run**. Kết quả (số khối đã xoá, số đoạn còn lại) hiện ở cửa sổ **Console**.
+## Purpose
 
-```javascript
-document.getElementById("run").addEventListener("click", () => tryCatch(run));
+This command produces the student version of an exam by removing every detailed-solution block (ĐACT, *đáp án chi tiết*). That includes the answer, explanation text, tables and inline images.
 
-async function run() {
-  // ====== CẤU HÌNH ======
-  const MARKER = "Lời giải";   // dòng đánh dấu bắt đầu đáp án
-  const HANGING_MAX = -20;     // firstLineIndent < -20pt = đầu câu hỏi mới
-  const LEFT_MIN = 10;         // lề trái < 10pt = đoạn dẫn / tiêu đề phần
-  // =======================
+## Block detection
 
-  await Word.run(async (context) => {
-    const ps = context.document.body.paragraphs;
-    ps.load("items/text,items/leftIndent,items/firstLineIndent,items/tableNestingLevel");
-    await context.sync();
-    const it = ps.items;
+A block **starts** at each paragraph where `text.trim() === "Lời giải"` and `tableNestingLevel === 0`.
 
-    // 1) Tìm các khối đáp án
-    const blocks = [];
-    for (let i = 0; i < it.length; i++) {
-      if (it[i].text.trim() === MARKER && it[i].tableNestingLevel === 0) {
-        let j = i + 1;
-        while (
-          j < it.length &&
-          !(
-            it[j].tableNestingLevel === 0 &&
-            (it[j].firstLineIndent < HANGING_MAX ||
-              it[j].leftIndent < LEFT_MIN ||
-              it[j].text.trim() === MARKER)
-          )
-        ) j++;
-        blocks.push([i, j - 1]);
-      }
-    }
-    console.log("Số khối đáp án tìm thấy: " + blocks.length);
+The block **ends** right before the first following paragraph that is outside a table (`tableNestingLevel === 0`) and meets one of these conditions:
 
-    // 2) Xoá từ cuối lên đầu
-    let ok = 0, fail = [];
-    for (let n = blocks.length - 1; n >= 0; n--) {
-      const [a, b] = blocks[n];
-      const rng = it[a].getRange("Whole").expandTo(it[b].getRange("Whole"));
-      try {
-        const tbs = rng.tables;
-        tbs.load("items");
-        await context.sync();
-        tbs.items.forEach((t) => t.delete());
-        await context.sync();
+| Condition | Meaning |
+| --- | --- |
+| `firstLineIndent < HANGING_MAX` (‑20 pt) | the start of the next question (hanging indent) |
+| `leftIndent < LEFT_MIN` (10 pt) | a lead-in or section header (no indent) |
+| `text.trim() === "Lời giải"` | the next solution block |
 
-        rng.delete();
-        await context.sync();
-        ok++;
-      } catch (e) {
-        fail.push([a, b]);
-      }
-    }
-    console.log("Đã xoá: " + ok + " | Lỗi: " + JSON.stringify(fail));
+Paragraphs inside tables never end a block, so a table in the solution is deleted with it. Left indent alone cannot separate questions from solutions, because both use 1.75 cm (49.6 pt). That is why the hanging indent is used.
 
-    // 3) Kiểm tra lại
-    const p2 = context.document.body.paragraphs;
-    p2.load("items/text");
-    await context.sync();
-    console.log("Đoạn còn lại: " + p2.items.length +
-      " | Còn dòng '" + MARKER + "': " +
-      p2.items.filter((p) => p.text.trim() === MARKER).length);
-  });
-}
+## Deletion strategy
 
-async function tryCatch(callback) {
-  try { await callback(); } catch (error) { console.error(error); }
-}
-```
+Deleting a range that contains a table in a single operation can fail with `GeneralException`. Tables are therefore deleted first.
 
-Trong tab **HTML** của Script Lab, bạn cần một nút có `id="run"`:
+**Fast path** (default, 3 round-trips no matter how many blocks there are):
 
-```html
-<button id="run">Xoá đáp án</button>
-```
+1. Build `Range = first.getRange("Whole").expandTo(last.getRange("Whole"))` for every block, from the last block to the first, and load `range.tables`.
+2. Delete all tables. This step is skipped when there are none.
+3. Delete all block ranges.
 
-## Logic của script
+**Fallback**: if any step of the fast path throws, the command:
 
-- **Điểm bắt đầu:** đoạn có nội dung đúng bằng "Lời giải".
-- **Điểm kết thúc:** đoạn liền trước một trong ba loại sau:
-  - Đoạn bắt đầu câu hỏi mới, có thụt treo (`firstLineIndent` nhỏ hơn -20pt).
-  - Đoạn dẫn hoặc tiêu đề phần, có lề trái bằng 0.
-  - Dòng "Lời giải" kế tiếp.
-- **Vì sao không dựa vào lề 1,75 cm (49,6pt):** câu hỏi và lời giải đều thụt lề này, nên lề trái không giúp phân biệt.
-- **Bảng và hình trong đáp án:** script xoá bảng riêng trước, vì xoá cả khối cùng lúc sẽ báo lỗi `GeneralException`. Hình gắn trong các đoạn đáp án bị xoá theo.
+1. Re-scans the document. Blocks that were already deleted are gone, so only the remaining blocks are found.
+2. Deletes the remaining blocks one at a time, from last to first, with the same table-first order and a try/catch around each block. This is the behaviour of the original Script Lab script.
+3. Lists the paragraph indices of any blocks that still failed.
 
-## Khi áp dụng cho file khác
+**Verify**: the command reloads the paragraphs and counts the remaining `Lời giải` markers.
 
-- Nếu dòng đánh dấu khác (ví dụ "Hướng dẫn giải" hay "Đáp án"), đổi `MARKER`.
-- Nếu câu hỏi trong file không dùng thụt treo, hoặc đoạn dẫn không có lề 0, chỉnh `HANGING_MAX` và `LEFT_MIN`. Nếu không, script có thể xoá thừa hoặc thiếu.
-- Với file mới, hãy chạy thử trước. Đổi `rng.delete()` thành `console.log(it[a].text, a, b)` (và bỏ phần xoá bảng) để xem danh sách khối trước khi xoá thật.
+## Configuration (top of the module)
+
+| Constant | Default | Change when |
+| --- | --- | --- |
+| `MARKER` | `"Lời giải"` | the file uses `Hướng dẫn giải`, `Đáp án`, … |
+| `HANGING_MAX` | `-20` | questions use a different hanging indent, or none |
+| `LEFT_MIN` | `10` | lead-ins or headers are indented |
+
+If you use the command on a file with a different layout, preview the blocks first: temporarily log `blocks` in `scan()` and return before deleting.
+
+## Output
+
+`Tìm thấy N khối đáp án.`, followed by `Đã xoá N khối (gồm T bảng).` (or the fallback statistics), followed by `Đoạn còn lại: P | Còn dòng "Lời giải": 0`.
+
+## Limitations
+
+- Questions that are not formatted with a hanging indent will not end a block, so content may be over-deleted. Check the configuration before you run it.
+- Floating shapes anchored inside a block are deleted together with their anchor paragraph.
+
+## Test checklist (run on a copy)
+
+- [ ] Every `Lời giải` block is removed, including its tables and images, and the next question and lead-in stay intact.
+- [ ] The dialog reports `Còn dòng "Lời giải": 0`.
+- [ ] On a large file (≥ 100 blocks), the command finishes in a few seconds. The original script took about 3 round-trips per block.

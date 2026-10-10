@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MY_SCRIPTS</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <style>
+      :root { --ok: #107c10; --err: #c50f1f; --fg: #242424; --muted: #616161; --bg: #ffffff; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
+        font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
+      main { display: flex; flex-direction: column; height: 100%; padding: 14px 16px; gap: 10px; }
+      header { display: flex; align-items: center; gap: 10px; }
+      .badge { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+        color: #fff; font-weight: 700; flex: none; }
+      .ok .badge { background: var(--ok); }
+      .err .badge { background: var(--err); }
+      h1 { font-size: 15px; margin: 0; font-weight: 600; }
+      #msg { flex: 1; overflow: auto; white-space: pre-wrap; margin: 0; }
+      footer { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
+      button { font: inherit; padding: 4px 16px; border: 1px solid #d1d1d1; border-radius: 4px; background: #fff; cursor: pointer; }
+      button:hover { background: #f5f5f5; }
+    </style>
+  </head>
+  <body>
+    <main id="root">
+      <header><div class="badge" id="badge"></div><h1 id="title"></h1></header>
+      <pre id="msg"></pre>
+      <footer><span id="meta"></span><button id="close" type="button">Đóng</button></footer>
+    </main>
+    <script src="{{dialog.js}}"></script>
+  </body>
+</html>

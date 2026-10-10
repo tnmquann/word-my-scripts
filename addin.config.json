@@ -1,0 +1,15 @@
+{
+  "displayName": "MY_SCRIPTS",
+  "providerName": "tnmquann",
+  "tabLabel": "MY_SCRIPTS",
+  "prod": {
+    "id": "9820d12c-685d-46ce-b02a-6f2046c50eff",
+    "baseUrl": "https://tnmquann.github.io/word-my-scripts/"
+  },
+  "dev": {
+    "id": "f7fd34a1-ba7d-453d-9ccb-42e9770f7c54",
+    "baseUrl": "https://localhost:3000/",
+    "port": 3000,
+    "labelSuffix": " (DEV)"
+  }
+}

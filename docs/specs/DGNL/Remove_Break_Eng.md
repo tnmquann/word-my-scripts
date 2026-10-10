@@ -1,30 +1,66 @@
-Tôi đã xử lý khoảng trống lớn giữa câu hỏi và đáp án. Kiểm tra lại bằng hình ảnh thì Câu 35, 47 và 54 đã có khoảng cách bình thường, giống các câu xung quanh.
+# Fix lỗi break dòng T.Anh — remove spurious "Keep with next" (English)
 
-**Nguyên nhân:** các dòng đáp án A–D, "Lời giải" và các dòng giải thích đang bị đặt chế độ "Keep with next". Cả khối đó phải nằm chung một trang, nên khi không đủ chỗ ở cuối trang thì Word đẩy nguyên khối sang trang sau. Phần cuối trang trước vì thế bị bỏ trống. Câu hỏi thì không bị ràng buộc nên ở lại trang cũ, như trong ảnh bạn gửi.
+| | |
+| --- | --- |
+| Ribbon | MY_SCRIPTS → ĐGNL → **Fix lỗi break dòng T.Anh** |
+| Action | `removeBreakEng` |
+| Module | `src/functions/dgnl/removeBreakEng.js` |
+| API sets | WordApi 1.1 (`getOoxml`, `insertOoxml`), WordApi 1.3 (`getNextOrNullObject`), WordApi 1.5 optional (`getStyles`, `paragraphFormat.keepWithNext`) |
+| Destructive | No. It changes pagination flags only, but it rewrites the affected paragraphs via OOXML. |
+| Idempotent | Yes |
+| Status | **New implementation.** It replaces a manual procedure and has not yet been run against production files. |
 
-**Tôi đã làm:**
-- Bỏ "Keep with next" khỏi "Lời giải", các dòng giải thích, các đoạn bài đọc và dòng đáp án cuối, nên nội dung chạy liên tục.
-- Giữ ràng buộc ở những chỗ cần thiết. Dòng "Questions …" luôn đi cùng câu đầu tiên. Mỗi câu hỏi luôn đi cùng dòng đáp án đầu tiên. Các dòng đáp án A, B, C, D nằm riêng thì đi cùng nhau, để câu hỏi và đáp án không bị tách trang.
-- Số câu vẫn liền mạch từ Câu 31 đến Câu 60.
+## Problem
 
-**Hai điểm còn lại:**
-- Ở Câu 35, "Lời giải" vẫn nằm sang trang sau dù cuối trang còn chỗ. Tôi cho là do cách Word ngắt dòng và đây chỉ là lỗi nhẹ.
-- Các câu hỏi từ Câu 53 đến Câu 60 đang in đậm toàn dòng, khác với Câu 31–52. Lỗi này có sẵn từ trước, không phải do thao tác của tôi. Bạn có muốn tôi bỏ đậm cho đồng bộ không?
+In English exam files, the answer options (A–D), the `Lời giải` line, the explanation lines and the reading passages often have **Keep with next** (`<w:keepNext/>`) set as direct paragraph formatting. Word then has to keep the whole chain on one page. When the chain does not fit at the bottom of a page, Word moves all of it to the next page and leaves a large blank area under the question stem.
 
-Trong Word, bạn làm như sau:
+## Policy
 
-1. Bôi đen các đoạn cần sửa: dòng "Lời giải", các dòng giải thích và dòng đáp án A–D. Để chọn nhiều đoạn cùng lúc, giữ **Ctrl** khi bôi từng đoạn. Hoặc bôi cả vùng rồi làm bước 2.
-2. Vào tab **Home**, nhóm **Paragraph**, bấm mũi tên nhỏ ở góc dưới bên phải. Bạn cũng có thể bấm chuột phải rồi chọn **Paragraph…**.
-3. Chuyển sang tab **Line and Page Breaks**.
-4. Trong mục **Pagination**, bỏ dấu tick ở **Keep with next**, rồi bấm **OK**.
+| Paragraph | Keep with next |
+| --- | --- |
+| Question line `Câu N.`, or any other list item | unchanged (the question stays with its first option line) |
+| Section header matching `/^s*Questions?/i` | unchanged (stays with the first question) |
+| Option line `A.`–`D.` that is directly followed by another option line | unchanged (the options stay together) |
+| Paragraph inside a table | unchanged |
+| Every other paragraph whose *effective* keep-with-next is on (last option line, `Lời giải`, explanations, passage paragraphs, empty paragraphs) | **forced off** by writing `<w:keepNext w:val="0"/>` |
 
-Nếu bạn bôi cả vùng gồm nhiều đoạn, ô này có thể hiện dấu vuông đặc (trạng thái hỗn hợp). Khi đó hãy bấm hai lần để ô trống hẳn, rồi bấm OK.
+The effective value is the direct value when one is set on the paragraph. Otherwise it is the value of the paragraph style (`Style.paragraphFormat.keepWithNext`, which needs WordApi 1.5; on older builds only the direct formatting is considered). The command writes an explicit `val="0"` rather than deleting the element, so a style-level flag cannot come back. It never turns the flag on.
 
-Để kiểm tra một đoạn có đang bị Keep with next hay không, đặt con trỏ vào đoạn rồi mở hộp thoại này. Dấu tick ở ô đó nghĩa là đoạn vẫn bị ràng buộc.
+## Implementation
 
-Ảnh bạn gửi lần này giống hệt ảnh trước, vẫn có khoảng trống lớn dưới Câu 35. Tôi đã bỏ Keep with next ở file hiện tại. Bạn hãy thử một trong hai cách sau:
+Office JS has no paragraph-level `keepWithNext`, so the flag is read and written through OOXML.
 
-- Nhấn **Ctrl + End** rồi **Ctrl + Home** để Word tính lại phân trang.
-- Chuyển thử qua chế độ **View → Draft**, hoặc đóng và mở lại file.
+1. **Load** the paragraph collection (`text`, `style`, `isListItem`, `tableNestingLevel`) and `body.getOoxml()` in one round-trip. Then load the style table (`nameLocal`, `paragraphFormat.keepWithNext`).
+2. **Select candidates** by structure, following the policy table above.
+3. **Map OOXML to paragraphs.**
+   - The command parses the body package with `DOMParser`, takes the `/word/document.xml` part, and collects the `<w:p>` elements under `<w:body>` in document order. Paragraphs inside `w:txbxContent` or `mc:Fallback` are excluded, and a trailing empty paragraph is dropped.
+   - The mapping is accepted only when the paragraph counts are equal **and** every candidate's text signature matches. The signature is the first 40 letters and digits of `w:t` + `m:t`, compared with the first 40 of `Paragraph.text`.
+   - Otherwise the command falls back to calling `getOoxml()` on each candidate. If there are more than 600 candidates it aborts with a message instead.
+4. **Safety filter.** Paragraphs that contain `w:sectPr`, `w:fldChar`, `w:fldSimple`, `w:object`, `w:ins`, `w:del` or `w:commentRange*` are **skipped** and counted. These structures do not survive a single-paragraph OOXML round-trip reliably: section breaks, fields, OLE/MathType objects, tracked changes and comments.
+5. **Rewrite**, in chunks of 25 paragraphs and from the end of the document to the start. For each chunk:
+   - Call `getOoxml()` on each paragraph, set `keepNext val=0` (inserted after `w:pStyle` to keep the schema order), and write it back with `insertOoxml(xml, "Replace")`. Each chunk is wrapped in try/catch, and failures are counted and reported.
+   - **Cleanup:** `insertOoxml` can leave an extra empty paragraph behind. An empty paragraph is deleted if it is the last paragraph of the inserted range while the original paragraph was not empty, or if it directly follows the range while the original next paragraph was not empty.
+6. **Verify** that the total paragraph count is unchanged. If it changed, a warning is shown.
 
-Nếu khoảng trống vẫn còn, hãy đặt con trỏ vào dòng đáp án "A. who … D. whom" ở Câu 35 rồi mở hộp thoại Paragraph, và cho tôi biết các ô trong mục Pagination đang tick những gì. Tôi sẽ kiểm tra nguyên nhân còn lại.
+## Output
+
+`Đã tắt "Keep with next" ở N đoạn.` It is followed, when relevant, by:
+
+- the number of paragraphs skipped by the safety filter;
+- the number of failed paragraphs;
+- a warning if the paragraph count changed.
+
+## Known limitations
+
+- Each rewritten paragraph is round-tripped through OOXML. Text runs, inline images and OMML equations survive, but the paragraph receives a new `uniqueLocalId`. Bookmarks on the paragraph boundary may move.
+- Skipped paragraphs (see step 4) must be fixed by hand: **Paragraph → Line and Page Breaks → Keep with next**.
+- Option lines are recognized only when they start with `A.`–`D.` as typed text. Options that are auto-numbered list items count as list items and are left unchanged.
+- If Word does not repaginate immediately afterwards, press `Ctrl+End` then `Ctrl+Home`, or switch to Draft view and back.
+
+## Test checklist (run on a copy)
+
+- [ ] The blank area under the affected questions disappears, and the stem plus its first option line still stay together.
+- [ ] The A–D lines of one question are never split across pages.
+- [ ] Equations and images in the explanations are intact.
+- [ ] The paragraph count is unchanged (no warning in the dialog).
+- [ ] A second run reports that there is nothing to fix.

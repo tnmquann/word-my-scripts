@@ -1,63 +1,72 @@
-Đây là script Office.js, chạy bằng add-in **Script Lab** trong Word (Insert → Script Lab → Code → dán vào tab Script → Run). Tôi không gửi được macro VBA từ đây.
+# Chuẩn hoá Toán ĐGNL — normalize shared-stimulus lead-ins (Math)
 
-```javascript
-// Chuẩn hóa dòng dẫn "Dựa vào ... trả lời câu hỏi X-Y"
-// -> "Dựa vào thông tin dưới đây để trả lời từ câu X đến câu Y"
-// + indent left 0 cho dòng dẫn và đoạn dữ kiện (đến trước "Câu N.")
-// + canh giữa hình ảnh / bảng trong đoạn dữ kiện
+| | |
+| --- | --- |
+| Ribbon | MY_SCRIPTS → ĐGNL → **Chuẩn hoá Toán ĐGNL** |
+| Action | `chuanHoaToan` |
+| Module | `src/functions/dgnl/chuanHoaToan.js` |
+| API sets | WordApi 1.3 (`listItemOrNullObject`, `parentTableOrNullObject`, `inlinePictures`) |
+| Destructive | No. It rewrites text and formatting only. |
+| Idempotent | Yes |
 
-const reRange = /câu(?:\s+hỏi)?\s*(\d+)\s*[-–]\s*(\d+)/i;   // "câu hỏi 73-74"
-const reDone  = /câu\s*(\d+)\s*đến\s*câu\s*(\d+)/i;          // đã chuẩn hóa rồi
-const reStart = /^\s*(Dựa vào|Trả lời)/i;
+## Purpose
 
-async function run() {
-  await Word.run(async (ctx) => {
-    const paras = ctx.document.body.paragraphs;
-    paras.load("items/text");
-    await ctx.sync();
-    const items = paras.items;
+In Math ĐGNL exams, a group of questions shares one stimulus (text, figure or table). The group starts with a lead-in line whose wording varies, for example `Dựa vào thông tin sau trả lời câu hỏi 73-74`. This command does three things:
 
-    const lis = items.map(p => { const l = p.listItemOrNullObject; l.load("isNullObject,listString"); return l; });
-    const pics = items.map(p => { const c = p.inlinePictures; c.load("items"); return c; });
-    const tbls = items.map(p => { const t = p.parentTableOrNullObject; t.load("isNullObject"); return t; });
-    await ctx.sync();
+1. Rewrites every lead-in to the canonical form
 
-    const isQuestion = (j) => !lis[j].isNullObject && /^Câu/i.test(lis[j].listString || "");
-    const getRange = (j) => {
-      const t = items[j].text;
-      if (isQuestion(j) || !reStart.test(t) || t.length > 120) return null;
-      return t.match(reRange) || t.match(reDone);
-    };
+   `Dựa vào thông tin dưới đây để trả lời từ câu X đến câu Y`
 
-    let headers = 0;
-    for (let i = 0; i < items.length; i++) {
-      const m = getRange(i);
-      if (!m) continue;
-      headers++;
+   and makes it bold.
+2. Removes the indentation from the lead-in and from the stimulus paragraphs that follow it.
+3. Centers the pictures and tables inside the stimulus.
 
-      // 1) Viết lại dòng dẫn (giữ in đậm)
-      const newText = `Dựa vào thông tin dưới đây để trả lời từ câu ${m[1]} đến câu ${m[2]}`;
-      if (items[i].text !== newText) items[i].insertText(newText, "Replace");
-      items[i].font.bold = true;
+## Detection
 
-      // 2) Dòng dẫn + đoạn dữ kiện: indent 0; hình/bảng canh giữa
-      for (let j = i; j < items.length; j++) {
-        if (j > i && (isQuestion(j) || getRange(j))) break;
-        items[j].leftIndent = 0;
-        items[j].firstLineIndent = 0;
-        if (pics[j].items.length > 0) items[j].alignment = "Centered";
-        if (!tbls[j].isNullObject) tbls[j].alignment = "Centered";
-      }
-    }
-    await ctx.sync();
-    console.log(`Đã xử lý ${headers} dòng dẫn.`);
-  });
-}
+A paragraph is a **lead-in** when all of the following hold:
 
-run().catch(e => console.error(e));
-```
+| Rule | Pattern |
+| --- | --- |
+| Starts with "Dựa vào" or "Trả lời" (case-insensitive) | `/^\s*(Dựa vào\|Trả lời)/i` |
+| Is not a question line (a list item whose `listString` starts with `Câu`) | `listItemOrNullObject.listString` |
+| Length ≤ 120 characters, which excludes solution sentences such as "Dựa vào BBT suy ra…" | `text.length` |
+| Contains a question range | `/câu(?:\s+hỏi)?\s*(\d+)\s*[-–]\s*(\d+)/i` (raw form), or `/câu\s*(\d+)\s*đến\s*câu\s*(\d+)/i` (already normalized) |
 
-Cách script hoạt động:
-- **Nhận diện dòng dẫn:** Script chọn đoạn bắt đầu bằng "Dựa vào" hoặc "Trả lời" có dạng "câu hỏi 73-74" hoặc "câu 73 - 74". Nhờ vậy câu như "Dựa vào BBT suy ra…" không bị đụng tới.
-- **Phạm vi đoạn dữ kiện:** Đoạn dữ kiện kéo dài đến trước đoạn "Câu N." tiếp theo.
-- **Chạy lại:** Script chạy lại được nhiều lần mà không làm hỏng kết quả cũ.
+The **stimulus scope** runs from the lead-in up to, but not including, the next question line (`Câu N.`) or the next lead-in.
+
+## Operations
+
+For each lead-in `i` and every paragraph `j` in its scope:
+
+| Target | Change |
+| --- | --- |
+| Lead-in text | `insertText(canonical, "Replace")`, but only when the text differs |
+| Lead-in font | `bold = true` |
+| `j` | `leftIndent = 0`, `firstLineIndent = 0` |
+| `j` containing ≥ 1 inline picture | `alignment = "Centered"` |
+| `j` inside a table | parent `table.alignment = "Centered"` |
+
+## Execution profile
+
+The command needs 3 round-trips in total:
+
+1. Load all paragraph texts.
+2. Load the list item, inline pictures and parent table of every paragraph.
+3. Commit all writes.
+
+## Output
+
+`Đã xử lý N dòng dẫn (viết lại M dòng).` If no lead-in is found, it reports that instead.
+
+## Limitations
+
+- Floating (non-inline) pictures and shapes are not centered.
+- Question lines must be real Word list items with a `Câu …` list string. Questions numbered as typed text are not recognized as scope boundaries.
+- `insertText(…, "Replace")` applies the formatting of the first character to the whole line. Mixed formatting inside a lead-in is therefore lost (it is made bold anyway).
+
+## Test checklist
+
+- [ ] `…câu hỏi 73-74`, `…câu 73 – 74` and `…câu 73 đến câu 74` are all rewritten to the canonical form.
+- [ ] A solution line such as `Dựa vào BBT suy ra…` is left untouched.
+- [ ] A figure or table in the stimulus is centered, and the question lines keep their hanging indent.
+- [ ] A second run reports `viết lại 0 dòng`.

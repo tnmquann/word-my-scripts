@@ -1,96 +1,70 @@
-Script Lab báo lỗi vì code chạy ở cấp cao nhất, mà `await` chỉ dùng được trong hàm `async`. Tôi đã bọc toàn bộ vào một hàm `async` và gọi hàm đó khi Office sẵn sàng. Dán thay toàn bộ nội dung ô Script:
+# Gạch chân đáp án Ngữ Văn — mark correct options, remove redundant solution lines (Literature)
 
-```javascript
-async function main() {
-  await Word.run(async (context) => {
-    const RED = "#EE0000";
-    const norm = (s) => s.toLowerCase().replace(/[\s.,;:!?"'“”‘’()\-–—…]+/g, "");
+| | |
+| --- | --- |
+| Ribbon | MY_SCRIPTS → ĐGNL → **Gạch chân đáp án Ngữ Văn** |
+| Action | `gachDapAnNguVan` |
+| Module | `src/functions/dgnl/gachDapAnNguVan.js` |
+| API sets | WordApi 1.3 (`listItemOrNullObject`, `Paragraph.search`, `Range.search`) |
+| Destructive | **Yes**. It deletes paragraphs. |
+| Idempotent | Yes. A processed section no longer matches, so a second run reports 0. |
 
-    const ps = context.document.body.paragraphs;
-    ps.load("items/text,items/isListItem");
-    await context.sync();
-    const items = ps.items;
-    const lis = items.map((p) => (p.isListItem ? p.listItemOrNullObject : null));
-    lis.forEach((l) => { if (l) l.load("listString"); });
-    await context.sync();
+## Purpose
 
-    const isQuestion = (i) => lis[i] && !lis[i].isNullObject && /^Câu/.test(lis[i].listString);
-    const isIntro = (i) => /^\s*Dựa vào thông tin/.test(items[i].text);
-    const isLoiGiai = (i) => items[i].text.trim() === "Lời giải";
+Source Literature files carry a solution block under each question:
 
-    // Thu thập các câu: dòng "Lời giải" + dòng đáp án + dòng phương án đúng
-    const sections = [];
-    for (let i = 0; i < items.length - 1; i++) {
-      if (!isLoiGiai(i)) continue;
-      const m = items[i + 1].text.match(/^\s*([A-D])\./);
-      if (!m) continue; // đã xử lý rồi thì bỏ qua
-      const letter = m[1];
-      let opt = null;
-      for (let j = i - 1; j >= Math.max(0, i - 8); j--) {
-        if (new RegExp("(^|\\t)\\s*" + letter + "\\.").test(items[j].text)) { opt = j; break; }
-      }
-      if (opt === null) continue;
-      sections.push({ i: i, ans: i + 1, letter: letter, opt: opt });
-    }
-
-    // Step 1: gạch chân đáp án (chữ cái: đậm + gạch chân + đỏ)
-    const dotHits = sections.map((s) => {
-      const h = items[s.opt].search(s.letter + ".", { matchCase: true });
-      h.load("items");
-      return h;
-    });
-    await context.sync();
-    const letterHits = dotHits.map((h, k) => {
-      if (!h.items.length) return null;
-      const r = h.items[0].search(sections[k].letter, { matchCase: true });
-      r.load("items");
-      return r;
-    });
-    await context.sync();
-    letterHits.forEach((r) => {
-      if (r && r.items.length) {
-        const f = r.items[0].font;
-        f.bold = true;
-        f.underline = "Single";
-        f.color = RED;
-      }
-    });
-    await context.sync();
-
-    // Step 2: xóa dòng đáp án, phần giải thích lặp lại đề, và "Lời giải" thừa
-    const toDelete = [];
-    for (const s of sections) {
-      toDelete.push(s.ans);
-      const expl = [];
-      for (let j = s.ans + 1; j < items.length && !isQuestion(j) && !isIntro(j) && !isLoiGiai(j); j++) {
-        if (items[j].text.trim() !== "") expl.push(j);
-      }
-      const ctx = norm(items.slice(Math.max(0, s.i - 12), s.i).map((p) => p.text).join(" "));
-      let removed = 0;
-      for (const j of expl) {
-        const n = norm(items[j].text);
-        if (n.length >= 15 && ctx.indexOf(n) >= 0) { toDelete.push(j); removed++; } else break;
-      }
-      if (expl.length - removed === 0) toDelete.push(s.i); // hết nội dung -> xóa luôn "Lời giải"
-    }
-    const unique = Array.from(new Set(toDelete)).sort((a, b) => b - a);
-    unique.forEach((k) => items[k].delete());
-    await context.sync();
-
-    console.log("Số câu xử lý: " + sections.length + " - Số đoạn đã xóa: " + unique.length);
-  });
-}
-
-Office.onReady(() => {
-  main().catch((e) => console.error(e));
-});
+```
+Câu 5. <stem>
+A. …    B. …
+C. …    D. …
+Lời giải
+C. <repeated text of option C>          ← answer line
+<explanation that repeats the stem…>    ← redundant
+<real explanation>
 ```
 
-**Những chỗ tôi đã sửa so với bản trước:**
-- Code nằm trong hàm `async main()` nên `await` không còn báo lỗi.
-- Tôi bỏ regex dùng cờ `u` và `\p{L}`, và bỏ cách viết `[...new Set()]`, vì Script Lab có thể không biên dịch được hai kiểu này.
+The command marks the correct option letter in the options. It then deletes the answer line and any explanation paragraphs that only repeat the question.
 
-**Lưu ý khi chạy:**
-- Tôi chưa chạy được script này trong Script Lab. Trong Word, tôi mới kiểm tra riêng các phần quan trọng, như nhận diện câu và chuẩn hóa chữ. Bản trước thì tôi đã chạy thử đầy đủ trên bản sao có cấu trúc tương tự.
-- Bản này gần như giống bản trước, chỉ đổi cách viết. Nếu Script Lab còn báo lỗi thì bạn gửi lại nội dung lỗi cho tôi.
-- File hiện tại đã xử lý xong, nên chạy lại sẽ không đổi gì. Dòng log sẽ báo 0 câu. Script chỉ có tác dụng với file gốc còn dòng đáp án dưới "Lời giải".
+## Detection
+
+A **section** is found for every paragraph `i` that meets all of these conditions:
+
+1. `text.trim() === "Lời giải"`.
+2. Paragraph `i+1` (the *answer line*) matches `/^\s*([A-D])\./`. This gives the correct letter `L`.
+3. Within the 8 paragraphs above `i`, the nearest paragraph that contains option `L` is the *option line*. It matches `(^|\t)\s*L\.`, which works whether the options are on one line separated by tabs or on separate lines.
+
+If any condition fails, the section is skipped. A section that has already been processed fails condition 2.
+
+## Operations
+
+**Step 1: mark the option** (3 round-trips in total, batched across all sections):
+
+1. Search the option line for `L.` with `matchCase`.
+2. Inside the first hit, search for `L`.
+3. Apply `bold`, underline `Single` and color `#EE0000` to that letter only.
+
+**Step 2: delete redundant paragraphs** (one batch, deleted from the last index to the first):
+
+- The answer line (`i+1`).
+- The *explanation* is the run of non-empty paragraphs after the answer line, up to the next question line (a list item starting with `Câu`), the next `Dựa vào thông tin…` lead-in, or the next `Lời giải`. Each explanation paragraph is checked in order:
+  - It is normalized: lower-cased, with whitespace and punctuation `.,;:!?"'“”‘’()-–—…` removed.
+  - If the normalized text has at least 15 characters **and** is a substring of the normalized text of the 12 paragraphs above `Lời giải`, it is deleted as a repeat of the stem.
+  - The check stops at the first paragraph that is not a repeat.
+- If every explanation paragraph was deleted, the now-empty `Lời giải` heading is deleted as well.
+
+## Output
+
+`Số câu xử lý: N (gạch chân K).` and `Số đoạn đã xoá: M.`
+
+## Limitations
+
+- The command expects the exact marker `Lời giải`, with no trailing colon and not in a table.
+- If the option line is more than 8 paragraphs above the marker, the section is skipped.
+- Duplicate detection is a substring test. A short genuine explanation (under 15 normalized characters) is never removed. A real explanation that quotes the stem verbatim **is** removed.
+
+## Test checklist
+
+- [ ] Options in a single tab-separated line and options on separate lines are both marked.
+- [ ] Only the letter is marked, not the period or the option text.
+- [ ] Explanations that only repeat the stem are removed, and the real explanation is kept.
+- [ ] A second run reports `Không tìm thấy câu nào cần xử lý`.

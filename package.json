@@ -1,0 +1,25 @@
+{
+  "name": "my-scripts-word-addin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Word add-in (Office JS) - tab MY_SCRIPTS: các công cụ xử lý đề ĐGNL",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:dev": "node scripts/build.mjs --dev",
+    "dev": "node scripts/build.mjs --dev --serve",
+    "certs": "office-addin-dev-certs install",
+    "sideload:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File installer/install.ps1 -ManifestPath dist-dev/manifest.xml",
+    "unload:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File installer/uninstall.ps1 -Dev",
+    "validate": "office-addin-manifest validate dist/manifest.xml",
+    "icons": "node scripts/make-icons.mjs",
+    "release": "node scripts/build.mjs && node scripts/release.mjs"
+  },
+  "devDependencies": {
+    "@types/office-js": "^1.0.611",
+    "esbuild": "^0.28.2",
+    "office-addin-dev-certs": "^3.0.1",
+    "office-addin-manifest": "^3.0.1",
+    "sharp": "^0.35.5"
+  }
+}
