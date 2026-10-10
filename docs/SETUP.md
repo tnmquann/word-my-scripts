@@ -109,6 +109,33 @@ Open Word. The **MY_SCRIPTS** tab appears on the ribbon.
 | `-ManifestPath <file>` | Register a specific manifest file |
 | `-ManifestUrl <url>` | Download the manifest from this URL (defaults to the prod Pages URL) |
 | `-ClearCache` | Clear the Office add-in web cache `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` (Word must be closed) |
+| `-NoUpdater` | Do not install the auto-updater (logon check + `myscripts:` protocol) |
+
+### Auto-update
+
+The installer also sets up an updater. This is needed because code changes go live automatically, but **manifest changes** (new buttons, labels, icons) only reach a machine when the manifest is reinstalled.
+
+| Piece | Location |
+| --- | --- |
+| Updater script | `%LOCALAPPDATA%\MY_SCRIPTS\updater.ps1` (from `installer/updater.ps1`, baked with the prod URL and ID, saved as UTF-8 with BOM) |
+| Logon check | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run\MY_SCRIPTS Updater` → `updater.ps1 -AtLogon` |
+| Protocol handler | `HKCU\Software\Classes\myscripts` → `updater.ps1 "%1"` (opened as `myscripts:update`) |
+
+Flow:
+
+1. The updater compares the installed manifest `<Version>` (`%LOCALAPPDATA%\MY_SCRIPTS\manifests\<id>.xml`) with `<baseUrl>version.json`.
+2. If a newer version exists, it asks **Yes/No**. If you answer No, nothing changes. At logon it says nothing when you are up to date or offline.
+3. If you answer Yes, it waits until every Word window is closed (OK/Cancel prompt).
+4. It downloads the published `install.ps1` and runs it with `-ClearCache`, which re-registers the manifest and refreshes the updater.
+5. It confirms when the update is done.
+
+Inside Word:
+
+- The manifest passes its version to the FunctionFile as `commands.html?mv=<Version>`. `src/runtime/update.js` compares that value with `version.json` once per session.
+- When a newer version exists, every result dialog shows a **Cập nhật** banner and stays open. The button calls `Office.context.ui.openBrowserWindow("myscripts:update")`, and Windows asks to open the updater.
+- **Thông tin → Kiểm tra cập nhật** runs the same check on demand.
+
+To install without the updater, use `install.ps1 -NoUpdater`. To check manually, run `powershell -ExecutionPolicy Bypass -File "%LOCALAPPDATA%\MY_SCRIPTS\updater.ps1"`.
 
 ### Uninstalling
 
@@ -127,6 +154,7 @@ What gets removed:
 
 - `HKCU\Software\Microsoft\Office\16.0\WEF\Developer\<add-in GUID>`
 - `%LOCALAPPDATA%\MY_SCRIPTS\manifests\<add-in GUID>.xml`
+- When no MY_SCRIPTS manifest remains: the auto-updater (the `MY_SCRIPTS Updater` Run value, the `HKCU\Software\Classes\myscripts` protocol and the `%LOCALAPPDATA%\MY_SCRIPTS` folder)
 
 Manual removal, if the scripts cannot run: delete the registry value above in `regedit`, delete the `%LOCALAPPDATA%\MY_SCRIPTS` folder, and restart Word. To also discard cached web files, delete the contents of `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` while Word is closed. This clears the cache of all web add-ins, which re-download on next use.
 

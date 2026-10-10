@@ -42,6 +42,12 @@ const ICONS = {
   author: `<circle cx="16" cy="16" r="14" fill="#2b6cb0"/>
          <circle cx="16" cy="12.5" r="5" fill="#fff"/>
          <path d="M7.5 25.5c1.6-4.6 5-6.6 8.5-6.6s6.9 2 8.5 6.6" fill="#fff"/>`,
+  // Check update: circular arrows
+  update: `<circle cx="16" cy="16" r="14" fill="#2f9e44"/>
+         <path d="M22.5 13.5A7 7 0 0 0 10 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+         <path d="M9.5 18.5A7 7 0 0 0 22 20" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+         <path d="M23.5 8.5v5.5H18" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+         <path d="M8.5 23.5V18H14" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`,
 };
 
 await fs.mkdir(OUT, { recursive: true });

@@ -88,8 +88,11 @@ async function writeStatic(names) {
     if (f.endsWith(".png")) await fs.copyFile(r("assets/icons", f), path.join(OUT, "assets", f));
   }
   // Hosted installer: `irm <BASE_URL>install.ps1 | iex`
-  await fs.writeFile(path.join(OUT, "install.ps1"), fill(await fs.readFile(r("installer/install.ps1"), "utf8"), vars));
-  await fs.writeFile(path.join(OUT, "uninstall.ps1"), fill(await fs.readFile(r("installer/uninstall.ps1"), "utf8"), vars));
+  // PowerShell scripts: UTF-8 with BOM so Windows PowerShell 5.1 reads Vietnamese text correctly
+  for (const ps1 of ["install.ps1", "uninstall.ps1", "updater.ps1"]) {
+    const text = fill(await fs.readFile(r("installer", ps1), "utf8"), vars);
+    await fs.writeFile(path.join(OUT, ps1), "﻿" + text.replace(/^﻿/, ""));
+  }
   await fs.writeFile(path.join(OUT, ".nojekyll"), "");
   await fs.writeFile(
     path.join(OUT, "version.json"),

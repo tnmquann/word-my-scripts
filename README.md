@@ -7,7 +7,7 @@ MY_SCRIPTS is a personal collection of Word automation commands, delivered as an
 | Group (ribbon) | Scope | Code | Specs |
 | --- | --- | --- | --- |
 | **ĐGNL** | Clean-up tools for exam documents of the Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT). *ĐGNL* is the Vietnamese abbreviation for this test. | [src/features/dgnl/](src/features/dgnl/) | [docs/specs/dgnl/](docs/specs/dgnl/) |
-| **Thông tin** | *Tác giả* button: opens a task pane with author information from the GitHub profile, the add-in version and the list of tools. | [src/ui/about/](src/ui/about/) | — |
+| **Thông tin** | *Tác giả*: task pane with author information from the GitHub profile, the version and the tool list. *Kiểm tra cập nhật*: checks for a newer version and launches the updater. | [src/ui/about/](src/ui/about/), [src/runtime/update.js](src/runtime/update.js) | [docs/SETUP.md, Auto-update](docs/SETUP.md#auto-update) |
 
 ```
 MY_SCRIPTS (tab)
@@ -19,12 +19,13 @@ MY_SCRIPTS (tab)
         ├── Fix lỗi break dòng T.Anh   → removeBreakEng
         └── Xoá ĐACT ĐGNL              → xoaDactDgnl
 └── Thông tin (group)
-    └── Tác giả (button)               → task pane: author card (GitHub profile), version, tool list
+    ├── Tác giả (button)               → task pane: author card (GitHub profile), version, tool list
+    └── Kiểm tra cập nhật (button)     → checkUpdate: compare installed vs published version, offer update
 ```
 
 Ribbon labels and result messages are in Vietnamese. To add a command or a whole new group, see [docs/SETUP.md § 6](docs/SETUP.md#6-adding-a-new-command).
 
-Each command runs inside a single `Word.run` batch. When it finishes, a small dialog shows the result. On success the dialog closes by itself after 3.5 s. On failure it stays open until you close it.
+Each command runs inside a single `Word.run` batch. When it finishes, a small dialog shows the result. On success the dialog closes by itself after 3.5 s. On failure, or when an update is available (a **Cập nhật** banner is shown), it stays open until you close it.
 
 ## Quick start
 
@@ -38,21 +39,22 @@ Each command runs inside a single `Word.run` batch. When it finishes, a small di
 | Portable installer package | `npm run release` → `release/` |
 | Validate manifest | `npm run validate` |
 
-For the full setup, release and troubleshooting guide, see **[docs/SETUP.md](docs/SETUP.md)**.
+For the full setup, release and troubleshooting guide, see **[docs/SETUP.md](docs/SETUP.md)**. The maintenance runbook for working on this repo from any machine is **[CLAUDE.md](CLAUDE.md)**. Claude Code also reads it automatically.
 
 ## Repository layout
 
 ```
 .
+├── CLAUDE.md                  # maintenance runbook (update / fix / release procedure)
 ├── addin.config.json          # add-in IDs, display name, prod/dev base URLs, author profile
 ├── manifest/
 │   └── manifest.template.xml  # ribbon definition (tab → groups → menus → items)
 ├── src/
-│   ├── runtime/               # FunctionFile (commands.html), command registration, runCommand wrapper
+│   ├── runtime/               # FunctionFile (commands.html), command registration, runCommand wrapper, update check
 │   ├── ui/                    # result dialog + about page (manifest SourceLocation)
 │   └── features/<group>/      # one folder per ribbon group: index.js registry + one module per command
 ├── assets/icons/              # generated PNG icons (16/32/80 px)
-├── installer/                 # install.ps1 / uninstall.ps1 / *.cmd wrappers
+├── installer/                 # install.ps1 / uninstall.ps1 / updater.ps1 / *.cmd wrappers
 ├── scripts/                   # build.mjs (esbuild), make-icons.mjs, release.mjs
 ├── docs/
 │   ├── SETUP.md               # setup, deployment, operations guide

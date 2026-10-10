@@ -3,9 +3,15 @@
 // Key phải khớp <FunctionName> trong manifest/manifest.template.xml và không trùng giữa các nhóm.
 
 import { makeCommand } from "./runCommand.js";
+import { checkUpdate } from "./update.js";
 import dgnl from "../features/dgnl/index.js";
 
-const GROUPS = { dgnl };
+// Command hệ thống (nhóm "Thông tin" trên ribbon)
+const system = {
+  checkUpdate: { label: "Kiểm tra cập nhật", run: checkUpdate },
+};
+
+const GROUPS = { system, dgnl };
 
 Office.onReady(() => {
   const seen = new Set();

@@ -22,6 +22,7 @@ const crlf = (s) => s.replace(/\r?\n/g, "\r\n");
 await fs.copyFile(r("dist", "manifest.xml"), path.join(dir, "manifest.xml"));
 await fs.copyFile(r("dist", "install.ps1"), path.join(dir, "install.ps1"));
 await fs.copyFile(r("dist", "uninstall.ps1"), path.join(dir, "uninstall.ps1"));
+await fs.copyFile(r("dist", "updater.ps1"), path.join(dir, "updater.ps1"));
 for (const f of ["Install.cmd", "Uninstall.cmd"]) {
   await fs.writeFile(path.join(dir, f), crlf(await fs.readFile(r("installer", f), "utf8")));
 }
@@ -37,6 +38,11 @@ Install
 
 Uninstall
   Double-click Uninstall.cmd, then restart Word.
+
+Updates
+  The installer also sets up an auto-updater: at Windows logon (and from the
+  "Cập nhật" button in Word) it checks for a new version and, if you accept,
+  reinstalls it. Run updater.ps1 to check manually.
 
 Notes
   - Requires Microsoft 365 / Word 2019+ on Windows and an internet connection

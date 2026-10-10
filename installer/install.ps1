@@ -22,7 +22,8 @@
 param(
   [string]$ManifestPath,
   [string]$ManifestUrl = '{{BASE_URL}}manifest.xml',
-  [switch]$ClearCache
+  [switch]$ClearCache,
+  [switch]$NoUpdater
 )
 
 $ErrorActionPreference = 'Stop'
@@ -67,7 +68,36 @@ if (-not (Test-Path $DevKey)) { New-Item -Path $DevKey -Force | Out-Null }
 New-ItemProperty -Path $DevKey -Name $id -Value $target -PropertyType String -Force | Out-Null
 Write-Step "Registered in $DevKey"
 
-# ---- 4. Optional: clear Office add-in web cache ---------------------------
+# ---- 4. Auto-update: updater.ps1 + logon check + myscripts: protocol -------
+if (-not $NoUpdater) {
+  $appRoot = Join-Path $env:LOCALAPPDATA 'MY_SCRIPTS'
+  $updater = Join-Path $appRoot 'updater.ps1'
+  $localUpdater = if ($here) { Join-Path $here 'updater.ps1' } else { $null }
+  try {
+    if ($localUpdater -and (Test-Path $localUpdater) -and -not ((Get-Content -LiteralPath $localUpdater -Raw) -like ("*'{{" + "BASE_URL}}'*"))) {
+      Copy-Item -LiteralPath $localUpdater -Destination $updater -Force
+    } else {
+      $base = $ManifestUrl -replace 'manifest\.xml$', ''
+      Invoke-WebRequest -Uri ($base + 'updater.ps1') -OutFile $updater -UseBasicParsing
+    }
+    $ps = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+    $cmd = "`"$ps`" -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$updater`""
+    # Check at Windows logon
+    New-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'MY_SCRIPTS Updater' `
+      -Value "$cmd -AtLogon" -PropertyType String -Force | Out-Null
+    # myscripts:update protocol (used by the add-in's "Cập nhật" button)
+    $proto = 'HKCU:\Software\Classes\myscripts'
+    New-Item -Path "$proto\shell\open\command" -Force | Out-Null
+    Set-ItemProperty -Path $proto -Name '(default)' -Value 'URL:MY_SCRIPTS updater'
+    New-ItemProperty -Path $proto -Name 'URL Protocol' -Value '' -PropertyType String -Force | Out-Null
+    Set-ItemProperty -Path "$proto\shell\open\command" -Name '(default)' -Value "$cmd `"%1`""
+    Write-Step "Auto-update enabled (logon check + myscripts:update)"
+  } catch {
+    Write-Warning "Could not set up the auto-updater: $($_.Exception.Message)"
+  }
+}
+
+# ---- 5. Optional: clear Office add-in web cache ---------------------------
 $wordRunning = [bool](Get-Process WINWORD -ErrorAction SilentlyContinue)
 if ($ClearCache) {
   if ($wordRunning) {

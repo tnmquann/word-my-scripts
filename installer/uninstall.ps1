@@ -49,4 +49,11 @@ foreach ($i in $ids) {
   $file = Join-Path $InstallRoot "$i.xml"
   if (Test-Path $file) { Remove-Item -LiteralPath $file -Force }
 }
+# Auto-updater (only when no MY_SCRIPTS manifest remains)
+if (-not (Test-Path $InstallRoot) -or -not (Get-ChildItem $InstallRoot -Filter *.xml -ErrorAction SilentlyContinue)) {
+  Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'MY_SCRIPTS Updater' -ErrorAction SilentlyContinue
+  Remove-Item -Path 'HKCU:\Software\Classes\myscripts' -Recurse -Force -ErrorAction SilentlyContinue
+  Remove-Item -LiteralPath (Join-Path $env:LOCALAPPDATA 'MY_SCRIPTS') -Recurse -Force -ErrorAction SilentlyContinue
+  Write-Host '==> Removed auto-updater' -ForegroundColor Cyan
+}
 Write-Host 'Done. Restart Word to remove the MY_SCRIPTS tab.' -ForegroundColor Green

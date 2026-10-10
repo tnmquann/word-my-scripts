@@ -21,12 +21,16 @@
       footer { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
       button { font: inherit; padding: 4px 16px; border: 1px solid #d1d1d1; border-radius: 4px; background: #fff; cursor: pointer; }
       button:hover { background: #f5f5f5; }
+      #upd { display: none; padding: 8px 10px; border-radius: 6px; background: #eef4fb; border: 1px solid #c7dbf2; font-size: 13px; }
+      #upd button { margin-top: 6px; background: #2b6cb0; color: #fff; border-color: #2b6cb0; }
+      #upd button:hover { background: #245a94; }
     </style>
   </head>
   <body>
     <main id="root">
       <header><div class="badge" id="badge"></div><h1 id="title"></h1></header>
       <pre id="msg"></pre>
+      <div id="upd"><span id="updText"></span><br /><button id="updBtn" type="button">Cập nhật</button></div>
       <footer><span id="meta"></span><button id="close" type="button">Đóng</button></footer>
     </main>
     <script src="{{dialog.js}}"></script>
