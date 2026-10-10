@@ -7,45 +7,45 @@
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
     <style>
       :root {
-        --fg: #1f1f1f; --muted: #6b6b6b; --line: #e6e6e6; --bg: #ffffff; --soft: #f6f7f9;
+        --fg: #1f1f1f; --muted: #6b6b6b; --bg: #ffffff; --soft: #f5f6f8;
         --ok: #0f7b3e; --ok-soft: #e8f5ee; --err: #c42b1c; --err-soft: #fdecea;
-        --accent: #2b6cb0; --accent-soft: #eef4fb;
+        --accent: #2b579a; --accent-soft: #eef3fa;
       }
       * { box-sizing: border-box; }
       html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
-        font: 14px/1.5 Aptos, "Aptos Display", Arial, sans-serif; }
-      main { display: flex; flex-direction: column; height: 100%; padding: 18px 20px 14px; gap: 14px; }
+        font: 13px/1.45 Aptos, "Aptos Display", Arial, sans-serif; }
+      main { visibility: hidden; display: flex; flex-direction: column; height: 100%; padding: 12px 14px 10px; gap: 8px; }
 
-      header { display: flex; align-items: center; gap: 12px; }
-      .icon { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none; }
-      .icon svg { width: 20px; height: 20px; }
+      header { display: flex; align-items: center; gap: 10px; }
+      .icon { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+      .icon svg { width: 16px; height: 16px; }
       .ok .icon { background: var(--ok-soft); color: var(--ok); }
       .err .icon { background: var(--err-soft); color: var(--err); }
-      h1 { font-size: 16px; font-weight: 600; margin: 0; }
-      .status { font-size: 12px; color: var(--muted); }
+      h1 { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.25; }
+      .status { font-size: 11px; color: var(--muted); }
 
-      #body { flex: 1; overflow: auto; }
+      #body { flex: 1; overflow: auto; min-height: 0; }
       ul#lines { list-style: none; margin: 0; padding: 0; }
-      ul#lines li { padding: 7px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
-      ul#lines li:last-child { border-bottom: 0; }
+      ul#lines li { padding: 2px 0; overflow-wrap: anywhere; }
       .err ul#lines li:first-child { font-weight: 600; }
 
-      details { margin-top: 10px; font-size: 12px; color: var(--muted); }
+      details { margin-top: 6px; font-size: 11px; color: var(--muted); }
       summary { cursor: pointer; user-select: none; }
-      details pre { margin: 6px 0 0; padding: 8px 10px; background: var(--soft); border-radius: 6px;
-        white-space: pre-wrap; overflow-wrap: anywhere; max-height: 90px; overflow: auto;
-        font: 11px/1.45 Consolas, "Cascadia Mono", monospace; }
+      details pre { margin: 4px 0 0; padding: 6px 8px; background: var(--soft); border-radius: 6px;
+        white-space: pre-wrap; overflow-wrap: anywhere; max-height: 70px; overflow: auto;
+        font: 11px/1.4 Consolas, "Cascadia Mono", monospace; }
 
-      #upd { display: none; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 8px;
-        background: var(--accent-soft); font-size: 13px; }
+      #upd { display: none; gap: 8px; align-items: center; padding: 6px 8px 6px 10px; border-radius: 6px;
+        background: var(--accent-soft); font-size: 12px; }
       #upd span { flex: 1; }
 
-      footer { display: flex; justify-content: flex-end; gap: 8px; }
-      button { font: inherit; font-size: 13px; padding: 6px 18px; border-radius: 6px; cursor: pointer;
+      footer { display: flex; justify-content: flex-end; }
+      button { font: inherit; font-size: 12px; padding: 4px 14px; border-radius: 5px; cursor: pointer;
         border: 1px solid #d0d0d0; background: #fff; color: var(--fg); }
       button:hover { background: var(--soft); }
+      button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
       button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-      button.primary:hover { background: #245a94; }
+      button.primary:hover { background: #224a85; }
     </style>
   </head>
   <body>

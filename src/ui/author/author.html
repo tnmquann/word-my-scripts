@@ -24,6 +24,10 @@
     </style>
   </head>
   <body>
+    <!-- Chỉ hiện thông tin tác giả khi mở từ nút "Tác giả" (URL có ?from=ribbon).
+         Word tự mở/khôi phục khung này (khi Add add-in) -> chỉ hiện dòng chào ngắn. -->
+    <p id="welcome" class="muted">MY_SCRIPTS đã sẵn sàng. Các công cụ nằm ở tab MY_SCRIPTS — bạn có thể đóng khung này.</p>
+    <div id="author" hidden>
     <div class="card">
       <img src="{{author.avatar}}" alt="Avatar" />
       <div>
@@ -52,5 +56,12 @@
       <li>Fix lỗi break dòng T.Anh</li>
       <li>Xoá ĐACT ĐGNL</li>
     </ul>
+    </div>
+    <script>
+      if (new URLSearchParams(location.search).get("from") === "ribbon") {
+        document.getElementById("author").hidden = false;
+        document.getElementById("welcome").hidden = true;
+      }
+    </script>
   </body>
 </html>

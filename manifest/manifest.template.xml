@@ -214,7 +214,7 @@
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="{{BASE_URL}}commands.html?mv={{VERSION}}"/>
-        <bt:Url id="About.Url" DefaultValue="{{BASE_URL}}author.html"/>
+        <bt:Url id="About.Url" DefaultValue="{{BASE_URL}}author.html?from=ribbon"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Tab.Label" DefaultValue="{{TAB_LABEL}}"/>

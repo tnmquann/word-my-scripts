@@ -63,17 +63,31 @@ function describeError(e) {
 
 const clip = (s, n) => (s.length > n ? s.slice(0, n) + "…" : s);
 
+// Kích thước hộp thoại (% màn hình) — giữ nhỏ gọn
+const DIALOG_SIZE = { height: 24, width: 22, displayInIframe: true };
+
+/**
+ * Mở dialog.html KHÔNG kèm query string (thanh tiêu đề Office luôn hiện URL — giữ URL ngắn),
+ * rồi gửi nội dung qua messageChild khi dialog báo "ready" (DialogApi 1.2).
+ * Word cũ không có DialogApi 1.2 -> fallback truyền qua query string.
+ */
 function showResult({ title, summary, details, ok, seconds, update }) {
+  const payload = {
+    t: title,
+    m: clip(summary, MAX_SUMMARY),
+    x: details ? clip(details, MAX_DETAILS) : "",
+    s: ok ? "ok" : "err",
+    d: seconds,
+    u: update || "",
+  };
+  const canMessageChild = Office.context.requirements.isSetSupported("DialogApi", "1.2");
   const url = new URL("dialog.html", window.location.href);
-  url.searchParams.set("t", title);
-  url.searchParams.set("m", clip(summary, MAX_SUMMARY));
-  if (details) url.searchParams.set("x", clip(details, MAX_DETAILS));
-  url.searchParams.set("s", ok ? "ok" : "err");
-  url.searchParams.set("d", seconds);
-  if (update) url.searchParams.set("u", update);
+  if (!canMessageChild) {
+    for (const [k, v] of Object.entries(payload)) if (v) url.searchParams.set(k, v);
+  }
 
   return new Promise((resolve) => {
-    Office.context.ui.displayDialogAsync(url.toString(), { height: 32, width: 26, displayInIframe: true }, (res) => {
+    Office.context.ui.displayDialogAsync(url.toString(), DIALOG_SIZE, (res) => {
       if (res.status !== Office.AsyncResultStatus.Succeeded) {
         console.warn("displayDialogAsync failed", res.error);
         resolve();
@@ -92,10 +106,16 @@ function showResult({ title, summary, details, ok, seconds, update }) {
         resolve();
       };
       dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
-        if (arg && arg.message === "update") launchUpdater();
+        const msg = arg && arg.message;
+        if (msg === "ready") {
+          if (canMessageChild) dialog.messageChild(JSON.stringify(payload));
+          return;
+        }
+        if (msg === "update") launchUpdater();
         finish();
       });
       dialog.addEventHandler(Office.EventType.DialogEventReceived, finish); // người dùng bấm X
     });
   });
 }
+

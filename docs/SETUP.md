@@ -30,7 +30,7 @@ This guide covers:
 - **runCommand** (`src/runtime/runCommand.js`): wraps every handler. It does four things:
   - Runs the handler inside `Word.run` and measures how long it takes.
   - Turns `OfficeExtension.Error` into readable text (message, code, `debugInfo.errorLocation`).
-  - Opens `dialog.html` with `displayDialogAsync`, passing the result in the query string: a summary capped at 600 characters, plus optional technical details capped at 400 characters and shown collapsed. Known error codes are mapped to short Vietnamese messages. The dialog stays open until the user closes it.
+  - Opens `dialog.html` with `displayDialogAsync` (24% × 22% of the screen) **without a query string**, so the Office caption shows only a short URL. When the dialog reports `ready`, it sends the result via `dialog.messageChild` (DialogApi 1.2). On older builds it falls back to the query string. The payload is: a summary capped at 600 characters, plus optional technical details capped at 400 characters and shown collapsed. Known error codes are mapped to short Vietnamese messages. The dialog stays open until the user closes it.
   - Always calls `event.completed()`.
 
   A module-level `busy` flag drops re-entrant clicks while a command is still running.
