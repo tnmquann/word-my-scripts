@@ -39,13 +39,12 @@ Each command runs inside a single `Word.run` batch. When it finishes, a small di
 | Portable installer package | `npm run release` → `release/` |
 | Validate manifest | `npm run validate` |
 
-For the full setup, release and troubleshooting guide, see **[docs/SETUP.md](docs/SETUP.md)**. The maintenance runbook for working on this repo from any machine is **[CLAUDE.md](CLAUDE.md)**. Claude Code also reads it automatically.
+For the full setup, release and troubleshooting guide, see **[docs/SETUP.md](docs/SETUP.md)**.
 
 ## Repository layout
 
 ```
 .
-├── CLAUDE.md                  # maintenance runbook (update / fix / release procedure)
 ├── addin.config.json          # add-in IDs, display name, prod/dev base URLs, author profile
 ├── manifest/
 │   └── manifest.template.xml  # ribbon definition (tab → groups → menus → items)
