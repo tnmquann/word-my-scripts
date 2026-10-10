@@ -3,19 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MY_SCRIPTS</title>
+    <title>MY_SCRIPTS — Tác giả</title>
+    <!-- Thông tin tác giả lấy từ "author" trong addin.config.json (theo GitHub profile), điền lúc build. -->
     <style>
-      body { margin: 0; padding: 16px; font: 14px/1.5 "Segoe UI", system-ui, sans-serif; color: #242424; background: #fff; }
-      h1 { font-size: 18px; margin: 0 0 8px; }
-      h2 { font-size: 15px; margin: 12px 0 4px; }
+      :root { --fg: #242424; --muted: #616161; --line: #e0e0e0; --accent: #2b6cb0; --bg: #ffffff; --card: #f7f9fc; }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 16px; font: 14px/1.5 "Segoe UI", system-ui, sans-serif; color: var(--fg); background: var(--bg); }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .card { display: flex; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+      .card img { width: 64px; height: 64px; border-radius: 50%; flex: none; border: 1px solid var(--line); }
+      .name { font-weight: 600; font-size: 15px; }
+      .login, .muted { color: var(--muted); font-size: 12px; }
+      dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: 12px 0 0; font-size: 13px; }
+      dt { color: var(--muted); }
+      dd { margin: 0; overflow-wrap: anywhere; }
+      h2 { font-size: 14px; margin: 18px 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+      ul { margin: 4px 0; padding-left: 18px; }
       li { margin: 2px 0; }
-      .muted { color: #616161; font-size: 12px; }
     </style>
   </head>
   <body>
-    <h1>MY_SCRIPTS</h1>
-    <p>Bộ công cụ tự động hoá Word, nằm ở tab <b>MY_SCRIPTS</b>, chia theo nhóm:</p>
-    <h2>ĐGNL</h2>
+    <div class="card">
+      <img src="{{author.avatar}}" alt="Avatar" />
+      <div>
+        <div class="name">{{author.name}}</div>
+        <div class="login"><a href="{{author.github}}" target="_blank" rel="noopener">@{{author.login}}</a></div>
+        <div>{{author.bio}}</div>
+      </div>
+    </div>
+    <dl>
+      <dt>Đơn vị</dt><dd>{{author.company}}</dd>
+      <dt>Nơi ở</dt><dd>{{author.location}}</dd>
+      <dt>GitHub</dt><dd><a href="{{author.github}}" target="_blank" rel="noopener">{{author.github}}</a></dd>
+      <dt>X</dt><dd><a href="https://x.com/{{author.twitter}}" target="_blank" rel="noopener">@{{author.twitter}}</a></dd>
+      <dt>Mã nguồn</dt><dd><a href="{{author.repo}}" target="_blank" rel="noopener">{{author.repo}}</a></dd>
+      <dt>Báo lỗi</dt><dd><a href="{{author.repo}}/issues" target="_blank" rel="noopener">GitHub Issues</a></dd>
+    </dl>
+
+    <h2>MY_SCRIPTS</h2>
+    <p class="muted">Bộ công cụ tự động hoá Word, chia theo nhóm trên tab MY_SCRIPTS. Phiên bản {{version}}.</p>
+    <b>ĐGNL</b>
     <ul>
       <li>Chuẩn hoá Toán ĐGNL</li>
       <li>Fix lỗi tab câu hỏi</li>
@@ -23,6 +51,5 @@
       <li>Fix lỗi break dòng T.Anh</li>
       <li>Xoá ĐACT ĐGNL</li>
     </ul>
-    <p class="muted">Phiên bản {{version}}</p>
   </body>
 </html>

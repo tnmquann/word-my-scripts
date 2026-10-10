@@ -38,6 +38,10 @@ const ICONS = {
   xoaDactDgnl: `${page()}${lines([10, 14])}
          <circle cx="21" cy="22" r="6.5" fill="#e03131"/>
          <path d="M18.4 19.4l5.2 5.2M23.6 19.4l-5.2 5.2" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`,
+  // Author / about: person badge
+  author: `<circle cx="16" cy="16" r="14" fill="#2b6cb0"/>
+         <circle cx="16" cy="12.5" r="5" fill="#fff"/>
+         <path d="M7.5 25.5c1.6-4.6 5-6.6 8.5-6.6s6.9 2 8.5 6.6" fill="#fff"/>`,
 };
 
 await fs.mkdir(OUT, { recursive: true });

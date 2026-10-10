@@ -2,6 +2,17 @@
   "displayName": "MY_SCRIPTS",
   "providerName": "tnmquann",
   "tabLabel": "MY_SCRIPTS",
+  "author": {
+    "name": "TON NGOC MINH QUAN",
+    "login": "tnmquann",
+    "github": "https://github.com/tnmquann",
+    "avatar": "https://avatars.githubusercontent.com/u/56569936?v=4",
+    "bio": "wanna play with type design 🤧?",
+    "company": "OUCRU - Oxford University Clinical Research Unit HCM",
+    "location": "Vietnam",
+    "twitter": "quanntnm",
+    "repo": "https://github.com/tnmquann/word-my-scripts"
+  },
   "prod": {
     "id": "9820d12c-685d-46ce-b02a-6f2046c50eff",
     "baseUrl": "https://tnmquann.github.io/word-my-scripts/"

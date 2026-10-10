@@ -57,6 +57,9 @@ function outputNames(metafile) {
   return names;
 }
 
+const escapeHtml = (s) =>
+  String(s).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+
 const fill = (text, vars) => text.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (m, k) => (k in vars ? vars[k] : m));
 
 async function writeStatic(names) {
@@ -70,6 +73,7 @@ async function writeStatic(names) {
     DISPLAY_NAME: cfg.displayName + (DEV ? env.labelSuffix : ""),
     PROVIDER: cfg.providerName,
     TAB_LABEL: cfg.tabLabel + (DEV ? env.labelSuffix : ""),
+    ...Object.fromEntries(Object.entries(cfg.author || {}).map(([k, v]) => [`author.${k}`, escapeHtml(v)])),
   };
   for (const [out, src] of Object.entries(PAGES)) {
     await fs.writeFile(path.join(OUT, out), fill(await fs.readFile(r(src), "utf8"), vars));

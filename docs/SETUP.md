@@ -34,6 +34,7 @@ This guide covers:
   - Always calls `event.completed()`.
 
   A module-level `busy` flag drops re-entrant clicks while a command is still running.
+- **Author pane**: the *Thông tin → Tác giả* button (`ShowTaskpane`) opens `about.html`. Its author card is filled at build time from the `author` block in `addin.config.json`, with values HTML-escaped. That block mirrors the public GitHub profile of `tnmquann`. To refresh it, run `gh api users/tnmquann`, update the block, then rebuild and push. The avatar is loaded from `avatars.githubusercontent.com`.
 - **Registration**: the installer writes a per-user registry value:
 
   ```

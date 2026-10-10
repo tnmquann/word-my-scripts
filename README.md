@@ -7,6 +7,7 @@ MY_SCRIPTS is a personal collection of Word automation commands, delivered as an
 | Group (ribbon) | Scope | Code | Specs |
 | --- | --- | --- | --- |
 | **ĐGNL** | Clean-up tools for exam documents of the Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT). *ĐGNL* is the Vietnamese abbreviation for this test. | [src/features/dgnl/](src/features/dgnl/) | [docs/specs/dgnl/](docs/specs/dgnl/) |
+| **Thông tin** | *Tác giả* button: opens a task pane with author information from the GitHub profile, the add-in version and the list of tools. | [src/ui/about/](src/ui/about/) | — |
 
 ```
 MY_SCRIPTS (tab)
@@ -17,6 +18,8 @@ MY_SCRIPTS (tab)
         ├── Gạch chân đáp án Ngữ Văn   → gachDapAnNguVan
         ├── Fix lỗi break dòng T.Anh   → removeBreakEng
         └── Xoá ĐACT ĐGNL              → xoaDactDgnl
+└── Thông tin (group)
+    └── Tác giả (button)               → task pane: author card (GitHub profile), version, tool list
 ```
 
 Ribbon labels and result messages are in Vietnamese. To add a command or a whole new group, see [docs/SETUP.md § 6](docs/SETUP.md#6-adding-a-new-command).
@@ -41,7 +44,7 @@ For the full setup, release and troubleshooting guide, see **[docs/SETUP.md](doc
 
 ```
 .
-├── addin.config.json          # add-in IDs, display name, prod/dev base URLs
+├── addin.config.json          # add-in IDs, display name, prod/dev base URLs, author profile
 ├── manifest/
 │   └── manifest.template.xml  # ribbon definition (tab → groups → menus → items)
 ├── src/

@@ -139,6 +139,30 @@
                   </Items>
                 </Control>
               </Group>
+              <Group id="MyScripts.Info.Group">
+                <Label resid="Info.Group.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.Author.16"/>
+                  <bt:Image size="32" resid="Icon.Author.32"/>
+                  <bt:Image size="80" resid="Icon.Author.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="MyScripts.Info.Author">
+                  <Label resid="Author.Label"/>
+                  <Supertip>
+                    <Title resid="Author.Label"/>
+                    <Description resid="Author.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.Author.16"/>
+                    <bt:Image size="32" resid="Icon.Author.32"/>
+                    <bt:Image size="80" resid="Icon.Author.80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>MyScripts.About</TaskpaneId>
+                    <SourceLocation resid="About.Url"/>
+                  </Action>
+                </Control>
+              </Group>
               <Label resid="Tab.Label"/>
             </CustomTab>
           </ExtensionPoint>
@@ -165,10 +189,14 @@
         <bt:Image id="Icon.RemoveBreakEng.80" DefaultValue="{{BASE_URL}}assets/removeBreakEng-80.png"/>
         <bt:Image id="Icon.XoaDactDgnl.16" DefaultValue="{{BASE_URL}}assets/xoaDactDgnl-16.png"/>
         <bt:Image id="Icon.XoaDactDgnl.32" DefaultValue="{{BASE_URL}}assets/xoaDactDgnl-32.png"/>
+        <bt:Image id="Icon.Author.16" DefaultValue="{{BASE_URL}}assets/author-16.png"/>
+        <bt:Image id="Icon.Author.32" DefaultValue="{{BASE_URL}}assets/author-32.png"/>
+        <bt:Image id="Icon.Author.80" DefaultValue="{{BASE_URL}}assets/author-80.png"/>
         <bt:Image id="Icon.XoaDactDgnl.80" DefaultValue="{{BASE_URL}}assets/xoaDactDgnl-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="{{BASE_URL}}commands.html"/>
+        <bt:Url id="About.Url" DefaultValue="{{BASE_URL}}about.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Tab.Label" DefaultValue="{{TAB_LABEL}}"/>
@@ -179,6 +207,8 @@
         <bt:String id="GachDapAnNguVan.Label" DefaultValue="Gạch chân đáp án Ngữ Văn"/>
         <bt:String id="RemoveBreakEng.Label" DefaultValue="Fix lỗi break dòng T.Anh"/>
         <bt:String id="XoaDactDgnl.Label" DefaultValue="Xoá ĐACT ĐGNL"/>
+        <bt:String id="Info.Group.Label" DefaultValue="Thông tin"/>
+        <bt:String id="Author.Label" DefaultValue="Tác giả"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="DGNL.Menu.Tip" DefaultValue="Các công cụ xử lý đề ĐGNL."/>
@@ -187,6 +217,7 @@
         <bt:String id="GachDapAnNguVan.Tip" DefaultValue="Gạch chân, tô đỏ chữ cái đáp án đúng. Xoá dòng đáp án và phần giải thích lặp lại đề dưới &quot;Lời giải&quot;."/>
         <bt:String id="RemoveBreakEng.Tip" DefaultValue="Gỡ &quot;Keep with next&quot; thừa gây khoảng trắng lớn giữa câu hỏi và đáp án (đề Tiếng Anh)."/>
         <bt:String id="XoaDactDgnl.Tip" DefaultValue="Xoá toàn bộ các khối đáp án chi tiết bắt đầu bằng &quot;Lời giải&quot;. Nên lưu bản sao trước khi chạy."/>
+        <bt:String id="Author.Tip" DefaultValue="Thông tin tác giả, phiên bản và danh sách công cụ của MY_SCRIPTS."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
