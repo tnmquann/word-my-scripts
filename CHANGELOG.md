@@ -1,0 +1,75 @@
+# Changelog
+
+All notable changes to MY_SCRIPTS are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/). The manifest `<Version>` is the package version followed by `.0`.
+
+Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
+
+## [1.4.3] - 2026-10-10
+
+### Changed
+- **Chuẩn hoá Toán ĐGNL**: new indent pass after normalization. Every lead-in in the canonical form (`Dựa vào thông tin dưới đây để trả lời từ câu X đến câu Y`) gets left indent 0 and first-line indent 0. This includes lines whose text already matched, which were therefore not replaced. The result dialog reports how many lines were re-indented.
+
+### Fixed
+- Lead-ins that were rewritten with `insertText("Replace")` could keep their old indent, because the indent was applied in the same batch as the rewrite.
+
+## [1.4.2] - 2026-10-10
+
+### Fixed
+- New ribbon icons did not appear after updating. Icon URLs in the manifest now carry `?v=<version>`, so Office reloads them on every version change.
+
+## [1.4.1] - 2026-10-10
+
+### Fixed
+- The **Cập nhật** button closed the popup without doing anything. It now opens an update page in the browser, which launches the updater and shows a fallback command.
+- Updater prompts could be hidden behind Word. They are now always on top.
+
+### Added
+- Updater log file at `%LOCALAPPDATA%\MY_SCRIPTS\updater.log`.
+
+## [1.4.0] - 2026-10-10
+
+### Changed
+- New minimal line icons and app logo (single colour, no text glyphs).
+- Result popup: smaller (about 22% × 24% of the screen) with a tighter layout. Content is sent via `messageChild`, so the title bar no longer shows a long URL.
+
+### Fixed
+- Author information no longer appears when Word opens or restores the pane without the **Tác giả** button.
+
+## [1.3.0] - 2026-10-10
+
+### Changed
+- Result popups never close on their own.
+- Popup redesign: Aptos/Arial font, one line per result, and technical details collapsed under *Chi tiết kỹ thuật*. Known errors are shown as short Vietnamese messages.
+- The default add-in page is now a minimal welcome page. Author information moved to its own page, opened only by **Thông tin → Tác giả**.
+
+## [1.2.3] - 2026-10-10
+
+### Documentation
+- Installer, updater and docs explain the one-time activation on recent Word builds: Home → Add-ins → Advanced → DEVELOPER ADD-INS → MY_SCRIPTS → **Add**.
+
+## [1.2.2] - 2026-10-10
+
+### Fixed
+- `irm …/install.ps1 | iex` failed with *Unexpected token '-ManifestPath'*. The installer scripts are now published without a BOM.
+
+## [1.2.1] - 2026-10-10
+
+### Added
+- GNU GPL v3 (`GPL-3.0-or-later`) license.
+
+## [1.2.0] - 2026-10-10
+
+### Added
+- Auto-update. The updater checks for a new version at Windows logon and on demand, asks before installing, waits for Word to close, then reinstalls.
+- **Thông tin → Kiểm tra cập nhật** button. Result popups show an update banner when a newer version exists.
+
+## [1.1.0] - 2026-10-10
+
+### Added
+- **Thông tin → Tác giả** button: a task pane with author information from the GitHub profile.
+
+## [1.0.0] - 2026-10-10
+
+### Added
+- MY_SCRIPTS ribbon tab with the **ĐGNL** group: Chuẩn hoá Toán ĐGNL, Fix lỗi tab câu hỏi, Gạch chân đáp án Ngữ Văn, Fix lỗi break dòng T.Anh, Xoá ĐACT ĐGNL.
+- Per-user installer and uninstaller, GitHub Pages hosting, and a portable release zip.

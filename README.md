@@ -39,7 +39,7 @@ Each command runs inside a single `Word.run` batch. When it finishes, a small di
 | Portable installer package | `npm run release` → `release/` |
 | Validate manifest | `npm run validate` |
 
-For the full setup, release and troubleshooting guide, see **[docs/SETUP.md](docs/SETUP.md)**.
+For the full setup, release and troubleshooting guide, see **[docs/SETUP.md](docs/SETUP.md)**. For the release history, see **[CHANGELOG.md](CHANGELOG.md)**.
 
 ## Repository layout
 

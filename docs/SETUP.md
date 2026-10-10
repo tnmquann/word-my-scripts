@@ -183,7 +183,7 @@ Recommended test procedure: keep a set of copies of real exam files, and never t
 
 ## 5. Releasing
 
-1. Bump the version: `npm version patch|minor|major --no-git-tag-version`. The manifest `<Version>` is taken from `package.json` and gets a trailing `.0`.
+1. Bump the version: `npm version patch|minor|major --no-git-tag-version`, and add a `## [X.Y.Z] - YYYY-MM-DD` section to [CHANGELOG.md](../CHANGELOG.md). The manifest `<Version>` is taken from `package.json` and gets a trailing `.0`.
 2. Commit, then push to `main`. Pages redeploys automatically.
 3. Optional: publish a portable package.
 
@@ -191,7 +191,7 @@ Recommended test procedure: keep a set of copies of real exam files, and never t
    git tag v1.1.0; git push origin v1.1.0
    ```
 
-   A tag with a suffix (for example `v1.1.0-beta.1`) is published as a **pre-release**.
+   A tag with a suffix (for example `v1.1.0-beta.1`) is published as a **pre-release**. The release notes come from the matching `## [1.1.0]` section of `CHANGELOG.md`, and the workflow fails if that section is missing. Publish every release under a new tag instead of overwriting an existing one.
    `.github/workflows/release.yml` builds `MY_SCRIPTS-v1.1.0.zip` on `windows-latest` and attaches it to a GitHub Release. To build the package locally, run `npm run release`.
 4. Users need to re-run the installer only if the manifest changed.
 
