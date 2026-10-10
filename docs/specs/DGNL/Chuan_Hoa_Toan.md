@@ -11,7 +11,7 @@
 
 ## Purpose
 
-In Math ĐGNL exams, a group of questions shares one stimulus (text, figure or table). The group starts with a lead-in line whose wording varies, for example `Dựa vào thông tin sau trả lời câu hỏi 73-74`. This command does three things:
+In the Math section of Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT) exams, a group of questions shares one stimulus (text, figure or table). The group starts with a lead-in line whose wording varies, for example `Dựa vào thông tin sau trả lời câu hỏi 73-74`. This command does three things:
 
 1. Rewrites every lead-in to the canonical form
 

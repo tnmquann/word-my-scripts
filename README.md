@@ -1,6 +1,6 @@
 # MY_SCRIPTS — Word add-in (Office JS)
 
-A Word add-in that adds a **MY_SCRIPTS** ribbon tab. It automates clean-up tasks on Vietnamese exam documents (ĐGNL). The scripts run as Office JS ribbon commands (`ExecuteFunction`), and there is no task pane and no VBA.
+A Word add-in that adds a **MY_SCRIPTS** ribbon tab. It automates clean-up tasks on exam documents for the Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT). Ribbon labels are in Vietnamese, and *ĐGNL* is the Vietnamese abbreviation for this test. The scripts run as Office JS ribbon commands (`ExecuteFunction`), and there is no task pane and no VBA.
 
 ```
 MY_SCRIPTS (tab)
