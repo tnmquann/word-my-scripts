@@ -8,6 +8,8 @@
 const reRange = /câu(?:\s+hỏi)?\s*(\d+)\s*[-–]\s*(\d+)/i; // "câu hỏi 73-74"
 const reDone = /câu\s*(\d+)\s*đến\s*câu\s*(\d+)/i; // đã chuẩn hoá rồi
 const reStart = /^\s*(Dựa vào|Trả lời)/i;
+// Dòng dẫn đã ở dạng chuẩn (sau bước 1, hoặc vốn đã đúng)
+const reCanonical = /^\s*Dựa vào thông tin dưới đây để trả lời từ câu \d+ đến câu \d+/i;
 
 export async function chuanHoaToan(context) {
   const paras = context.document.body.paragraphs;
@@ -65,6 +67,23 @@ export async function chuanHoaToan(context) {
   }
   await context.sync();
 
-  if (!headers) return "Không tìm thấy dòng dẫn \"Dựa vào … câu X-Y\" nào.";
-  return `Đã xử lý ${headers} dòng dẫn (viết lại ${changed} dòng).`;
+  // 3) Sau khi chuẩn hoá: đưa MỌI dòng dẫn đúng mẫu (kể cả dòng vốn đã đúng, không cần replace) về indent 0.
+  //    Chạy sau sync để áp lên đoạn đã được insertText("Replace") ghi lại.
+  const after = context.document.body.paragraphs;
+  after.load("items/text");
+  await context.sync();
+  let indented = 0;
+  for (const p of after.items) {
+    if (!reCanonical.test(p.text)) continue;
+    p.leftIndent = 0;
+    p.firstLineIndent = 0;
+    indented++;
+  }
+  if (indented) await context.sync();
+
+  if (!headers && !indented) return "Không tìm thấy dòng dẫn \"Dựa vào … câu X-Y\" nào.";
+  return [
+    `Đã xử lý ${headers} dòng dẫn (viết lại ${changed} dòng).`,
+    `Đưa ${indented} dòng dẫn về lề trái 0.`,
+  ].join("\n");
 }

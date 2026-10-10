@@ -46,17 +46,21 @@ For each lead-in `i` and every paragraph `j` in its scope:
 | `j` containing ≥ 1 inline picture | `alignment = "Centered"` |
 | `j` inside a table | parent `table.alignment = "Centered"` |
 
+**Indent pass (since 1.4.3).** After the writes above are synced, the command reloads all paragraphs. It then sets `leftIndent = 0` and `firstLineIndent = 0` on **every** paragraph that matches the canonical form `/^\s*Dựa vào thông tin dưới đây để trả lời từ câu \d+ đến câu \d+/i`. This covers lines that were just rewritten and lines that already matched (so were not replaced). Running it as a separate phase guarantees that the indent applies to the paragraph *after* `insertText("Replace")` has rewritten it.
+
 ## Execution profile
 
-The command needs 3 round-trips in total:
+The command needs 5 round-trips in total:
 
 1. Load all paragraph texts.
 2. Load the list item, inline pictures and parent table of every paragraph.
-3. Commit all writes.
+3. Commit the rewrites and the formatting.
+4. Reload the paragraph texts (indent pass).
+5. Commit the indent pass.
 
 ## Output
 
-`Đã xử lý N dòng dẫn (viết lại M dòng).` If no lead-in is found, it reports that instead.
+`Đã xử lý N dòng dẫn (viết lại M dòng).` followed by `Đưa K dòng dẫn về lề trái 0.` If no lead-in is found, it reports that instead.
 
 ## Limitations
 
@@ -70,3 +74,4 @@ The command needs 3 round-trips in total:
 - [ ] A solution line such as `Dựa vào BBT suy ra…` is left untouched.
 - [ ] A figure or table in the stimulus is centered, and the question lines keep their hanging indent.
 - [ ] A second run reports `viết lại 0 dòng`.
+- [ ] Every canonical lead-in ends up at left indent 0 and first-line indent 0. This includes a line that already had the canonical text but was indented, which is fixed even though its text is not replaced.

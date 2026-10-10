@@ -1,6 +1,6 @@
 {
   "name": "my-scripts-word-addin",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "private": true,
   "description": "MY_SCRIPTS: Word add-in (Office JS) - a growing collection of document automation commands, organized by ribbon group",
   "license": "GPL-3.0-or-later",
