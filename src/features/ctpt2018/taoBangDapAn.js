@@ -11,7 +11,9 @@ import { askUser } from "../runtime.js";
 const DEFAULTS = {
   answerLabel: /(Đáp án|Đáp số|Trả lời)\s*:/i,
   solutionMarker: /^(Lời giải|Hướng dẫn giải)\s*:?\s*$/i,
-  endMarker: /^([\s(\-–—*]*HẾT\b|BẢNG ĐÁP ÁN)/,
+  // Kết thúc vùng câu hỏi. "BẢNG ĐÁP ÁN" KHÔNG nằm ở đây: nó chỉ là điểm kết thúc khi sau nó không còn
+  // câu hỏi (bảng ở cuối đề); nếu nằm ngay dưới tiêu đề phần thì là bảng của phần đó.
+  endMarker: /^[\s(\-–—*]*HẾT\b/,
   tableAnchor: /^BẢNG ĐÁP ÁN/i,
   tlTag: /^\[TL\]/,
   bold: false,
@@ -192,7 +194,56 @@ function markedLetters(xml, kind) {
   return [...new Set(found)];
 }
 
+// Bảng đáp án có 2 kiểu ô:
+//  - "tách": ô nhãn ("1", "Câu 1", "1a") + ô đáp án bên dưới / bên phải  -> analyzeSeparate (logic v7)
+//  - "gộp": nhãn và đáp án trong cùng 1 ô -> analyzeInline
+//      trắc nghiệm / trả lời ngắn: "1.A", "2.", "Câu 3: 98"            (prefix "1.")
+//      đúng/sai theo cột: đầu cột "Câu 1", các ô dưới "a) Đ", "b) S"   (prefix "a) ")
+// analyzeTable chọn kiểu khớp được nhiều nhãn hơn.
 function analyzeTable(values, labelSet) {
+  const sep = analyzeSeparate(values, labelSet);
+  const inl = analyzeInline(values, labelSet);
+  return inl.labels.length > sep.labels.length ? inl : sep;
+}
+
+function analyzeInline(values, labelSet) {
+  const seen = new Set();
+  const labels = [];
+  const add = (k, r, c, prefix, existing) => {
+    if (!labelSet.has(k) || seen.has(k)) return;
+    seen.add(k);
+    labels.push({ k, r, c, ar: r, ac: c, prefix, existing: (existing || "").trim() });
+  };
+  const cell = (r, c) => String((values[r] || [])[c] || "").trim();
+  values.forEach((row, r) =>
+    row.forEach((v, c) => {
+      const t = String(v || "").trim();
+      // "1.A" / "2." / "Câu 3: 98"
+      let m = t.match(/^(?:Câu\s*)?(\d+)\s*([.:)])\s*(.*)$/i);
+      if (m && labelSet.has(m[1])) return add(m[1], r, c, `${m[1]}${m[2]}`, m[3]);
+      // đầu cột/hàng "Câu 1" + các ô "a) Đ" bên dưới (hoặc bên phải)
+      m = t.match(/^Câu\s*(\d+)\s*[.:]?$/i);
+      if (!m) return;
+      const n = m[1];
+      const scan = (dr, dc) => {
+        let hit = 0;
+        for (let rr = r + dr, cc = c + dc; rr < values.length && cc < (values[rr] || []).length; rr += dr, cc += dc) {
+          const s = cell(rr, cc).match(/^([a-d])\s*\)\s*(.*)$/i);
+          if (!s) break;
+          add(n + s[1].toLowerCase(), rr, cc, `${s[1].toLowerCase()}) `, s[2]);
+          hit++;
+        }
+        return hit;
+      };
+      if (!scan(1, 0)) scan(0, 1);
+    })
+  );
+  // Đúng/Sai viết tắt (Đ/S) nếu bảng đang viết tắt hoặc còn trống; viết đầy đủ nếu bảng đang ghi "Đúng/Sai"
+  const abbr = !labels.some((l) => /^(đúng|sai)$/i.test(l.existing));
+  return { labels, vertical: false, inline: true, abbr };
+}
+
+function analyzeSeparate(values, labelSet) {
   const seen = new Set();
   const labels = [];
   values.forEach((row, r) =>
@@ -250,7 +301,7 @@ export async function fillAnswerTable(context, userOpts = {}) {
   const body = context.document.body;
 
   const paras = body.paragraphs;
-  paras.load("items/text,items/isListItem");
+  paras.load("items/text,items/isListItem,items/tableNestingLevel");
   await context.sync();
   const P = paras.items;
   const lis = P.map((p) => (p.isListItem ? p.listItemOrNullObject : null));
@@ -258,22 +309,36 @@ export async function fillAnswerTable(context, userOpts = {}) {
   await context.sync();
 
   // ---------- câu hỏi, gom theo "PHẦN X." ----------
+  const inTable = (i) => P[i].tableNestingLevel > 0;
   const isQStart = (i) => {
+    if (inTable(i)) return false; // ô bảng (vd "Câu 1" trong bảng đáp án) không phải câu hỏi
     const t = P[i].text.trim();
     return (
       O.tlTag.test(t) || /^Câu\s*\d+\s*[.:]/i.test(t) || !!(lis[i] && !lis[i].isNullObject && /^Câu/i.test(lis[i].listString || ""))
     );
   };
-  let stop = P.findIndex((p) => O.endMarker.test(p.text.trim()));
+  const isAnchor = (i) => !inTable(i) && O.tableAnchor.test(P[i].text.trim());
+  // Kết thúc vùng câu hỏi: "HẾT", hoặc dòng "BẢNG ĐÁP ÁN" mà sau nó KHÔNG còn câu hỏi (bố cục bảng ở cuối đề).
+  // "BẢNG ĐÁP ÁN" nằm giữa đề (bảng đặt ngay dưới tiêu đề từng phần) không làm dừng.
+  let stop = P.findIndex((p, i) => !inTable(i) && O.endMarker.test(p.text.trim()));
   if (stop < 0) stop = P.length;
+  {
+    let lastQ = -1;
+    for (let i = 0; i < stop; i++) if (isQStart(i)) lastQ = i;
+    const endAnchor = P.findIndex((p, i) => i > lastQ && i < stop && isAnchor(i));
+    if (lastQ >= 0 && endAnchor > lastQ) stop = endAnchor;
+  }
   const starts = [];
   const headIdAt = [];
   const headKind = {};
   // Tiêu đề phần: "PHẦN I.", "Phần IV:", "PHẦN 2.", "Phần 11 - …" (số La Mã hợp lệ hoặc số thường)
   const headingRe = new RegExp("^PHẦN\\s+" + PART_TOKEN, "i");
+  // Chữ đầy đủ của đoạn: số tự động (listString, vd "PHẦN I.") không nằm trong text -> ghép vào trước
+  const fullText = (i) =>
+    lis[i] && !lis[i].isNullObject && lis[i].listString ? `${lis[i].listString} ${P[i].text}`.trim() : P[i].text.trim();
   const headingAt = (i) => {
     if (isQStart(i)) return null;
-    const h = P[i].text.trim().match(headingRe);
+    const h = fullText(i).match(headingRe);
     return h ? parsePart(h[1]) : null;
   };
   // Kiểu đánh số của đề (thống nhất): theo tiêu đề phần đầu tiên; mặc định La Mã
@@ -289,13 +354,15 @@ export async function fillAnswerTable(context, userOpts = {}) {
   const label = (n) => fmtPart(n, partStyle);
 
   let curId = null;
+  const boundary = []; // tiêu đề phần / "BẢNG ĐÁP ÁN": câu hỏi phía trước kết thúc tại đây
   for (let i = 0; i < stop; i++) {
-    const p = headingAt(i);
+    const p = inTable(i) ? null : headingAt(i);
     if (p) {
       curId = label(p.n);
-      headKind[curId] = kindFromHeading(P[i].text);
+      headKind[curId] = kindFromHeading(fullText(i));
     }
     headIdAt[i] = curId;
+    if (p || isAnchor(i)) boundary.push(i);
     if (isQStart(i)) starts.push(i);
   }
   const numOf = (i) => {
@@ -304,7 +371,10 @@ export async function fillAnswerTable(context, userOpts = {}) {
     return m ? +m[1] : null;
   };
   const blocks = starts.map((s, k) => {
-    const e = k + 1 < starts.length ? starts[k + 1] : stop;
+    // câu kết thúc ở câu kế tiếp, tiêu đề phần kế tiếp hoặc dòng "BẢNG ĐÁP ÁN" (không lấn sang phần sau)
+    let e = k + 1 < starts.length ? starts[k + 1] : stop;
+    const b = boundary.find((x) => x > s && x < e);
+    if (b !== undefined) e = b;
     let sol = -1;
     for (let i = s; i < e; i++)
       if (O.solutionMarker.test(P[i].text.trim())) {
@@ -502,12 +572,21 @@ export async function fillAnswerTable(context, userOpts = {}) {
   }
 
   // ---------- tìm bảng đáp án ----------
-  const anchorPara = (() => {
-    const i = P.findIndex((p) => O.tableAnchor.test(p.text.trim()));
-    return i >= 0 ? P[i] : null;
-  })();
-
-  const refPara = anchorPara || (stop < P.length ? P[stop] : null);
+  // (a) Bố cục trong từng phần: "PHẦN X" -> "BẢNG ĐÁP ÁN" -> bảng -> các câu hỏi.
+  //     Bảng ngay dưới dòng "BẢNG ĐÁP ÁN" (bỏ qua dòng trống) thuộc về phần chứa dòng đó.
+  const inline = [];
+  for (let a = 0; a < stop; a++) {
+    if (!isAnchor(a) || !headIdAt[a]) continue;
+    let j = a + 1;
+    while (j < P.length && !inTable(j) && P[j].text.trim() === "") j++;
+    if (j < P.length && inTable(j)) {
+      const t = P[j].parentTableOrNullObject;
+      t.load("isNullObject,values,rowCount");
+      inline.push({ id: headIdAt[a], a, t });
+    }
+  }
+  // (b) Bố cục bảng ở cuối đề: các bảng sau "BẢNG ĐÁP ÁN" cuối / "HẾT", có tiêu đề "Phần X" ngay trên.
+  const refPara = stop < P.length ? P[stop] : null;
   const tables = body.tables;
   tables.load("items");
   await context.sync();
@@ -540,6 +619,11 @@ export async function fillAnswerTable(context, userOpts = {}) {
   const tbl = {};
   const headOf = {};
   const unmatched = [];
+  for (const { id, a, t } of inline) {
+    if (t.isNullObject || tbl[id] || !order.includes(id)) continue;
+    tbl[id] = t;
+    headOf[id] = P[a];
+  }
   for (const { t, i } of cand) {
     const p = headMatch(i);
     const id = p && label(p.n); // khớp theo số, kể cả bảng ghi "Phần 2" còn đề ghi "PHẦN II"
@@ -570,7 +654,7 @@ export async function fillAnswerTable(context, userOpts = {}) {
       continue;
     }
     const a = analyzeTable(t.values, new Set(Object.keys(lab[g.id])));
-    report.tables[g.id] = `${t.rowCount}×${Math.max(...t.values.map((r) => r.length))}, ${a.vertical ? "dọc" : "ngang"}, khớp ${
+    report.tables[g.id] = `${t.rowCount}×${Math.max(...t.values.map((r) => r.length))}, ${a.inline ? "ô gộp nhãn+đáp án" : a.vertical ? "dọc" : "ngang"}, khớp ${
       a.labels.length
     }/${Object.keys(lab[g.id]).length} nhãn (nhãn theo ${modeTxt})`;
   }
@@ -670,17 +754,22 @@ export async function fillAnswerTable(context, userOpts = {}) {
     }
     t.load("values,rowCount");
     await context.sync();
-    const { labels } = analyzeTable(t.values, new Set(Object.keys(L)));
+    const an = analyzeTable(t.values, new Set(Object.keys(L)));
     const used = new Set();
-    for (const l of labels) {
+    for (const l of an.labels) {
       const item = L[l.k];
       const cell = t.getCell(l.ar, l.ac);
+      // Ô gộp: giữ nhãn ("1.", "a) ") rồi ghi đáp án; Đúng/Sai viết tắt Đ/S nếu bảng đang viết tắt
+      let text = item.text;
+      if (l.prefix !== undefined && an.abbr && /^(Đúng|Sai)$/.test(text)) text = text[0];
       cell.body.clear();
       await context.sync();
       if (item.eqPara !== undefined) {
         if (!eqCache[item.eqPara]) eqCache[item.eqPara] = await buildAnswerDocx(need.get(item.eqPara).value, O.answerLabel);
+        if (l.prefix) cell.body.insertText(l.prefix, "Start");
         await cell.body.insertFileFromBase64(eqCache[item.eqPara], "End");
-      } else if (item.text) cell.body.paragraphs.getFirst().insertText(item.text, "Start");
+      } else if (l.prefix !== undefined) cell.body.paragraphs.getFirst().insertText(l.prefix + (text || ""), "Start");
+      else if (text) cell.body.paragraphs.getFirst().insertText(text, "Start");
       cell.body.font.bold = O.bold;
       cell.body.paragraphs.getFirst().alignment = O.alignment;
       await context.sync();

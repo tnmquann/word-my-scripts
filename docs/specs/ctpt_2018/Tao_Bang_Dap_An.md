@@ -30,7 +30,26 @@ Exams that follow the 2018 General Education Curriculum (*Chương trình GDPT 2
 
 A question ends where the next question starts, or at the end marker. The *stem* runs up to the solution marker `Lời giải` / `Hướng dẫn giải`.
 
-**End of the question area.** This is the first paragraph that matches `HẾT` or `BẢNG ĐÁP ÁN`. If there is none, it is the end of the document.
+**Auto numbering.** Both `Câu N.` and `PHẦN X.` may be typed or produced by Word's automatic numbering. The list string (`ListItem.listString`) is read and prepended to the paragraph text before matching. Paragraphs inside tables are never treated as questions or part headings.
+
+**End of the question area.** The area ends at the first `HẾT` line. It also ends at a `BẢNG ĐÁP ÁN` line that has **no question after it**, which is the end-of-document answer-key layout. A `BẢNG ĐÁP ÁN` line that appears *between* questions does not end the area. That is the per-part layout described below.
+
+**Question boundaries.** A question ends at the next question, the next part heading, or the next `BẢNG ĐÁP ÁN` line, whichever comes first. A question therefore never extends into the next part or its answer table.
+
+**Answer-table layouts.** Both layouts are supported, and they can be mixed:
+
+| Layout | Shape | How the table is matched to a part |
+| --- | --- | --- |
+| Per part (inline) | `PHẦN X …` → `BẢNG ĐÁP ÁN` → *table* → questions of part X | the first table right after the `BẢNG ĐÁP ÁN` line (blank lines skipped) belongs to the part that contains that line |
+| End of document | questions … → `BẢNG ĐÁP ÁN` / `HẾT` → `Phần X.` → *table* … | the `Phần X` heading right above each table; unlabelled tables go to the remaining parts in order |
+
+**Cell styles.** Each table is analysed in two ways, and the one that matches more labels is used:
+
+| Style | Example | Written as |
+| --- | --- | --- |
+| Separate label and answer cells | label row `1 2 3 …` with an answer row below, or a label column with answers to the right | the answer alone in the answer cell |
+| Combined: number + answer (MC, SA) | `1.A`, `2.`, `Câu 3: 98` | `1.` + answer → `1.A` (the existing separator is kept) |
+| Combined: true/false by column | header `Câu 1`, cells below `a) Đ`, `b) S` (or to the right) | `a) ` + `Đ`/`S`. Abbreviated if the table already uses `Đ`/`S` or is empty, and `Đúng`/`Sai` if the table already uses the full words. |
 
 **Parts.** A part starts at a heading that begins with `PHẦN <n>` and is not itself a question.
 - `<n>` is either a **valid Roman numeral** (`I`, `IV`, `IX`, `XVI`, …) or a **positive integer** (`1`, `2`, `11`, …), in the range 1–50.
@@ -55,11 +74,11 @@ A question ends where the next question starts, or at the end marker. The *stem*
 
    The numbering does not have to start at 1, because some exams continue the numbering across parts.
 3. **Extract the answers.** The command fetches the OOXML of the relevant paragraphs in one batch and reads the marks from the run properties (`w:u`, `w:highlight`, `w:shd`).
-4. **Locate the existing answer tables.** These are tables after `BẢNG ĐÁP ÁN` (or after the end marker), whose preceding paragraph is a `Phần <n>` heading.
-   - Tables located before the first question are ignored, with a warning.
-   - Unlabelled tables are assigned to the remaining parts in order.
-   - Table labels are matched against the question numbers, or against the order 1…n, whichever matches more cells.
-   - Both horizontal layouts (label row, then answer row) and vertical layouts (label column, then answer column) are supported.
+4. **Locate the existing answer tables** (see *Answer-table layouts* above).
+   - **Per part:** the table right under a `BẢNG ĐÁP ÁN` line inside part X belongs to part X.
+   - **End of document:** a table after the final `BẢNG ĐÁP ÁN` line or after `HẾT` belongs to the part whose `Phần <n>` heading sits right above it. Unlabelled tables in that area are assigned to the remaining parts in order.
+   - A table preceded by a `Phần <n>` heading but located before the first question is ignored, with a warning.
+   - Labels are matched against the question numbers, or against the order 1…n, whichever matches more cells. Each table is read with both cell styles (separate or combined), and the style with more matches is used.
 5. **Create the missing tables at the cursor.** This needs no page break and no `BẢNG ĐÁP ÁN` heading.
    - **The cursor is on an empty line:** the tables are inserted at that line. The empty line is kept as spacing after them.
    - **The cursor is inside text:** the tables are inserted right after that paragraph, followed by one empty spacer line.
@@ -107,6 +126,14 @@ The command stops without writing anything, and says so, when:
 - Equation answers need `insertFileFromBase64` (Word desktop, recent builds).
 - Filling is cell by cell (one sync per cell), so large tables take a few seconds.
 
+## Validation on a real exam (2026-10-12)
+
+The command was dry-run on `test.docx`, a CTPT 2018 Math mock exam. The run used a read-only COM export of the document fed into the module, and simulated the table writes.
+
+- Detected parts: I (12 multiple-choice questions), II (4 true/false), III (6 short answer). All questions are auto-numbered, and every answer table sits directly under the heading of its part.
+- The extracted answers matched the answer tables already in the document **100%**: 12/12 multiple-choice letters (all read from underlined options), 16/16 true/false statements (read from the solutions), and 6/6 short answers.
+- After the simulated fill, tables I (`1.A … 12.C`) and II (`a) S`, `a) Đ`, …) were **identical** to the originals. In table III, questions 5 and 6 received the answer as an embedded MathType object, because the solution's `Đáp số:` line is an equation. The original cells contained typed text.
+
 ## Test checklist (run on a copy)
 
 - [ ] An exam with PHẦN I / II / III and no tables: all tables are created at the cursor in part order, headed `Phần I.`, `Phần II.`, `Phần III.`, with no page break.
@@ -118,3 +145,6 @@ The command stops without writing anything, and says so, when:
 - [ ] Cursor inside a table: the command stops with the message asking to move the cursor.
 - [ ] A short-answer value written as an equation appears as an equation in the cell.
 - [ ] A second run refills the same cells without duplicating tables.
+- [ ] Per-part layout (`PHẦN X` → `BẢNG ĐÁP ÁN` → table): every part's table is found and filled, and questions are detected after the first `BẢNG ĐÁP ÁN`.
+- [ ] Combined cells: `1.A` cells are rewritten as `<n>.<answer>`, and `a) Đ` columns are rewritten with `Đ`/`S`.
+- [ ] `Câu N.` and `PHẦN X.` produced by automatic numbering are recognized exactly like typed ones.

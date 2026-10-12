@@ -4,6 +4,21 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [1.4.5-beta.2] - 2026-10-12
+
+Code-only patch for **Tạo bảng đáp án (CTPT 2018)**. It applies on the next click and needs no reinstall.
+
+### Fixed
+- Exams that place each part's answer table directly under the part heading (`PHẦN X` → `BẢNG ĐÁP ÁN` → table) reported "Không tìm thấy câu hỏi nào". The first `BẢNG ĐÁP ÁN` line was treated as the end of the questions. It now ends the question area only when no question follows it, and a table right under `BẢNG ĐÁP ÁN` inside a part belongs to that part.
+- Part headings produced by automatic numbering (`PHẦN I.` as a list number) were not recognized.
+- A question no longer extends past the next part heading or `BẢNG ĐÁP ÁN` line.
+
+### Added
+- Combined label + answer cells: `1.A` (multiple choice / short answer) and true/false columns headed `Câu N` with cells `a) Đ`. Answers are written in the table's own style (`Đ`/`S` or `Đúng`/`Sai`).
+
+### Verified
+- On a real CTPT 2018 Math mock exam, the extracted answers matched the existing answer tables 100% (12 + 16 + 6 answers), and the simulated fill reproduced tables I and II exactly.
+
 ## [1.4.5] - 2026-10-12
 
 This release changes the manifest (new group, button and tooltips) and the runtime. To get it, **re-install once**: use the **Cập nhật** button or the install command, then restart Word.
