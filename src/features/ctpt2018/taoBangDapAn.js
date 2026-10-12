@@ -572,19 +572,10 @@ export async function fillAnswerTable(context, userOpts = {}) {
   }
 
   // ---------- tìm bảng đáp án ----------
-  // (a) Bố cục trong từng phần: "PHẦN X" -> "BẢNG ĐÁP ÁN" -> bảng -> các câu hỏi.
-  //     Bảng ngay dưới dòng "BẢNG ĐÁP ÁN" (bỏ qua dòng trống) thuộc về phần chứa dòng đó.
-  const inline = [];
-  for (let a = 0; a < stop; a++) {
-    if (!isAnchor(a) || !headIdAt[a]) continue;
-    let j = a + 1;
-    while (j < P.length && !inTable(j) && P[j].text.trim() === "") j++;
-    if (j < P.length && inTable(j)) {
-      const t = P[j].parentTableOrNullObject;
-      t.load("isNullObject,values,rowCount");
-      inline.push({ id: headIdAt[a], a, t });
-    }
-  }
+  // (a) Bảng dựng sẵn trong từng phần ("PHẦN X" -> "BẢNG ĐÁP ÁN" -> bảng -> câu hỏi): BỎ QUA, không điền.
+  //     Đáp án được ghi vào bảng đáp án tổng (tạo tại con trỏ / hoặc bảng tổng đã có — mục b).
+  report.skippedPartTables = [];
+  for (let a = 0; a < stop; a++) if (isAnchor(a) && headIdAt[a]) report.skippedPartTables.push(headIdAt[a]);
   // (b) Bố cục bảng ở cuối đề: các bảng sau "BẢNG ĐÁP ÁN" cuối / "HẾT", có tiêu đề "Phần X" ngay trên.
   const refPara = stop < P.length ? P[stop] : null;
   const tables = body.tables;
@@ -619,11 +610,6 @@ export async function fillAnswerTable(context, userOpts = {}) {
   const tbl = {};
   const headOf = {};
   const unmatched = [];
-  for (const { id, a, t } of inline) {
-    if (t.isNullObject || tbl[id] || !order.includes(id)) continue;
-    tbl[id] = t;
-    headOf[id] = P[a];
-  }
   for (const { t, i } of cand) {
     const p = headMatch(i);
     const id = p && label(p.n); // khớp theo số, kể cả bảng ghi "Phần 2" còn đề ghi "PHẦN II"
@@ -839,7 +825,9 @@ export function summarize(report) {
     const filled = report.filled[g.id] ? ` — điền ${report.filled[g.id]} ô` : "";
     return `Phần ${g.id} (${KIND_VN[g.kind] || g.kind}): ${g.questions} câu${filled}`;
   });
-  if (report.createdTables.length) lines.push(`Tạo mới bảng tại con trỏ: Phần ${report.createdTables.join(", ")}`);
+  if (report.createdTables.length) lines.push(`Tạo bảng đáp án tổng tại con trỏ: Phần ${report.createdTables.join(", ")}`);
+  if (report.skippedPartTables && report.skippedPartTables.length)
+    lines.push(`Bỏ qua bảng đáp án dựng sẵn trong từng phần: Phần ${report.skippedPartTables.join(", ")}`);
   const warns = [...report.numberingWarnings, ...report.warnings];
   if (warns.length) {
     lines.push(`⚠ ${warns.length} cảnh báo:`);

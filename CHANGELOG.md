@@ -4,6 +4,13 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [1.4.5-beta.3] - 2026-10-12
+
+Code-only patch for **Tạo bảng đáp án (CTPT 2018)**. It applies on the next click, with **no need to close Word**.
+
+### Changed
+- Answer tables pre-built inside each part (`PHẦN X` → `BẢNG ĐÁP ÁN` → table) are now **skipped**: they are neither filled nor modified. The command writes a **summary answer key for all parts at the cursor** instead, and the result dialog lists the skipped parts.
+
 ## [1.4.5-beta.2] - 2026-10-12
 
 Code-only patch for **Tạo bảng đáp án (CTPT 2018)**. It applies on the next click and needs no reinstall.
