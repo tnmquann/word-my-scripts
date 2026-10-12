@@ -4,6 +4,13 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [1.4.5-beta.4] - 2026-10-12
+
+Code-only patch for **Tạo bảng đáp án (CTPT 2018)**. It applies on the next click, with no need to close Word.
+
+### Changed
+- A summary answer key created at the cursor now starts with a bold, centered **`BẢNG ĐÁP ÁN`** title, followed by each `Phần X.` heading and its table. The title is added only when the whole key is created. When only some parts are missing, their tables are appended without a second title.
+
 ## [1.4.5-beta.3] - 2026-10-12
 
 Code-only patch for **Tạo bảng đáp án (CTPT 2018)**. It applies on the next click, with **no need to close Word**.

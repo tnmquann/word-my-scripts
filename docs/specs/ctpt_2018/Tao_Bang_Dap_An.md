@@ -79,7 +79,10 @@ A question ends where the next question starts, or at the end marker. The *stem*
    - **End of document:** a table after the final `BẢNG ĐÁP ÁN` line or after `HẾT` belongs to the part whose `Phần <n>` heading sits right above it. Unlabelled tables in that area are assigned to the remaining parts in order.
    - A table preceded by a `Phần <n>` heading but located before the first question is ignored, with a warning.
    - Labels are matched against the question numbers, or against the order 1…n, whichever matches more cells. Each table is read with both cell styles (separate or combined), and the style with more matches is used.
-5. **Create the missing tables at the cursor.** This needs no page break and no `BẢNG ĐÁP ÁN` heading.
+5. **Create the missing tables at the cursor.** No page break is inserted.
+   - **Whole summary key created** (no part has a summary table yet): the block starts with a bold, centered **`BẢNG ĐÁP ÁN`** title, followed by `Phần I.` + table, `Phần II.` + table, and so on (since 1.4.5-beta.4).
+   - **Only some parts are missing**: their tables are added at the cursor without a second title.
+   - **Recommended cursor position**: below the last question, for example at the end of the document. The new `BẢNG ĐÁP ÁN` line then marks the end of the questions, and a later run finds and refills this key. A title placed in the middle of a part acts as a question boundary.
    - **The cursor is on an empty line:** the tables are inserted at that line. The empty line is kept as spacing after them.
    - **The cursor is inside text:** the tables are inserted right after that paragraph, followed by one empty spacer line.
    - Every new table gets a `Phần <n>.` heading in the document's numbering style. The table is styled *Table Grid* and centered, with labels in bold: 6 columns per row, or 8 for true/false. The font of the heading above an existing answer table is reused.

@@ -692,10 +692,21 @@ export async function fillAnswerTable(context, userOpts = {}) {
         const sp = lastCreated.insertParagraph("", "After");
         sp.styleBuiltIn = "Normal";
         head = sp.insertParagraph(`Phần ${part}.`, "After");
-      } else if (cursorEmpty) {
-        head = cursorPara.insertParagraph(`Phần ${part}.`, "Before"); // dòng trống ở con trỏ giữ lại làm khoảng cách
       } else {
-        head = cursorPara.insertParagraph(`Phần ${part}.`, "After");
+        // Bảng đầu tiên tại con trỏ. Nếu tạo mới TOÀN BỘ bảng tổng -> mở đầu bằng tiêu đề "BẢNG ĐÁP ÁN".
+        let anchor = null;
+        if (missing.length === order.length) {
+          anchor = cursorEmpty
+            ? cursorPara.insertParagraph("BẢNG ĐÁP ÁN", "Before") // dòng trống ở con trỏ giữ lại làm khoảng cách
+            : cursorPara.insertParagraph("BẢNG ĐÁP ÁN", "After");
+          anchor.styleBuiltIn = "Normal";
+          anchor.font.bold = true;
+          anchor.alignment = "Centered";
+          report.createdTitle = true;
+        }
+        if (anchor) head = anchor.insertParagraph(`Phần ${part}.`, "After");
+        else if (cursorEmpty) head = cursorPara.insertParagraph(`Phần ${part}.`, "Before");
+        else head = cursorPara.insertParagraph(`Phần ${part}.`, "After");
       }
       head.styleBuiltIn = fmtHead ? fmtHead.styleBuiltIn : "Normal";
       if (fmtHead) {
