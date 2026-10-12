@@ -21,7 +21,13 @@ export function makeCommand(title, fn) {
     let summary;
     let details = "";
     try {
-      summary = await Word.run((context) => fn(context));
+      const res = await Word.run((context) => fn(context));
+      // Lệnh có thể trả về chuỗi, hoặc { ok, summary, details } khi muốn báo lỗi có cấu trúc (không throw)
+      if (res && typeof res === "object") {
+        ok = res.ok !== false;
+        summary = res.summary;
+        details = res.details || "";
+      } else summary = res;
     } catch (e) {
       ok = false;
       ({ summary, details } = describeError(e));
@@ -65,37 +71,32 @@ const clip = (s, n) => (s.length > n ? s.slice(0, n) + "…" : s);
 
 // Kích thước hộp thoại (% màn hình) — giữ nhỏ gọn
 const DIALOG_SIZE = { height: 24, width: 22, displayInIframe: true };
+const ASK_SIZE = { height: 32, width: 26, displayInIframe: true }; // câu hỏi có nhiều dòng cảnh báo
 
 /**
  * Mở dialog.html KHÔNG kèm query string (thanh tiêu đề Office luôn hiện URL — giữ URL ngắn),
  * rồi gửi nội dung qua messageChild khi dialog báo "ready" (DialogApi 1.2).
  * Word cũ không có DialogApi 1.2 -> fallback truyền qua query string.
+ * Resolve với tin nhắn cuối: "close" | "btn:<tên nút>" | null (người dùng bấm X).
  */
-function showResult({ title, summary, details, ok, seconds, update }) {
-  const payload = {
-    t: title,
-    m: clip(summary, MAX_SUMMARY),
-    x: details ? clip(details, MAX_DETAILS) : "",
-    s: ok ? "ok" : "err",
-    d: seconds,
-    u: update || "",
-  };
+function openDialog(payload, size) {
   const canMessageChild = Office.context.requirements.isSetSupported("DialogApi", "1.2");
   const url = new URL("dialog.html", window.location.href);
   if (!canMessageChild) {
-    for (const [k, v] of Object.entries(payload)) if (v) url.searchParams.set(k, v);
+    for (const [k, v] of Object.entries(payload)) {
+      if (v) url.searchParams.set(k, Array.isArray(v) ? v.join("|") : v);
+    }
   }
-
   return new Promise((resolve) => {
-    Office.context.ui.displayDialogAsync(url.toString(), DIALOG_SIZE, (res) => {
+    Office.context.ui.displayDialogAsync(url.toString(), size, (res) => {
       if (res.status !== Office.AsyncResultStatus.Succeeded) {
         console.warn("displayDialogAsync failed", res.error);
-        resolve();
+        resolve(undefined);
         return;
       }
       const dialog = res.value;
       let done = false;
-      const finish = () => {
+      const finish = (msg) => {
         if (done) return;
         done = true;
         try {
@@ -103,7 +104,7 @@ function showResult({ title, summary, details, ok, seconds, update }) {
         } catch (_) {
           /* đã đóng */
         }
-        resolve();
+        resolve(msg);
       };
       dialog.addEventHandler(Office.EventType.DialogMessageReceived, (arg) => {
         const msg = arg && arg.message;
@@ -115,10 +116,38 @@ function showResult({ title, summary, details, ok, seconds, update }) {
           launchUpdater(); // giữ popup mở: dialog tự hiện trạng thái "đã mở trình cập nhật"
           return;
         }
-        finish();
+        finish(msg);
       });
-      dialog.addEventHandler(Office.EventType.DialogEventReceived, finish); // người dùng bấm X
+      dialog.addEventHandler(Office.EventType.DialogEventReceived, () => finish(null)); // người dùng bấm X
     });
   });
+}
+
+function showResult({ title, summary, details, ok, seconds, update }) {
+  return openDialog(
+    {
+      t: title,
+      m: clip(summary, MAX_SUMMARY),
+      x: details ? clip(details, MAX_DETAILS) : "",
+      s: ok ? "ok" : "err",
+      d: seconds,
+      u: update || "",
+    },
+    DIALOG_SIZE
+  );
+}
+
+/**
+ * Hỏi người dùng giữa lúc chạy lệnh (thay cho confirm/alert — không hiện được trong ribbon command).
+ * @param {{title: string, lines: string[], buttons: string[]}} opts  nút đầu tiên là nút chính
+ * @returns {Promise<string>} tên nút được bấm; bấm X hoặc không mở được dialog -> nút cuối cùng (an toàn)
+ */
+export async function askUser({ title, lines, buttons }) {
+  const msg = await openDialog(
+    { t: title, m: clip(lines.join("\n"), 1500), s: "warn", b: buttons },
+    ASK_SIZE
+  );
+  if (msg && msg.indexOf("btn:") === 0) return msg.slice(4);
+  return buttons[buttons.length - 1];
 }
 

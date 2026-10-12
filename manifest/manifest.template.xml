@@ -52,7 +52,7 @@
                 <Control xsi:type="Menu" id="MyScripts.DGNL.Menu">
                   <Label resid="DGNL.Menu.Label"/>
                   <Supertip>
-                    <Title resid="DGNL.Menu.Label"/>
+                    <Title resid="DGNL.Title"/>
                     <Description resid="DGNL.Menu.Tip"/>
                   </Supertip>
                   <Icon>
@@ -64,7 +64,7 @@
                     <Item id="MyScripts.DGNL.ChuanHoaToan">
                       <Label resid="ChuanHoaToan.Label"/>
                       <Supertip>
-                        <Title resid="ChuanHoaToan.Label"/>
+                        <Title resid="ChuanHoaToan.Title"/>
                         <Description resid="ChuanHoaToan.Tip"/>
                       </Supertip>
                       <Icon>
@@ -79,7 +79,7 @@
                     <Item id="MyScripts.DGNL.FixTabNumbering">
                       <Label resid="FixTabNumbering.Label"/>
                       <Supertip>
-                        <Title resid="FixTabNumbering.Label"/>
+                        <Title resid="FixTabNumbering.Title"/>
                         <Description resid="FixTabNumbering.Tip"/>
                       </Supertip>
                       <Icon>
@@ -94,7 +94,7 @@
                     <Item id="MyScripts.DGNL.GachDapAnNguVan">
                       <Label resid="GachDapAnNguVan.Label"/>
                       <Supertip>
-                        <Title resid="GachDapAnNguVan.Label"/>
+                        <Title resid="GachDapAnNguVan.Title"/>
                         <Description resid="GachDapAnNguVan.Tip"/>
                       </Supertip>
                       <Icon>
@@ -109,7 +109,7 @@
                     <Item id="MyScripts.DGNL.RemoveBreakEng">
                       <Label resid="RemoveBreakEng.Label"/>
                       <Supertip>
-                        <Title resid="RemoveBreakEng.Label"/>
+                        <Title resid="RemoveBreakEng.Title"/>
                         <Description resid="RemoveBreakEng.Tip"/>
                       </Supertip>
                       <Icon>
@@ -124,7 +124,7 @@
                     <Item id="MyScripts.DGNL.XoaDactDgnl">
                       <Label resid="XoaDactDgnl.Label"/>
                       <Supertip>
-                        <Title resid="XoaDactDgnl.Label"/>
+                        <Title resid="XoaDactDgnl.Title"/>
                         <Description resid="XoaDactDgnl.Tip"/>
                       </Supertip>
                       <Icon>
@@ -134,6 +134,43 @@
                       </Icon>
                       <Action xsi:type="ExecuteFunction">
                         <FunctionName>xoaDactDgnl</FunctionName>
+                      </Action>
+                    </Item>
+                  </Items>
+                </Control>
+              </Group>
+              <Group id="MyScripts.CTPT2018.Group">
+                <Label resid="CTPT2018.Group.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.CTPT2018.16"/>
+                  <bt:Image size="32" resid="Icon.CTPT2018.32"/>
+                  <bt:Image size="80" resid="Icon.CTPT2018.80"/>
+                </Icon>
+                <Control xsi:type="Menu" id="MyScripts.CTPT2018.Menu">
+                  <Label resid="CTPT2018.Menu.Label"/>
+                  <Supertip>
+                    <Title resid="CTPT2018.Title"/>
+                    <Description resid="CTPT2018.Menu.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.CTPT2018.16"/>
+                    <bt:Image size="32" resid="Icon.CTPT2018.32"/>
+                    <bt:Image size="80" resid="Icon.CTPT2018.80"/>
+                  </Icon>
+                  <Items>
+                    <Item id="MyScripts.CTPT2018.TaoBangDapAn">
+                      <Label resid="TaoBangDapAn.Label"/>
+                      <Supertip>
+                        <Title resid="TaoBangDapAn.Title"/>
+                        <Description resid="TaoBangDapAn.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.TaoBangDapAn.16"/>
+                        <bt:Image size="32" resid="Icon.TaoBangDapAn.32"/>
+                        <bt:Image size="80" resid="Icon.TaoBangDapAn.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>taoBangDapAn</FunctionName>
                       </Action>
                     </Item>
                   </Items>
@@ -149,7 +186,7 @@
                 <Control xsi:type="Button" id="MyScripts.Info.Author">
                   <Label resid="Author.Label"/>
                   <Supertip>
-                    <Title resid="Author.Label"/>
+                    <Title resid="Author.Title"/>
                     <Description resid="Author.Tip"/>
                   </Supertip>
                   <Icon>
@@ -165,7 +202,7 @@
                 <Control xsi:type="Button" id="MyScripts.Info.CheckUpdate">
                   <Label resid="CheckUpdate.Label"/>
                   <Supertip>
-                    <Title resid="CheckUpdate.Label"/>
+                    <Title resid="CheckUpdate.Title"/>
                     <Description resid="CheckUpdate.Tip"/>
                   </Supertip>
                   <Icon>
@@ -211,6 +248,12 @@
         <bt:Image id="Icon.Author.32" DefaultValue="{{BASE_URL}}assets/author-32.png"/>
         <bt:Image id="Icon.Author.80" DefaultValue="{{BASE_URL}}assets/author-80.png"/>
         <bt:Image id="Icon.XoaDactDgnl.80" DefaultValue="{{BASE_URL}}assets/xoaDactDgnl-80.png"/>
+        <bt:Image id="Icon.CTPT2018.16" DefaultValue="{{BASE_URL}}assets/ctpt2018-16.png"/>
+        <bt:Image id="Icon.CTPT2018.32" DefaultValue="{{BASE_URL}}assets/ctpt2018-32.png"/>
+        <bt:Image id="Icon.CTPT2018.80" DefaultValue="{{BASE_URL}}assets/ctpt2018-80.png"/>
+        <bt:Image id="Icon.TaoBangDapAn.16" DefaultValue="{{BASE_URL}}assets/taoBangDapAn-16.png"/>
+        <bt:Image id="Icon.TaoBangDapAn.32" DefaultValue="{{BASE_URL}}assets/taoBangDapAn-32.png"/>
+        <bt:Image id="Icon.TaoBangDapAn.80" DefaultValue="{{BASE_URL}}assets/taoBangDapAn-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="{{BASE_URL}}commands.html?mv={{VERSION}}"/>
@@ -225,19 +268,34 @@
         <bt:String id="GachDapAnNguVan.Label" DefaultValue="Gạch chân đáp án Ngữ Văn"/>
         <bt:String id="RemoveBreakEng.Label" DefaultValue="Fix lỗi break dòng T.Anh"/>
         <bt:String id="XoaDactDgnl.Label" DefaultValue="Xoá ĐACT ĐGNL"/>
+        <bt:String id="CTPT2018.Group.Label" DefaultValue="CTPT 2018"/>
+        <bt:String id="CTPT2018.Menu.Label" DefaultValue="CTPT 2018"/>
+        <bt:String id="TaoBangDapAn.Label" DefaultValue="Tạo bảng đáp án (CTPT 2018)"/>
         <bt:String id="Info.Group.Label" DefaultValue="Thông tin"/>
         <bt:String id="Author.Label" DefaultValue="Tác giả"/>
         <bt:String id="CheckUpdate.Label" DefaultValue="Kiểm tra cập nhật"/>
+        <bt:String id="DGNL.Title" DefaultValue="ĐGNL — Đề Đánh giá năng lực ĐHQG-HCM (V-ACT)"/>
+        <bt:String id="ChuanHoaToan.Title" DefaultValue="Chuẩn hoá Toán ĐGNL — dòng dẫn và đoạn dữ kiện"/>
+        <bt:String id="FixTabNumbering.Title" DefaultValue="Fix lỗi tab câu hỏi — đánh số câu liên tục"/>
+        <bt:String id="GachDapAnNguVan.Title" DefaultValue="Gạch chân đáp án Ngữ Văn (ĐGNL)"/>
+        <bt:String id="RemoveBreakEng.Title" DefaultValue="Fix lỗi break dòng Tiếng Anh (Keep with next)"/>
+        <bt:String id="XoaDactDgnl.Title" DefaultValue="Xoá đáp án chi tiết (ĐACT) — đề ĐGNL"/>
+        <bt:String id="CTPT2018.Title" DefaultValue="CTPT 2018 — Đề theo Chương trình GDPT 2018"/>
+        <bt:String id="TaoBangDapAn.Title" DefaultValue="Tạo bảng đáp án — đề CTPT 2018"/>
+        <bt:String id="CheckUpdate.Title" DefaultValue="Kiểm tra cập nhật MY_SCRIPTS"/>
+        <bt:String id="Author.Title" DefaultValue="Thông tin tác giả"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="DGNL.Menu.Tip" DefaultValue="Các công cụ xử lý đề ĐGNL."/>
-        <bt:String id="ChuanHoaToan.Tip" DefaultValue="Chuẩn hoá dòng dẫn &quot;Dựa vào … câu X-Y&quot;, bỏ thụt lề đoạn dữ kiện, canh giữa hình và bảng."/>
-        <bt:String id="FixTabNumbering.Tip" DefaultValue="Gộp các dòng &quot;Câu N.&quot; vào một danh sách, canh đều, thụt lề treo 1,75 cm, đánh số liên tục từ 1."/>
-        <bt:String id="GachDapAnNguVan.Tip" DefaultValue="Gạch chân, tô đỏ chữ cái đáp án đúng. Xoá dòng đáp án và phần giải thích lặp lại đề dưới &quot;Lời giải&quot;."/>
-        <bt:String id="RemoveBreakEng.Tip" DefaultValue="Gỡ &quot;Keep with next&quot; thừa gây khoảng trắng lớn giữa câu hỏi và đáp án (đề Tiếng Anh)."/>
-        <bt:String id="XoaDactDgnl.Tip" DefaultValue="Xoá toàn bộ các khối đáp án chi tiết bắt đầu bằng &quot;Lời giải&quot;. Nên lưu bản sao trước khi chạy."/>
-        <bt:String id="Author.Tip" DefaultValue="Thông tin tác giả, phiên bản và danh sách công cụ của MY_SCRIPTS."/>
-        <bt:String id="CheckUpdate.Tip" DefaultValue="Kiểm tra phiên bản mới của MY_SCRIPTS và cài đặt nếu bạn đồng ý."/>
+        <bt:String id="DGNL.Menu.Tip" DefaultValue="Công cụ cho đề ĐGNL ĐHQG-HCM: chuẩn hoá dòng dẫn Toán, đánh số câu, gạch chân đáp án Ngữ Văn, sửa ngắt dòng Tiếng Anh, xoá đáp án chi tiết."/>
+        <bt:String id="ChuanHoaToan.Tip" DefaultValue="Dành cho: đề Toán ĐGNL có nhóm câu dùng chung dữ kiện. Viết lại dòng &quot;Dựa vào… câu X-Y&quot; theo mẫu chuẩn, đưa dữ kiện về lề 0, canh giữa hình/bảng. Cần: câu hỏi &quot;Câu N.&quot; đánh số tự động."/>
+        <bt:String id="FixTabNumbering.Tip" DefaultValue="Dành cho: đề ghép từ nhiều nguồn, số câu bị nhảy hoặc lệch tab. Gộp các dòng &quot;Câu N.&quot; vào một danh sách, đánh số 1…N, thụt lề treo 1,75 cm. Cần: &quot;Câu N.&quot; là đánh số tự động, nằm ngoài bảng."/>
+        <bt:String id="GachDapAnNguVan.Tip" DefaultValue="Dành cho: đề Ngữ Văn có &quot;Lời giải&quot; và dòng đáp án &quot;X.&quot; ngay bên dưới. Tô đỏ, gạch chân chữ cái đáp án đúng; xoá dòng đáp án và lời giải lặp lại đề. Có xoá nội dung — nên lưu bản sao."/>
+        <bt:String id="RemoveBreakEng.Tip" DefaultValue="Dành cho: đề Tiếng Anh có khoảng trắng lớn giữa câu hỏi và đáp án. Tắt &quot;Keep with next&quot; ở lời giải, giải thích, bài đọc; câu hỏi vẫn đi cùng đáp án. Cần: phương án gõ dạng &quot;A.&quot; … &quot;D.&quot;."/>
+        <bt:String id="XoaDactDgnl.Tip" DefaultValue="Dành cho: tạo bản đề cho học sinh. Xoá mọi khối từ dòng &quot;Lời giải&quot; đến trước câu kế tiếp (kể cả bảng, hình). Cần: câu hỏi thụt lề treo, dòng dẫn lề 0. Có xoá nội dung — nên lưu bản sao."/>
+        <bt:String id="Author.Tip" DefaultValue="Tác giả, liên hệ, mã nguồn, giấy phép và danh sách công cụ của MY_SCRIPTS."/>
+        <bt:String id="CheckUpdate.Tip" DefaultValue="So sánh phiên bản đang cài với bản mới nhất. Nếu có bản mới, mở trình cập nhật (sẽ hỏi trước khi cài và yêu cầu đóng Word)."/>
+        <bt:String id="CTPT2018.Menu.Tip" DefaultValue="Công cụ cho đề theo cấu trúc GDPT 2018: PHẦN I trắc nghiệm, PHẦN II đúng/sai, PHẦN III trả lời ngắn, tự luận."/>
+        <bt:String id="TaoBangDapAn.Tip" DefaultValue="Dành cho: đề GDPT 2018 chia PHẦN (trắc nghiệm, đúng/sai, trả lời ngắn, tự luận). Điền đáp án vào bảng; bảng thiếu tạo tại con trỏ. Cần: &quot;Câu N.&quot;, đáp án gạch chân/highlight, &quot;Chọn X&quot; hoặc &quot;Đáp án:&quot;."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

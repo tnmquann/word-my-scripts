@@ -10,11 +10,27 @@ const ICON_OK = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stro
 const ICON_ERR = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 5.5v5.5"/><path d="M10 14.5v.01"/></svg>';
 
 function render(data) {
-  const ok = data.s !== "err";
-  $("root").className = ok ? "ok" : "err";
-  $("icon").innerHTML = ok ? ICON_OK : ICON_ERR;
+  const state = data.s === "err" ? "err" : data.s === "warn" ? "warn" : "ok";
+  $("root").className = state;
+  $("icon").innerHTML = state === "ok" ? ICON_OK : ICON_ERR;
   $("title").textContent = data.t || "MY_SCRIPTS";
-  $("status").textContent = (ok ? "Hoàn tất" : "Không thành công") + (data.d ? ` · ${data.d} giây` : "");
+  $("status").textContent =
+    state === "warn" ? "Cần bạn xác nhận" : (state === "ok" ? "Hoàn tất" : "Không thành công") + (data.d ? ` · ${data.d} giây` : "");
+
+  // Câu hỏi (askUser): thay nút "Đóng" bằng các nút được yêu cầu; nút đầu tiên là nút chính
+  const buttons = Array.isArray(data.b) ? data.b : data.b ? String(data.b).split("|") : null;
+  if (buttons && buttons.length) {
+    const footer = $("close").parentNode;
+    footer.textContent = "";
+    buttons.forEach((name, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = name;
+      if (i === 0) btn.className = "primary";
+      btn.addEventListener("click", () => Office.context.ui.messageParent("btn:" + name));
+      footer.appendChild(btn);
+    });
+  }
 
   $("lines").textContent = "";
   for (const line of String(data.m || "").split("\n")) {
@@ -32,13 +48,16 @@ function render(data) {
     $("updText").textContent = `Có phiên bản mới v${data.u}`;
   }
   $("root").style.visibility = "visible";
+  const first = document.querySelector("footer button");
+  if (first) first.focus();
 }
 
 const q = new URLSearchParams(location.search);
 if (q.has("t")) render(Object.fromEntries(q.entries()));
 
 Office.onReady(() => {
-  $("close").addEventListener("click", () => Office.context.ui.messageParent("close"));
+  const closeBtn = $("close"); // có thể đã được thay bằng nút của askUser
+  if (closeBtn) closeBtn.addEventListener("click", () => Office.context.ui.messageParent("close"));
   $("updBtn").addEventListener("click", () => {
     $("updBtn").disabled = true;
     $("updBtn").textContent = "Đã mở";
@@ -55,5 +74,4 @@ Office.onReady(() => {
     });
     Office.context.ui.messageParent("ready");
   }
-  $("close").focus();
 });

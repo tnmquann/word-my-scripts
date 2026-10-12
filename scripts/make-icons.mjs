@@ -32,6 +32,11 @@ const ICONS = {
   removeBreakEng: `<path d="M6 8h20M6 24h20" ${S}/><path d="M6 16h3M12.5 16h3M19 16h3" ${S}/><path d="M26 12v8" ${S}/>`,
   // Xoá ĐACT: page with minus
   xoaDactDgnl: `${page}<path d="M12.5 19h8" ${S}/>`,
+  // CTPT 2018 menu: open book
+  ctpt2018: `<path d="M16 9c-2.5-2-6-2.5-10-2v17c4-.5 7.5 0 10 2 2.5-2 6-2.5 10-2V7c-4-.5-7.5 0-10 2z" ${S}/><path d="M16 9v17" ${S}/>`,
+  // Tạo bảng đáp án: answer grid with a check in the first answer cell
+  taoBangDapAn: `<rect x="5" y="7" width="22" height="18" rx="2" ${S}/><path d="M5 16h22M12.5 7v18M19.5 7v18" ${S}/>
+         <path d="M6.8 20.6l1.6 1.6 2.8-3" ${S}/>`,
   // Tác giả: person
   author: `<circle cx="16" cy="11" r="5" ${S}/><path d="M6.5 27c1.5-5 5-7.5 9.5-7.5s8 2.5 9.5 7.5" ${S}/>`,
   // Kiểm tra cập nhật: circular arrow

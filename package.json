@@ -1,6 +1,6 @@
 {
   "name": "my-scripts-word-addin",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "private": true,
   "description": "MY_SCRIPTS: Word add-in (Office JS) - a growing collection of document automation commands, organized by ribbon group",
   "license": "GPL-3.0-or-later",
@@ -26,5 +26,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/tnmquann/word-my-scripts.git"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
   }
 }

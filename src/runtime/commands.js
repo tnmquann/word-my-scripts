@@ -4,7 +4,10 @@
 //   tự động khi có bản mới (src/runtime/loader.js) -> bản vá có hiệu lực ngay, không cần mở lại Word.
 // Key phải khớp <FunctionName> trong manifest/manifest.template.xml và không trùng giữa các nhóm.
 
-import { makeCommand } from "./runCommand.js";
+import { makeCommand, askUser } from "./runCommand.js";
+
+// API runtime cho bundle features (features không import runtime để có thể hot-reload độc lập)
+window.__MY_SCRIPTS_RUNTIME__ = { askUser };
 import { checkUpdate } from "./update.js";
 import { initFeatures, ensureLatestFeatures } from "./loader.js";
 

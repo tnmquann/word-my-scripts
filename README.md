@@ -7,6 +7,7 @@ MY_SCRIPTS is a personal collection of Word automation commands, delivered as an
 | Group (ribbon) | Scope | Code | Specs |
 | --- | --- | --- | --- |
 | **ĐGNL** | Clean-up tools for exam documents of the Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT). *ĐGNL* is the Vietnamese abbreviation for this test. | [src/features/dgnl/](src/features/dgnl/) | [docs/specs/dgnl/](docs/specs/dgnl/) |
+| **CTPT 2018** | Tools for exams that follow the 2018 General Education Curriculum (*Chương trình GDPT 2018*): parts for multiple choice, true/false, short answer and essay. | [src/features/ctpt2018/](src/features/ctpt2018/) | [docs/specs/ctpt_2018/](docs/specs/ctpt_2018/) |
 | **Thông tin** | *Tác giả*: task pane with author information from the GitHub profile, the version and the tool list. *Kiểm tra cập nhật*: checks for a newer version and launches the updater. | [src/ui/author/](src/ui/author/), [src/runtime/update.js](src/runtime/update.js) | [docs/SETUP.md, Auto-update](docs/SETUP.md#auto-update) |
 
 ```
@@ -18,6 +19,9 @@ MY_SCRIPTS (tab)
         ├── Gạch chân đáp án Ngữ Văn   → gachDapAnNguVan
         ├── Fix lỗi break dòng T.Anh   → removeBreakEng
         └── Xoá ĐACT ĐGNL              → xoaDactDgnl
+├── CTPT 2018 (group)
+│   └── CTPT 2018 ▾ (menu button)
+│       └── Tạo bảng đáp án (CTPT 2018) → taoBangDapAn
 └── Thông tin (group)
     ├── Tác giả (button)               → task pane: author card (GitHub profile), version, tool list
     └── Kiểm tra cập nhật (button)     → checkUpdate: compare installed vs published version, offer update
@@ -72,6 +76,12 @@ Generated folders, which git ignores: `dist/` (prod build), `dist-dev/` (dev bui
 - [Gach_DapAn_NguVan.md](docs/specs/dgnl/Gach_DapAn_NguVan.md): marks the correct option and removes redundant answer lines (Literature).
 - [Remove_Break_Eng.md](docs/specs/dgnl/Remove_Break_Eng.md): removes extra *Keep with next* flags that cause large page gaps (English).
 - [Xoa_DACT_DGNL.md](docs/specs/dgnl/Xoa_DACT_DGNL.md): deletes the detailed-solution blocks.
+
+### CTPT 2018
+
+- [Tao_Bang_Dap_An.md](docs/specs/ctpt_2018/Tao_Bang_Dap_An.md): extracts the answers of every part (multiple choice, true/false, short answer, essay), validates the question numbering, and fills the answer-key tables, creating missing tables at the cursor.
+
+Hovering over any ribbon button shows its full name, the exam format it targets, what it does, and what the document needs for it to work.
 
 ## Requirements
 

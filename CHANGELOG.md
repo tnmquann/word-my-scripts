@@ -4,6 +4,16 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [1.4.5] - 2026-10-12
+
+This release changes the manifest (new group, button and tooltips) and the runtime. To get it, **re-install once**: use the **Cập nhật** button or the install command, then restart Word.
+
+### Added
+- New ribbon group **CTPT 2018** with **Tạo bảng đáp án (CTPT 2018)**. The command reads the answers of every part (multiple choice, true/false, short answer, essay) and fills the answer-key tables. Missing tables are created **at the cursor**, with no page break. Before writing, it checks the question numbering: a duplicate number stops the command, and a gap or out-of-order number asks **Tiếp tục / Dừng lại**. Equation answers are copied into cells (JSZip is bundled; no CDN needed).
+- Part headings accept any valid Roman numeral or integer (`PHẦN IX`, `PHẦN XVI`, `PHẦN 11`, …). New table headings follow the document's numbering style.
+- Hover tooltips on every button: full name, the exam format it targets, what it does, and what the document needs.
+- Runtime: commands can ask the user mid-run through an Office dialog with custom buttons (replaces `confirm`/`alert`, which do not work in ribbon commands).
+
 ## [1.4.4-beta.3] - 2026-10-10
 
 ### Fixed
