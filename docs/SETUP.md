@@ -16,12 +16,12 @@ This guide covers:
 
 ```
  Word (desktop)                              GitHub Pages (HTTPS)
- ┌────────────────────────────┐              ┌─────────────────────────────┐
+ ┌────────────────────────────┐              ┌──────────────────────────────┐
  │ Ribbon: MY_SCRIPTS tab     │  loads       │ commands.html + commands-*.js│
- │  └ ĐGNL menu → 5 items  ───┼─────────────▶│ dialog.html  + dialog-*.js  │
- │                            │              │ start/author.html, assets/* │
- │ HKCU\…\WEF\Developer       │              │ manifest.xml, install.ps1   │
- │   {add-in id} = manifest   │              └─────────────────────────────┘
+ │  └ ĐGNL menu → 5 items  ───┼─────────────▶│ dialog.html  + dialog-*.js   │
+ │                            │              │ start/author.html, assets/*  │
+ │ HKCU\…\WEF\Developer       │              │ manifest.xml, install.ps1    │
+ │   {add-in id} = manifest   │              └──────────────────────────────┘
  └────────────────────────────┘
 ```
 
