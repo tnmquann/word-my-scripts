@@ -8,6 +8,7 @@ MY_SCRIPTS is a personal collection of Word automation commands, delivered as an
 | --- | --- | --- | --- |
 | **ĐGNL** | Clean-up tools for exam documents of the Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT). *ĐGNL* is the Vietnamese abbreviation for this test. | [src/features/dgnl/](src/features/dgnl/) | [docs/specs/dgnl/](docs/specs/dgnl/) |
 | **CTPT 2018** | Tools for exams that follow the 2018 General Education Curriculum (*Chương trình GDPT 2018*): parts for multiple choice, true/false, short answer and essay. | [src/features/ctpt2018/](src/features/ctpt2018/) | [docs/specs/ctpt_2018/](docs/specs/ctpt_2018/) |
+| **Equations** | Convert between LaTeX (`$…$`, `$$…$$`, `\[…\]`) and native Word equations (OMML), in either the selection or the whole document. | [src/features/equations/](src/features/equations/) | [docs/specs/equations/](docs/specs/equations/) |
 | **Thông tin** | *Tác giả*: task pane with author information from the GitHub profile, the version and the tool list. *Kiểm tra cập nhật*: checks for a newer version and launches the updater. | [src/ui/author/](src/ui/author/), [src/runtime/update.js](src/runtime/update.js) | [docs/SETUP.md, Auto-update](docs/SETUP.md#auto-update) |
 
 ```
@@ -22,6 +23,10 @@ MY_SCRIPTS (tab)
 ├── CTPT 2018 (group)
 │   └── CTPT 2018 ▾ (menu button)
 │       └── Tạo bảng đáp án (CTPT 2018) → taoBangDapAn
+├── Equations (group)
+│   └── Equations ▾ (menu button)       each asks: Vùng chọn / Toàn bộ tài liệu / Huỷ
+│       ├── LaTeX → Equation            → latexToEquation
+│       └── Equation → LaTeX            → equationToLatex
 └── Thông tin (group)
     ├── Tác giả (button)               → task pane: author card (GitHub profile), version, tool list
     └── Kiểm tra cập nhật (button)     → checkUpdate: compare installed vs published version, offer update
@@ -80,6 +85,17 @@ Generated folders, which git ignores: `dist/` (prod build), `dist-dev/` (dev bui
 ### CTPT 2018
 
 - [Tao_Bang_Dap_An.md](docs/specs/ctpt_2018/Tao_Bang_Dap_An.md): extracts the answers of every part (multiple choice, true/false, short answer, essay), validates the question numbering, and fills the answer-key tables, creating missing tables at the cursor.
+
+### Equations
+
+- [LaTeX_Equations.md](docs/specs/equations/LaTeX_Equations.md): LaTeX ⇄ Word equation conversion, with a scope dialog, batched Office JS calls and a sequential fallback.
+
+## Tests
+
+`npm test` builds the add-in and runs the smoke tests in [tests/](tests/):
+- `runtime-smoke.cjs`: command registration, hot reload of the features bundle, and the `askUser` dialog;
+- `equations-batch.mjs`: the batched LaTeX → Equation driver against a mock Word API;
+- `equations-roundtrip.mjs`: LaTeX → OMML → LaTeX in Edge headless.
 
 Hovering over any ribbon button shows its full name, the exam format it targets, what it does, and what the document needs for it to work.
 

@@ -37,6 +37,14 @@ const ICONS = {
   // Tạo bảng đáp án: answer grid with a check in the first answer cell
   taoBangDapAn: `<rect x="5" y="7" width="22" height="18" rx="2" ${S}/><path d="M5 16h22M12.5 7v18M19.5 7v18" ${S}/>
          <path d="M6.8 20.6l1.6 1.6 2.8-3" ${S}/>`,
+  // Equations menu: radical sign
+  equations: `<path d="M4 18h4l4 8 7-21h9" ${S}/>`,
+  // LaTeX -> Equation: braces, arrow, radical
+  latexToEquation: `<path d="M6 9c-1.5 0-2 1-2 3s-.5 3-2 4c1.5 1 2 2 2 4s.5 3 2 3" ${S}/>
+         <path d="M9.5 16h5M12.5 13.5L15 16l-2.5 2.5" ${S}/><path d="M18 18h1.5l2 4 3-11H30" ${S}/>`,
+  // Equation -> LaTeX: radical, arrow, braces
+  equationToLatex: `<path d="M2 18h1.5l2 4 3-11H13" ${S}/>
+         <path d="M16 16h5M19 13.5l2.5 2.5L19 18.5" ${S}/><path d="M27 9c1.5 0 2 1 2 3s.5 3 2 4c-1.5 1-2 2-2 4s-.5 3-2 3" ${S}/>`,
   // Tác giả: person
   author: `<circle cx="16" cy="11" r="5" ${S}/><path d="M6.5 27c1.5-5 5-7.5 9.5-7.5s8 2.5 9.5 7.5" ${S}/>`,
   // Kiểm tra cập nhật: circular arrow

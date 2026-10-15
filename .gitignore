@@ -7,3 +7,4 @@ release/
 Thumbs.db
 ~$*.docx
 CLAUDE.md
+.claude/

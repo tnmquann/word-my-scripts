@@ -176,6 +176,58 @@
                   </Items>
                 </Control>
               </Group>
+              <Group id="MyScripts.Equations.Group">
+                <Label resid="Equations.Group.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.Equations.16"/>
+                  <bt:Image size="32" resid="Icon.Equations.32"/>
+                  <bt:Image size="80" resid="Icon.Equations.80"/>
+                </Icon>
+                <Control xsi:type="Menu" id="MyScripts.Equations.Menu">
+                  <Label resid="Equations.Menu.Label"/>
+                  <Supertip>
+                    <Title resid="Equations.Title"/>
+                    <Description resid="Equations.Menu.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.Equations.16"/>
+                    <bt:Image size="32" resid="Icon.Equations.32"/>
+                    <bt:Image size="80" resid="Icon.Equations.80"/>
+                  </Icon>
+                  <Items>
+                    <Item id="MyScripts.Equations.LatexToEquation">
+                      <Label resid="LatexToEquation.Label"/>
+                      <Supertip>
+                        <Title resid="LatexToEquation.Title"/>
+                        <Description resid="LatexToEquation.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.LatexToEquation.16"/>
+                        <bt:Image size="32" resid="Icon.LatexToEquation.32"/>
+                        <bt:Image size="80" resid="Icon.LatexToEquation.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>latexToEquation</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.Equations.EquationToLatex">
+                      <Label resid="EquationToLatex.Label"/>
+                      <Supertip>
+                        <Title resid="EquationToLatex.Title"/>
+                        <Description resid="EquationToLatex.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.EquationToLatex.16"/>
+                        <bt:Image size="32" resid="Icon.EquationToLatex.32"/>
+                        <bt:Image size="80" resid="Icon.EquationToLatex.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>equationToLatex</FunctionName>
+                      </Action>
+                    </Item>
+                  </Items>
+                </Control>
+              </Group>
               <Group id="MyScripts.Info.Group">
                 <Label resid="Info.Group.Label"/>
                 <Icon>
@@ -254,6 +306,15 @@
         <bt:Image id="Icon.TaoBangDapAn.16" DefaultValue="{{BASE_URL}}assets/taoBangDapAn-16.png"/>
         <bt:Image id="Icon.TaoBangDapAn.32" DefaultValue="{{BASE_URL}}assets/taoBangDapAn-32.png"/>
         <bt:Image id="Icon.TaoBangDapAn.80" DefaultValue="{{BASE_URL}}assets/taoBangDapAn-80.png"/>
+        <bt:Image id="Icon.Equations.16" DefaultValue="{{BASE_URL}}assets/equations-16.png"/>
+        <bt:Image id="Icon.Equations.32" DefaultValue="{{BASE_URL}}assets/equations-32.png"/>
+        <bt:Image id="Icon.Equations.80" DefaultValue="{{BASE_URL}}assets/equations-80.png"/>
+        <bt:Image id="Icon.LatexToEquation.16" DefaultValue="{{BASE_URL}}assets/latexToEquation-16.png"/>
+        <bt:Image id="Icon.LatexToEquation.32" DefaultValue="{{BASE_URL}}assets/latexToEquation-32.png"/>
+        <bt:Image id="Icon.LatexToEquation.80" DefaultValue="{{BASE_URL}}assets/latexToEquation-80.png"/>
+        <bt:Image id="Icon.EquationToLatex.16" DefaultValue="{{BASE_URL}}assets/equationToLatex-16.png"/>
+        <bt:Image id="Icon.EquationToLatex.32" DefaultValue="{{BASE_URL}}assets/equationToLatex-32.png"/>
+        <bt:Image id="Icon.EquationToLatex.80" DefaultValue="{{BASE_URL}}assets/equationToLatex-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="{{BASE_URL}}commands.html?mv={{VERSION}}"/>
@@ -284,6 +345,13 @@
         <bt:String id="TaoBangDapAn.Title" DefaultValue="Tạo bảng đáp án — đề CTPT 2018"/>
         <bt:String id="CheckUpdate.Title" DefaultValue="Kiểm tra cập nhật MY_SCRIPTS"/>
         <bt:String id="Author.Title" DefaultValue="Thông tin tác giả"/>
+        <bt:String id="Equations.Group.Label" DefaultValue="Equations"/>
+        <bt:String id="Equations.Menu.Label" DefaultValue="Equations"/>
+        <bt:String id="Equations.Title" DefaultValue="Equations — chuyển đổi công thức LaTeX ⇄ Word"/>
+        <bt:String id="LatexToEquation.Label" DefaultValue="LaTeX → Equation"/>
+        <bt:String id="LatexToEquation.Title" DefaultValue="Chuyển LaTeX thành equation Word"/>
+        <bt:String id="EquationToLatex.Label" DefaultValue="Equation → LaTeX"/>
+        <bt:String id="EquationToLatex.Title" DefaultValue="Chuyển equation Word thành LaTeX"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="DGNL.Menu.Tip" DefaultValue="Công cụ cho đề ĐGNL ĐHQG-HCM: chuẩn hoá dòng dẫn Toán, đánh số câu, gạch chân đáp án Ngữ Văn, sửa ngắt dòng Tiếng Anh, xoá đáp án chi tiết."/>
@@ -296,6 +364,9 @@
         <bt:String id="CheckUpdate.Tip" DefaultValue="So sánh phiên bản đang cài với bản mới nhất. Nếu có bản mới, mở trình cập nhật (sẽ hỏi trước khi cài và yêu cầu đóng Word)."/>
         <bt:String id="CTPT2018.Menu.Tip" DefaultValue="Công cụ cho đề theo cấu trúc GDPT 2018: PHẦN I trắc nghiệm, PHẦN II đúng/sai, PHẦN III trả lời ngắn, tự luận."/>
         <bt:String id="TaoBangDapAn.Tip" DefaultValue="Dành cho: đề GDPT 2018 chia PHẦN (trắc nghiệm, đúng/sai, trả lời ngắn, tự luận). Điền đáp án vào bảng; bảng thiếu tạo tại con trỏ. Cần: &quot;Câu N.&quot;, đáp án gạch chân/highlight, &quot;Chọn X&quot; hoặc &quot;Đáp án:&quot;."/>
+        <bt:String id="Equations.Menu.Tip" DefaultValue="Chuyển công thức giữa LaTeX ($…$, $…$, \[…\]) và equation Word. Mỗi lệnh hỏi phạm vi: vùng chọn hoặc toàn bộ tài liệu."/>
+        <bt:String id="LatexToEquation.Tip" DefaultValue="Dành cho: tài liệu có công thức LaTeX dạng $…$, $…$ hoặc \[…\]. Thay bằng equation Word (inline/display). Hỏi phạm vi: vùng chọn hoặc toàn bộ tài liệu. Cần: LaTeX hợp lệ."/>
+        <bt:String id="EquationToLatex.Tip" DefaultValue="Dành cho: tài liệu có equation Word (OMML). Thay bằng LaTeX $…$ (inline) hoặc $…$ (display). Hỏi phạm vi: vùng chọn hoặc toàn bộ. Không hỗ trợ MathType; toàn tài liệu bỏ qua đoạn có hình/field."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

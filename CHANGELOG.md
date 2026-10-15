@@ -4,6 +4,19 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [1.4.6] - 2026-10-15
+
+This release adds a new ribbon group, so the manifest changes: **re-install once** (the **Cập nhật** button or the install command), then restart Word.
+
+### Added
+- New group **Equations** with **LaTeX → Equation** and **Equation → LaTeX**. Each command asks for the scope in a MathType-style dialog: **Vùng chọn** (selection), **Toàn bộ tài liệu** (whole document) or **Huỷ** (cancel).
+  - Supports `$…$`, `$$…$$` and `\[…\]`: fractions, sums and integrals, roots, matrices, `cases`, accents, `\mathbb`/`\mathcal`/`\mathbf`, `\text`, and more. `$5 and $6` is not treated as a formula.
+  - `\frown` / `\smile` were added, for arc notation `\overset{\frown}{AB}`.
+- `npm test` with smoke tests kept in the repository (`tests/`): runtime and hot reload, the equations batch driver, and the LaTeX round trip.
+
+### Changed
+- Compared with the original script, conversion is batched. LaTeX → Equation now uses 4 Word round-trips in total, where it used to need about 3 per formula. Equation → LaTeX (whole document) reads the document once and rewrites only the paragraphs that contain equations. If a batch fails, the command falls back to the original one-by-one method.
+
 ## [1.4.5-beta.4] - 2026-10-12
 
 Code-only patch for **Tạo bảng đáp án (CTPT 2018)**. It applies on the next click, with no need to close Word.

@@ -34,14 +34,14 @@ const RISKY = [
 ];
 
 // ---------- OOXML helpers ----------
-function parseXml(xml) {
+export function parseXml(xml) {
   const doc = new DOMParser().parseFromString(xml, "application/xml");
   if (doc.getElementsByTagName("parsererror").length) throw new Error("Không đọc được OOXML của tài liệu.");
   return doc;
 }
 
 /** <w:body> của part /word/document.xml trong flat-OPC package */
-function documentBody(doc) {
+export function documentBody(doc) {
   for (const part of doc.getElementsByTagNameNS(PKG_NS, "part")) {
     if (part.getAttributeNS(PKG_NS, "name") === "/word/document.xml") {
       return part.getElementsByTagNameNS(W_NS, "body")[0] || null;
@@ -51,7 +51,7 @@ function documentBody(doc) {
 }
 
 /** Các <w:p> thuộc body (bỏ đoạn trong text box và nhánh mc:Fallback) theo thứ tự tài liệu */
-function bodyParagraphs(body) {
+export function bodyParagraphs(body) {
   const out = [];
   if (!body) return out;
   for (const p of body.getElementsByTagNameNS(W_NS, "p")) {
