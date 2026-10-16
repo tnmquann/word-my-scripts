@@ -6,6 +6,7 @@
 import { askUser, isDesktop } from "../runtime.js";
 import { loadParas, planBlocks, listToText } from "./chuanHoaBigKey.js";
 import { findBlocks, questionBlocks } from "../xoa/xoaCanThiet.js";
+import { bodyHasObject } from "./normalizeXml.js";
 import { markAnswerXml, readAnswersXml, splitOptionsXml, optionPeriodsXml, highlightToRedXml } from "./optionTools.js";
 
 const BLUE = "#0000FF";
@@ -194,7 +195,7 @@ async function transformOptions(context, fn) {
       .map((b) => P2[b.optTo + 1].p);
     const cx = cand.map((p) => p.getOoxml());
     await context.sync();
-    cand.forEach((p, i) => !/<w:drawing|<w:pict|<w:object|<m:oMath/.test(cx[i].value) && p.delete());
+    cand.forEach((p, i) => !bodyHasObject(cx[i].value) && p.delete());
     await context.sync();
   }
   return { n: plan.length, done };

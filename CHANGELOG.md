@@ -4,6 +4,19 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.1.0-beta.2] - 2026-10-17
+
+No manifest change: the commands apply on the next click and the pane on its next opening.
+
+### Added
+- **Công cụ BigKey → Plugin BigKey** (from `D:\BIGKEY\Apps\Bigkey\Plugins`): **Tách LG**, **Xoá dòng viết LG**, **Chemistry Formatter**, **Tô phiếu ZG50** (ZipGrade 50, optional mã đề A–E; pick the template `ans50zg.docx` once).
+- Check lỗi đề reports questions with two underlined answers (*thừa đáp án*), the remaining check of BigKey's *Quét lỗi*.
+
+### Fixed
+- Chuẩn hoá BigKey: **the real cause of "the last question needs a second run"**: the empty-line clean-up treated every paragraph as containing a table (the OOXML package includes the styles part, which always has `<w:tblPr>`), so leftover empty paragraphs stayed between options. Now only the paragraph body is checked; one run finishes every question (verified end to end on both test exams).
+- Xoá lời giải / Ẩn-Hiện lời giải / Xoá dòng viết LG: a block also ends at a `HẾT` line and at a paragraph indented less than the solution (a passage at the margin), as Xoá ĐACT ĐGNL does.
+- Tô phiếu ZG50 with a mã đề no longer fails (the VBA used an undeclared variable).
+
 ## [2.1.0] - 2026-10-17
 
 The manifest changes (new pane item, WordApi 1.4), so **re-install once** (the **Cập nhật** button or the install command), then restart Word. The companion template also changes: the installer replaces it (close Word first).

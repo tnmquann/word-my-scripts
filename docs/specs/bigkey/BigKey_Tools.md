@@ -39,10 +39,14 @@ The VBA did the same with Find/Replace and temporary marker characters (`#`, `~`
 | Lời giải | Chèn lời giải | Like *Ghi đáp án*, without touching existing solutions; essay questions get `Lời giải` + `Nội dung lời giải` | — |
 | | Ẩn/Hiện lời giải | Hides every solution block (stops at group lead-ins); when none is visible, un-hides all hidden text | — |
 | | Xoá lời giải | Same command as *Xoá cần thiết → Xoá lời giải* | — |
+| Plugin BigKey | Tách LG | Copies the solutions of the **selected** questions to the end of the document under a centred bold `LỜI GIẢI CHI TIẾT`: each becomes `Câu N.` (bold blue) + the content after *Lời giải* (tables and pictures kept; stems, options, the *Lời giải* line and passages dropped). The exam itself is unchanged. | One OOXML copy instead of clipboard + a temporary document; no section break carried over |
+| | Xoá dòng viết LG | Per question, deletes from *Lời giải* (if any), else from the paragraph after option D (multiple choice) or from the first dotted line (essay), to the end of the question. Stops at the next question, group lead-ins, `HẾT` lines and less-indented passages. | The VBA inserted fake *Lời giải* lines and deleted with marker characters |
+| | Chemistry Formatter | On the selection: digits after a letter/`)`/`]` subscript (H₂SO₄, Al₂(SO₄)₃); charges superscript with their 1–2 digits (Fe³⁺, SO₄²⁻; NO₃⁻ keeps 3 subscript; H-Cl untouched); `-->` → →, `*` → ·; `6.02E23` → 6.02 × 10²³. Equations untouched. | Same rules (hdpnChemistryFormatter), applied in OOXML; shapes/SmartArt text not handled |
+| | Tô phiếu ZG50 | Reads each question's answer (underlined label, else `Chọn X`) for questions 1–50, fills the ZipGrade 50 template (bubble filled and moved to the A/B/C/D column; optional mã đề A–E), opens it in a new window to save or print as PDF. The template `ans50zg.docx` is picked once in the pane from the BigKey plugin folder and kept in the pane's local storage (it is not published with the add-in). | The VBA crashed when a mã đề was given (undeclared `arMade`) and saved a PDF next to the exam |
 | Hình ảnh | Picture Inline WithText | Floating pictures → in line with text (Word desktop) | — |
 | | Căn giữa hình ảnh | Centres paragraphs that contain only a picture | The VBA also centred text lines that contained a formula picture |
 
-**Not ported** (need BigKey's Bank data in `%APPDATA%\BigKey`, which this machine does not have; maintainer decision 2026-10-16): *Gắn ID6*, *Gắn Nguồn tác giả*. *Quét lỗi* (2024) is covered by *Check lỗi đề*. *MathType Color* is in the companion template (MY_SCRIPTS+). The other BigKey groups (Bank, Trộn đề, T-H-F, Chấm bài, Plugins) are outside the *Chuẩn hóa* group.
+**Not ported** (need BigKey's Bank data in `%APPDATA%\BigKey`, which this machine does not have; maintainer decision 2026-10-16): *Gắn ID6*, *Gắn Nguồn tác giả*. *Quét lỗi* (2024) is covered by *Check lỗi đề*, which also reports two underlined answers (*thừa đáp án*). Plugins not requested: *TACHLOIGIAI_BIGKEY*, *Trộn đề theo mức độ*. *MathType Color* is in the companion template (MY_SCRIPTS+). The other BigKey groups (Bank, Trộn đề, T-H-F, Chấm bài, Plugins) are outside the *Chuẩn hóa* group.
 
 ## Test checklist
 
@@ -60,5 +64,9 @@ Run on a **copy** of a real exam.
 - [ ] Gắn ID mức độ - nhóm: click VD → `[3]` after `Câu N:` and the next question is selected; clicking NB on the same question replaces `[3]`.
 - [ ] Đánh số thứ tự from 31 also renumbers the BigKey key table.
 - [ ] Picture Inline / Căn giữa hình ảnh on an exam with a floating picture.
+- [ ] Tách LG on 3 selected questions: `LỜI GIẢI CHI TIẾT` + `Câu N.` + solution at the end; the exam is unchanged.
+- [ ] Xoá dòng viết LG on an exam with dotted writing lines and a `HẾT` line: the lines go, `HẾT` and passages stay.
+- [ ] Chemistry Formatter on `H2SO4, Fe3+, SO42-, NO3-, CuSO4*5H2O, 2H2 + O2 --> 2H2O, 6.02E23`.
+- [ ] Tô phiếu ZG50: pick `ans50zg.docx` once; the filled sheet opens in a new window with the right bubbles and mã đề.
 
 Automated: `tests/bigkey-optiontools.mjs [export.json…]` (every transform on synthetic and real option blocks), `tests/bigkey-registry.mjs` (ribbon commands, manifest FunctionNames, every pane button maps to `tools.js`, ID/key-table helpers, planBlocks with empty paragraphs), `tests/bigkey-pane.mjs` (pane renders and runs every button).

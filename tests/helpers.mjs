@@ -15,12 +15,12 @@ globalThis.DOMParser = win.DOMParser;
 globalThis.XMLSerializer = win.XMLSerializer;
 
 /** Bundle src/<rel> and import it. askUser answers from globalThis.__choice (or the first button). */
-export async function loadModule(rel) {
+export async function loadModule(rel, srcRoot = path.join(root, "src")) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "myscripts-"));
   const stub = path.join(tmp, "runtime-stub.js");
   fs.writeFileSync(stub, "export const askUser=async o=>globalThis.__choice||o.buttons[0];export const isDesktop=()=>globalThis.__desktop!==false;");
   const out = await build({
-    entryPoints: [path.join(root, "src", rel)], bundle: true, format: "esm", write: false, platform: "node",
+    entryPoints: [path.join(srcRoot, rel)], bundle: true, format: "esm", write: false, platform: "node",
     plugins: [{ name: "stub-runtime", setup(b) { b.onResolve({ filter: /features[\\/]runtime\.js$|^\.\.\/runtime\.js$/ }, () => ({ path: stub })); } }],
   });
   return import("data:text/javascript;base64," + Buffer.from(out.outputFiles[0].text).toString("base64"));

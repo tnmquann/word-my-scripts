@@ -19,7 +19,7 @@ Bring a multiple-choice exam (questions `Câu N.` with options `A.`–`D.`) to t
 Scope: the whole document, or (vùng chọn) the paragraphs of the selection. An empty selection stops with a message.
 
 1. **Numbering to text**: automatic list numbers outside tables become literal text (`listString` + space), then the paragraph leaves the list.
-2. **Layout, as the VBA `bkBonDong`** (`normalizeXml.js`). Office JS cannot clear tab stops or *Keep with next* per paragraph, so the paragraphs outside tables are rewritten in OOXML, in chunks of about 40 consecutive paragraphs, from the end. A chunk is cut only at the start of a question (never inside an option block), and the document's last paragraph is formatted directly through Office JS (Word cannot replace the final paragraph mark). Each inserted package ends with an empty sentinel paragraph; empty leftovers are removed right after this step and after the option layout (in 2.0.0-beta the last question sometimes needed a second run):
+2. **Layout, as the VBA `bkBonDong`** (`normalizeXml.js`). Office JS cannot clear tab stops or *Keep with next* per paragraph, so the paragraphs outside tables are rewritten in OOXML, in chunks of about 40 consecutive paragraphs, from the end. A chunk is cut only at the start of a question (never inside an option block), and the document's last paragraph is formatted directly through Office JS (Word cannot replace the final paragraph mark). Each inserted package ends with an empty sentinel paragraph; empty leftovers are removed right after this step and after the option layout. The "has an object" test looks only at the `<w:body>` of the package: `getOoxml()` also returns the styles part, whose table style always contains `<w:tblPr>`, so the old `/<w:tbl/` test kept every empty paragraph — the root cause of "the last question needs a second run" (2.0.0-beta, reproduced by `tests/bigkey-pipeline.mjs`):
    - paragraph: style Normal, all direct paragraph formatting removed (alignment, line spacing, tab stops, keep with next, borders…), left indent 1 cm, right 0, first line 0, spacing 0, single line spacing; section breaks are kept;
    - every text run: Times New Roman 12. Bold, italic, underline and colour are kept (the VBA removed bold); equation (OMML) runs keep Cambria Math;
    - a tab right after `Câu N.` becomes a space; manual page breaks are removed.
@@ -49,6 +49,7 @@ Reads the document and reports every problem at once (the VBA stopped at the fir
 | Option labels out of order | `Câu N: thứ tự phương án bị sai.` |
 | No answer | `Câu N: thiếu đáp án (không gạch chân, không có "Chọn X").` |
 | Underline ≠ `Chọn X` | `Câu N: gạch chân B nhưng lời giải ghi "Chọn C".` |
+| Two or more underlined answers | `Câu N: thừa đáp án — gạch chân A, C.` |
 | Picture or object between the options and *Lời giải* | `Câu N: có hình nằm giữa phương án và "Lời giải" …` |
 
 **Warnings** (shown with ⚠, not counted as errors): text before the first question, such as a title or a lead-in `Questions 31-35: …`. Tables add an informational line.
@@ -69,4 +70,4 @@ Run on a **copy** of a real exam.
 - [ ] Check lỗi đề on a clean exam: "Không phát hiện lỗi"; a title before Câu 1 only adds a ⚠ line.
 - [ ] Check lỗi đề finds a removed `C.`, a duplicated `B.`, a skipped number, and underline ≠ `Chọn X`; the first faulty question is selected.
 
-Automated: `tests/bigkey-options.mjs` (synthetic layouts), `tests/bigkey-normalize.mjs [export.json…]` (layout reset) and `tests/bigkey-real.mjs <export.json> [--has-errors]` (real exams exported with `tests/tools/export-docx.ps1`). Visual comparison with the VBA: `tests/tools/run-vba-macro.ps1` (old output) and `tests/tools/bigkey-simulate.mjs` + `render-pdf.ps1` (new output).
+Automated: `tests/bigkey-pipeline.mjs <export.json>` (the whole command on a mock Word that reproduces Office JS insertOoxml: one run must finish every question, a second run must change nothing), `tests/bigkey-options.mjs` (synthetic layouts), `tests/bigkey-normalize.mjs [export.json…]` (layout reset) and `tests/bigkey-real.mjs <export.json> [--has-errors]` (real exams exported with `tests/tools/export-docx.ps1`). Visual comparison with the VBA: `tests/tools/run-vba-macro.ps1` (old output) and `tests/tools/bigkey-simulate.mjs` + `render-pdf.ps1` (new output).

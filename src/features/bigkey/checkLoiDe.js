@@ -44,6 +44,7 @@ export function findErrors(P, plan, optXml, gapXml) {
 
     const marked = optXml[k] ? (rebuildOptionsXml(optXml[k]) || { correct: [] }).correct : [];
     if (!b.chonLetter && !marked.length) errs.push({ q: b.q, msg: `Câu ${b.num}: thiếu đáp án (không gạch chân, không có "Chọn X").` });
+    if (marked.length > 1) errs.push({ q: b.q, msg: `Câu ${b.num}: thừa đáp án — gạch chân ${marked.join(", ")}.` }); // như Quét lỗi (BigKey 2024)
     if (b.chonLetter && marked.length && marked[0] !== b.chonLetter)
       errs.push({ q: b.q, msg: `Câu ${b.num}: gạch chân ${marked[0]} nhưng lời giải ghi "Chọn ${b.chonLetter}".` });
 

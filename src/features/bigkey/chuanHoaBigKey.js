@@ -9,7 +9,7 @@
 // Khác bản VBA: KHÔNG đổi bảng thành chữ (bản VBA crash khi đề có bảng) — đoạn trong bảng được giữ nguyên.
 
 import { rebuildOptionsXml } from "./optionLayout.js";
-import { normalizeParagraphsXml } from "./normalizeXml.js";
+import { normalizeParagraphsXml, bodyHasObject } from "./normalizeXml.js";
 import { isDesktop, askUser } from "../runtime.js";
 
 const CM = 28.35; // pt
@@ -85,7 +85,7 @@ async function dropEmpty(context, scope, useSelection) {
   await context.sync();
   let n = 0;
   empties.forEach((x, k) => {
-    if (/<w:drawing|<w:pict|<w:object|<m:oMath|<w:tbl/.test(eox[k].value)) return;
+    if (bodyHasObject(eox[k].value)) return;
     if (P.indexOf(x) === P.length - 1 && !useSelection) return; // đoạn cuối tài liệu không xoá được
     x.p.delete();
     n++;
@@ -96,7 +96,7 @@ async function dropEmpty(context, scope, useSelection) {
 
 export async function loadParas(context, scopeRange) {
   const ps = scopeRange ? scopeRange.paragraphs : context.document.body.paragraphs;
-  ps.load("items/text,items/isListItem,items/tableNestingLevel");
+  ps.load("items/text,items/isListItem,items/tableNestingLevel,items/leftIndent");
   await context.sync();
   const lis = ps.items.map((p) => {
     if (!p.isListItem) return null;
@@ -105,7 +105,7 @@ export async function loadParas(context, scopeRange) {
     return l;
   });
   await context.sync();
-  return ps.items.map((p, i) => ({ p, text: p.text, inTable: p.tableNestingLevel > 0, list: lis[i] && !lis[i].isNullObject ? lis[i].listString : "" }));
+  return ps.items.map((p, i) => ({ p, text: p.text, inTable: p.tableNestingLevel > 0, left: p.leftIndent, list: lis[i] && !lis[i].isNullObject ? lis[i].listString : "" }));
 }
 
 async function chuanHoa(context, useSelection) {

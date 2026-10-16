@@ -21,6 +21,23 @@ check(JSON.stringify(X.findBlocks(doc, reLG)) === "[[2,4],[10,12],[17,18]]", "so
 const qb = X.questionBlocks(doc).map((b) => [b.q, b.end, b.num]);
 check(JSON.stringify(qb) === "[[0,4,1],[8,12,2],[15,18,3]]", "question blocks (typed + auto-numbered) exclude passages", JSON.stringify(qb));
 
+// --- relative indent (as Xoá ĐACT ĐGNL): a passage at the margin with NO lead-in text still ends the solution
+const ind = (text, left) => ({ text, inTable: false, list: "", left });
+const passage = [ind("Câu 1. Hỏi?", 28), ind("A. 1\tB. 2\tC. 3\tD. 4", 28), ind("Lời giải", 28), ind("Giải thích", 28),
+  ind("Some reading passage without any lead-in line.", 0), ind("Second passage paragraph.", 0), ind("Câu 2. Hỏi?", 28)];
+check(JSON.stringify(X.findBlocks(passage, reLG)) === "[[2,3]]", "solution block stops at a less-indented passage", JSON.stringify(X.findBlocks(passage, reLG)));
+const flat = passage.map((p) => ({ ...p, left: 28 })); // BigKey layout: everything at 1 cm -> text rules only
+check(JSON.stringify(X.findBlocks(flat, reLG)) === "[[2,5]]", "equal indents: block runs to the next question (text rules only)");
+
+// --- Xoá dòng viết LG: after options / Lời giải / dotted lines, stops at HẾT and less-indented passages
+const wr = [ind("Câu 1. Hỏi?", 28), ind("A. 1\tB. 2\tC. 3\tD. 4", 28), ind("....................", 28), ind("....................", 28),
+  ind("Câu 2. Tự luận: chứng minh?", 28), ind("Gợi ý: dùng định lí", 28), ind("..........................", 28),
+  ind("Câu 3. Hỏi?", 28), ind("A. 1", 28), ind("B. 2", 28), ind("C. 3", 28), ind("D. 4", 28), ind("Lời giải", 28), ind("Chọn A", 28),
+  ind("----- HẾT -----", 28), ind("Passage at the margin", 0)];
+check(JSON.stringify(X.writingBlocks(wr)) === "[[2,3],[6,6],[12,13]]", "writingBlocks: MC dots, essay dots (stem kept), Lời giải; HẾT kept", JSON.stringify(X.writingBlocks(wr)));
+check(X.findBlocks([ind("Lời giải", 28), ind("x", 28), ind("HẾT", 28)], reLG).join() === "0,1", "HẾT ends a solution block");
+check(X.findBlocks([ind("Lời giải", 28), ind("HẾT HẠN nộp bài là…", 28)], reLG).join() === "0,1", "'HẾT HẠN…' text is not a boundary");
+
 // --- tags
 check(X.leadingSourceTags(" [2D1-3] (Sở Hà Nội) Hỏi gì?") === "[2D1-3] (Sở Hà Nội)", "leading source tags");
 check(!X.authorParts("Tác giảng viên").wholeParagraph, "author: no false match on longer word");

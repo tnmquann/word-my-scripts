@@ -12,12 +12,15 @@ const reSuyLuan = /^\s*Phân\s*tích\s*(hướng\s*dẫn|lời)\s*giải/i;
 // ranh giới khối: câu mới, chuyên đề "CĐ1…", "PHẦN …", "BẢNG ĐÁP ÁN", và lời dẫn nhóm câu
 // ("Questions 46-52: Read the following passage…", "Đọc đoạn văn…", "…trả lời các câu hỏi từ X đến Y")
 // — nếu không, xoá lời giải/câu cuối nhóm sẽ xoá luôn đoạn văn đọc hiểu của nhóm sau.
-const reBoundary = /^\s*(CĐ\s*\d+|PHẦN\s+[IVXLC\d]+|BẢNG\s*ĐÁP\s*ÁN|Questions?\s*\d+\s*[-–—]|Read\s+the\s+following|Mark\s+the\s+letter|Đọc\s+(đoạn|bài|văn\s*bản|thông\s*tin)|Dựa\s+vào|Sử\s+dụng\s+(các\s+)?(thông\s*tin|dữ\s*kiện)|Dùng\s+(các\s+)?(thông\s*tin|dữ\s*kiện))|trả\s+lời\s+(các\s+)?câu(\s*hỏi)?\s*(từ\s*)?\d+\s*(đến|[-–—])/i;
+export const reBoundary = /^\s*(CĐ\s*\d+|PHẦN\s+[IVXLC\d]+|BẢNG\s*ĐÁP\s*ÁN|[-–—_.*\s]*HẾT[-–—_.!*\s]*$|Questions?\s*\d+\s*[-–—]|Read\s+the\s+following|Mark\s+the\s+letter|Đọc\s+(đoạn|bài|văn\s*bản|thông\s*tin)|Dựa\s+vào|Sử\s+dụng\s+(các\s+)?(thông\s*tin|dữ\s*kiện)|Dùng\s+(các\s+)?(thông\s*tin|dữ\s*kiện))|trả\s+lời\s+(các\s+)?câu(\s*hỏi)?\s*(từ\s*)?\d+\s*(đến|[-–—])/i;
 
 const full = (p) => ((p.list ? p.list + " " : "") + (p.text || "")).normalize("NFC");
 export const isQuestion = (p) => !p.inTable && reQ.test(full(p));
 
-/** Các khối [a,b] bắt đầu ở đoạn khớp startRe, kết thúc trước câu mới / ranh giới / endRe (nếu có). Thuần. */
+/**
+ * Các khối [a,b] bắt đầu ở đoạn khớp startRe, kết thúc trước câu mới / ranh giới / endRe (nếu có), hoặc trước đoạn
+ * thụt lề ÍT hơn đoạn bắt đầu > 5 pt (đoạn văn / lời dẫn sát lề — như Xoá ĐACT ĐGNL; cần P[i].left). Thuần.
+ */
 export function findBlocks(P, startRe, endRe) {
   const out = [];
   for (let i = 0; i < P.length; i++) {
@@ -27,6 +30,7 @@ export function findBlocks(P, startRe, endRe) {
       if (!P[j].inTable) {
         const t = full(P[j]);
         if (isQuestion(P[j]) || reBoundary.test(t) || (endRe && endRe.test(t)) || startRe.test(t)) break;
+        if (P[j].left != null && P[i].left != null && P[j].left < P[i].left - 5) break;
       }
       j++;
     }
@@ -73,12 +77,12 @@ export function authorParts(text) {
 
 async function loadParas(context) {
   const ps = context.document.body.paragraphs;
-  ps.load("items/text,items/isListItem,items/tableNestingLevel");
+  ps.load("items/text,items/isListItem,items/tableNestingLevel,items/leftIndent");
   await context.sync();
   const lis = ps.items.map((p) => (p.isListItem ? p.listItemOrNullObject : null));
   lis.forEach((l) => l && l.load("listString,isNullObject"));
   await context.sync();
-  return { it: ps.items, P: ps.items.map((p, i) => ({ text: p.text, inTable: p.tableNestingLevel > 0, list: lis[i] && !lis[i].isNullObject ? lis[i].listString : "" })) };
+  return { it: ps.items, P: ps.items.map((p, i) => ({ text: p.text, inTable: p.tableNestingLevel > 0, left: p.leftIndent, list: lis[i] && !lis[i].isNullObject ? lis[i].listString : "" })) };
 }
 
 const wq = (s) => s.replace(/\^/g, "^^"); // ^ là ký tự đặc biệt của Word Search
@@ -272,4 +276,43 @@ export async function themDongCham(context, n) {
   }
   await context.sync();
   return `Đã thêm ${n} dòng chấm cho ${qs.length} câu` + (del ? ` (đã xoá ${del} lời giải).` : ".");
+}
+
+// ---------------------------------------------------------------- plugin BigKey "Xóa dòng viết LG"
+
+const reOptD = /(^|[\t ])D\s*[.)]/;
+const reDots = /^[\s.…_\-–]{8,}$/; // dòng chấm / gạch để học sinh viết
+
+/**
+ * Phần "viết lời giải" của mỗi câu: từ "Lời giải" (nếu có), nếu không thì từ đoạn ngay sau phương án D (trắc nghiệm)
+ * hoặc từ dòng chấm đầu tiên (tự luận), đến hết câu. Dừng ở câu mới / lời dẫn nhóm / đoạn thụt lề ít hơn đề > 5 pt
+ * (đoạn văn đọc hiểu sát lề). Thuần. Trả về các khối [a, b].
+ */
+export function writingBlocks(P) {
+  const out = [];
+  for (const b of questionBlocks(P)) {
+    let start = -1;
+    for (let i = b.q + 1; i <= b.end && start < 0; i++) if (!P[i].inTable && reLG.test(full(P[i]))) start = i;
+    if (start < 0) {
+      let d = -1;
+      for (let i = b.q; i <= b.end; i++) if (!P[i].inTable && reOptD.test(full(P[i]))) d = i;
+      if (d >= 0) start = d + 1;
+      else for (let i = b.q + 1; i <= b.end && start < 0; i++) if (!P[i].inTable && reDots.test(P[i].text)) start = i;
+    }
+    if (start < 0 || start > b.end) continue;
+    let end = b.end;
+    const base = P[b.q].left;
+    for (let i = start; i <= b.end; i++) if (!P[i].inTable && base != null && P[i].left != null && P[i].left < base - 5) { end = i - 1; break; }
+    if (end >= start) out.push([start, end]);
+  }
+  return out;
+}
+
+/**
+ * Xoá dòng viết LG (plugin BigKey dnqXoadongvietLG = Chèn lời giải + Xóa lời giải): xoá phần sau phương án / lời giải
+ * / dòng chấm của mọi câu. Bản VBA chèn "Lời giải" giả rồi xoá bằng ký tự đánh dấu ~ — dễ xoá nhầm đoạn văn.
+ */
+export async function xoaDongVietLG(context) {
+  const n = await deleteBlocks(context, writingBlocks);
+  return n ? `Đã xoá phần viết lời giải ở ${n} câu.` : "Không có phần viết lời giải nào (sau phương án / Lời giải / dòng chấm).";
 }

@@ -105,6 +105,17 @@ export function normalizeParagraph(doc, p) {
 }
 
 /**
+ * Đoạn có hình/công thức/đối tượng/bảng không? Chỉ xét phần <w:body> của gói getOoxml(): gói còn chứa styles.xml,
+ * mà style "Normal Table" luôn có <w:tblPr> -> /<w:tbl/ khớp MỌI gói (bug 2.1.0: không xoá được đoạn trống nào).
+ */
+export function bodyHasObject(pkgXml) {
+  const a = pkgXml.indexOf("<w:body");
+  const b = pkgXml.lastIndexOf("</w:body>");
+  const body = a >= 0 && b > a ? pkgXml.slice(a, b) : pkgXml;
+  return /<w:drawing[\s>]|<w:pict[\s>]|<w:object[\s>]|<m:oMath[\s>]|<w:tbl>/.test(body);
+}
+
+/**
  * Đoạn rỗng "hy sinh" đặt cuối gói OOXML trước khi insertOoxml("Replace"): Word gộp đoạn CUỐI của nội dung
  * chèn vào dấu ¶ của đoạn đích, và (Office JS) giữ định dạng đoạn CŨ của dấu ¶ đó -> mất tab stop / lề mới
  * (bug thật 2.0.0-beta.4: phương án A–D không có tab). Đoạn rỗng này nhận dấu ¶ cũ; bước dọn dòng trống xoá nó.

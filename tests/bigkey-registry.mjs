@@ -12,8 +12,10 @@ check(Object.keys(reg).length === 3 && !bad.length, `bigkey registry: ${Object.k
 const paneHtml = fs.readFileSync(path.join(root, "src/ui/bigkey/bigkey.html"), "utf8");
 const acts = [...paneHtml.matchAll(/data-act="(\w+)"/g)].map((m) => m[1]);
 const tools = await loadModule("features/bigkey/tools.js");
-const missingActs = acts.filter((a) => a !== "xoaLoiGiai" && typeof tools[a] !== "function");
-check(acts.length >= 20 && !missingActs.length, `pane: ${acts.length} buttons map to tools.js`, missingActs.join(","));
+const plugins = await loadModule("features/bigkey/plugins.js");
+const xoa = await loadModule("features/xoa/xoaCanThiet.js");
+const missingActs = acts.filter((a) => typeof tools[a] !== "function" && typeof plugins[a] !== "function" && typeof xoa[a] !== "function");
+check(acts.length >= 20 && !missingActs.length, `pane: ${acts.length} buttons map to tools.js / plugins.js / xoaCanThiet.js`, missingActs.join(","));
 
 // manifest FunctionNames -> must be registered in some group (duplicates across groups are fatal at startup)
 const groups = ["dgnl", "ctpt2018", "equations", "bigkey", "xoa"];
@@ -40,4 +42,13 @@ const P = ["Câu 1. Hỏi?", "A. 1", "B. 2", "", "C. 3", "D. 4", "Lời giải",
 const plan = CH.planBlocks(P);
 check(plan.length === 2 && plan[0].optFrom === 1 && plan[0].optTo === 5 && plan[1].optFrom === 9 && plan[1].optTo === 14,
   "planBlocks: empty paragraphs inside option blocks are skipped (incl. last question)", JSON.stringify(plan.map((b) => [b.optFrom, b.optTo])));
+// Check lỗi đề: two underlined answers -> "thừa đáp án" (the BigKey 2024 "Quét lỗi" check)
+const CK = await loadModule("features/bigkey/checkLoiDe.js");
+const Wn = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+const u = (t) => `<w:r><w:rPr><w:u w:val="single"/></w:rPr><w:t xml:space="preserve">${t}</w:t></w:r>`;
+const r = (t) => `<w:r><w:t xml:space="preserve">${t}</w:t></w:r>`;
+const optPkg = `<pkg:package xmlns:pkg="http://schemas.microsoft.com/office/2006/xmlPackage"><pkg:part pkg:name="/word/document.xml"><pkg:xmlData><w:document xmlns:w="${Wn}"><w:body><w:p>${u("A")}${r(". 1")}<w:r><w:tab/></w:r>${u("B")}${r(". 2")}<w:r><w:tab/></w:r>${r("C. 3")}<w:r><w:tab/></w:r>${r("D. 4")}</w:p></w:body></w:document></pkg:xmlData></pkg:part></pkg:package>`;
+const P3 = ["Câu 1. Hỏi?", "A. 1\tB. 2\tC. 3\tD. 4"].map(para);
+const errs3 = CK.findErrors(P3, CH.planBlocks(P3), [optPkg], [[]]).map((e) => e.msg);
+check(errs3.some((m) => /thừa đáp án/.test(m)), "check lỗi đề: two underlined answers reported", JSON.stringify(errs3));
 done();

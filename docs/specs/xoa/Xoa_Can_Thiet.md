@@ -19,7 +19,7 @@ Strip what a student version of an exam must not contain, and prepare it for pri
 The VBA used chains of Find/Replace with temporary marker characters (`#`, `~`, `#$`), which broke on documents that already contained those characters. This port works on paragraphs:
 
 - A **question** is a paragraph outside a table whose text (list number included) starts with `Câu N.` or `Câu N:`.
-- A **block** starts at its marker paragraph and ends before the next question or **boundary**: `CĐ1…`, `PHẦN …`, `BẢNG ĐÁP ÁN`, or a group lead-in (`Questions 46-52: …`, `Read the following…`, `Mark the letter…`, `Đọc đoạn văn…`, `Dựa vào…`, `Sử dụng các thông tin…`, `…trả lời các câu hỏi từ X đến Y`). Without the lead-in boundary, deleting the solution of the last question of a group would also delete the next reading passage.
+- A **block** starts at its marker paragraph and ends before the next question or **boundary**: `CĐ1…`, `PHẦN …`, `BẢNG ĐÁP ÁN`, a `HẾT` line (only dashes/dots around it), a paragraph indented more than 5 pt **less** than the marker paragraph (a passage at the margin, as in Xoá ĐACT ĐGNL; inactive when everything has the same indent), or a group lead-in (`Questions 46-52: …`, `Read the following…`, `Mark the letter…`, `Đọc đoạn văn…`, `Dựa vào…`, `Sử dụng các thông tin…`, `…trả lời các câu hỏi từ X đến Y`). Without the lead-in boundary, deleting the solution of the last question of a group would also delete the next reading passage.
 - Tables inside a block are deleted with it; deletion runs from the end of the document (fast batched path; if it fails, the document is re-scanned and blocks are deleted one by one).
 
 ## Ribbon commands
