@@ -47,6 +47,13 @@ check(sol && sol.count === 2 && JSON.stringify(txt) === JSON.stringify(["LỜI G
   "Tách LG: label + solution only, table kept, passage and unsolved question skipped, sentinel last", JSON.stringify(txt));
 check(sol && !/sectPr/.test(sol.xml), "Tách LG: no section break inserted");
 check(PL.extractSolutionsXml(pkg(p(r("Câu 1. Hỏi?")) + p(r("A. 1")))) === null, "Tách LG: no solution -> null");
+// TACHLOIGIAI_BIGKEY: questions without a solution get a red placeholder at the end, in question order
+const mv = PL.extractSolutionsXml(solPkg, { markMissing: true });
+const mvTxt = mv && [...new DOMParser().parseFromString(mv.xml, "application/xml").getElementsByTagNameNS(W, "body")[0].childNodes]
+  .filter((n) => n.nodeType === 1).map((n) => (n.localName === "tbl" ? "[tbl]" : [...n.getElementsByTagNameNS(W, "t")].map((t) => t.textContent).join("")));
+check(mv && JSON.stringify(mv.missing) === '["Câu 3."]' && mvTxt.includes("Câu 3. THIẾU LỜI GIẢI Ở ĐÂY") && mvTxt.indexOf("Câu 3. THIẾU LỜI GIẢI Ở ĐÂY") > mvTxt.indexOf("Câu 2. Giải câu 2"),
+  "Chuyển lời giải xuống cuối: missing solution marked after Câu 2", JSON.stringify(mvTxt));
+check(/FF0000/.test(mv.xml), "placeholder is red");
 
 // ---- Tô phiếu ZG50 (template from the BigKey plugin folder, if given)
 const tpl = process.argv[2] || process.env.MYSCRIPTS_ZG50;

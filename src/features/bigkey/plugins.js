@@ -5,7 +5,7 @@
 import JSZip from "jszip";
 import { parseXml, documentBody } from "../dgnl/removeBreakEng.js";
 import { W, putInRPr, sentinelParagraph } from "./normalizeXml.js";
-import { reBoundary } from "../xoa/xoaCanThiet.js";
+import { reBoundary, xoaLoiGiai } from "../xoa/xoaCanThiet.js";
 import { loadParas, planBlocks } from "./chuanHoaBigKey.js";
 import { readAnswersXml } from "./optionTools.js";
 
@@ -39,9 +39,10 @@ function textRun(doc, text, props = {}) {
 /**
  * Tách LG (dnqTachloigiai): từ gói OOXML các câu đã chọn, giữ "Câu N." + nội dung sau "Lời giải" của từng câu
  * (bỏ đề, phương án, dòng "Lời giải"), đặt dưới tiêu đề "LỜI GIẢI CHI TIẾT". Bảng/hình trong lời giải giữ nguyên.
- * Trả về { xml, count } hoặc null nếu không có câu nào có lời giải. Thuần.
+ * opts.markMissing (plugin TACHLOIGIAI_BIGKEY): câu không có lời giải -> dòng "Câu N. THIẾU LỜI GIẢI Ở ĐÂY" (đỏ).
+ * Trả về { xml, count, missing: [nhãn] } hoặc null nếu không có câu nào có lời giải. Thuần.
  */
-export function extractSolutionsXml(pkgXml) {
+export function extractSolutionsXml(pkgXml, opts = {}) {
   const doc = parseXml(pkgXml);
   const body = documentBody(doc);
   const nodes = kids(body).filter((n) => n.namespaceURI === W && (n.localName === "p" || n.localName === "tbl"));
@@ -50,22 +51,39 @@ export function extractSolutionsXml(pkgXml) {
   let inSol = false;
   let first = false;
   let count = 0;
+  let solved = true; // câu hiện tại đã có lời giải chưa
+  const missing = [];
+  const closeQuestion = () => {
+    if (label && !solved) {
+      missing.push(label);
+      if (opts.markMissing) {
+        const mp = el(doc, "p");
+        mp.appendChild(textRun(doc, label + " ", { b: true, color: "0000FF" }));
+        mp.appendChild(textRun(doc, "THIẾU LỜI GIẢI Ở ĐÂY", { b: true, color: "FF0000" }));
+        keep.push(mp);
+      }
+    }
+  };
   for (const n of nodes) {
     const isP = n.localName === "p";
     const t = isP ? pText(n) : "";
     const q = isP && reQ.exec(t);
     if (q) {
+      closeQuestion();
       label = q[1].replace(/\s+/g, " ").trim();
+      solved = false;
       inSol = false;
       continue;
     }
     if (isP && reBoundary.test(t)) {
+      closeQuestion();
       label = "";
       inSol = false;
       continue;
     }
     if (isP && label && !inSol && reLG.test(t)) {
       inSol = true;
+      solved = true;
       first = true;
       count++;
       continue;
@@ -84,6 +102,7 @@ export function extractSolutionsXml(pkgXml) {
     }
     keep.push(n);
   }
+  closeQuestion();
   if (!count) return null;
   for (const n of [...body.childNodes]) body.removeChild(n); // bỏ cả sectPr: chèn vào cuối tài liệu không được tạo ngắt section
   const head = el(doc, "p");
@@ -97,7 +116,7 @@ export function extractSolutionsXml(pkgXml) {
     body.appendChild(n);
   }
   body.appendChild(sentinelParagraph(doc));
-  return { xml: new XMLSerializer().serializeToString(doc), count };
+  return { xml: new XMLSerializer().serializeToString(doc), count, missing };
 }
 
 /** Tách LG: lời giải của các câu đang chọn -> cuối tài liệu dưới "LỜI GIẢI CHI TIẾT" (đề giữ nguyên). */
@@ -117,6 +136,27 @@ export async function tachLG(context) {
   body.insertOoxml(res.xml, "End");
   await context.sync();
   return `Đã tách lời giải của ${res.count} câu xuống cuối tài liệu.`;
+}
+
+/**
+ * Chuyển lời giải xuống cuối (plugin TACHLOIGIAI_BIGKEY): mọi lời giải của đề được CHUYỂN (không chép) xuống cuối tài
+ * liệu dưới "LỜI GIẢI CHI TIẾT"; câu thiếu lời giải có dòng "THIẾU LỜI GIẢI Ở ĐÂY" và được liệt kê.
+ * Bản VBA: thêm "Câu cuối" giả, dùng Find/Replace wildcard với "Câu n" theo số thứ tự (sai khi số câu không liên tục).
+ */
+export async function chuyenLoiGiaiXuongCuoi(context) {
+  const body = context.document.body;
+  const ox = body.getOoxml();
+  await context.sync();
+  const res = extractSolutionsXml(ox.value, { markMissing: true });
+  if (!res) return 'Không có câu "Câu N." nào có dòng "Lời giải".';
+  await xoaLoiGiai(context); // cùng ranh giới khối (lời dẫn nhóm, PHẦN, HẾT, đoạn sát lề)
+  body.insertParagraph("", "End");
+  body.insertOoxml(res.xml, "End");
+  await context.sync();
+  const msg = `Đã chuyển lời giải của ${res.count} câu xuống cuối tài liệu.`;
+  return res.missing.length
+    ? { ok: false, summary: `${msg}\n⚠ Thiếu lời giải (đã đánh dấu ở cuối): ${res.missing.slice(0, 10).join(", ")}${res.missing.length > 10 ? "…" : ""}`, details: res.missing.join(", ") }
+    : msg;
 }
 
 // ================================================================ Chemistry Formatter

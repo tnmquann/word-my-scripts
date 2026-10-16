@@ -4,6 +4,13 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.2.0-beta.2] - 2026-10-17
+
+No manifest change: applies on the next click / next opening of the pane.
+
+### Added
+- **Công cụ BigKey → Plugin BigKey → Chuyển lời giải xuống cuối** (plugin TACHLOIGIAI_BIGKEY): moves every solution to the end of the document under `LỜI GIẢI CHI TIẾT`; questions without a solution get a red `THIẾU LỜI GIẢI Ở ĐÂY` line and are listed.
+
 ## [2.2.0] - 2026-10-17
 
 New ribbon item, so the manifest changes: **re-install once** (the **Cập nhật** button or the install command), then restart Word.

@@ -7,7 +7,7 @@ import { isDesktop } from "../../features/runtime.js";
 
 const $ = (s) => document.querySelector(s);
 const status = $("#status");
-const ACTIONS = { ...T, tachLG: PL.tachLG, chemFormatter: PL.chemFormatter, xoaLoiGiai, xoaDongVietLG };
+const ACTIONS = { ...T, tachLG: PL.tachLG, chuyenLoiGiaiXuongCuoi: PL.chuyenLoiGiaiXuongCuoi, chemFormatter: PL.chemFormatter, xoaLoiGiai, xoaDongVietLG };
 const ZG_KEY = "myscripts.zg50.template"; // mẫu ans50zg.docx (base64) chỉ lưu trên máy này
 
 /** Chạy job(ctx) trong Word.run, khoá các nút, hiện kết quả. */
