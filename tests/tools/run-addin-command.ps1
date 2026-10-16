@@ -27,8 +27,15 @@ Copy-Item -LiteralPath $Path -Destination $copy -Force
 function Find-ByName($root, [string]$n, [int]$timeout = 30) {
   $t0 = Get-Date
   while (((Get-Date) - $t0).TotalSeconds -lt $timeout) {
-    $e = $root.FindFirst($TS::Descendants, (New-Object $PC($AE::NameProperty, $n)))
-    if ($e) { return $e }
+    # several elements can share a name (group label + its menu button): take the first one that can be clicked
+    $found = @()
+    try { $found = $root.FindAll($TS::Descendants, (New-Object $PC($AE::NameProperty, $n))) } catch {} # window still initializing: retry
+    foreach ($e in $found) {
+      foreach ($p in [System.Windows.Automation.InvokePattern]::Pattern, [System.Windows.Automation.SelectionItemPattern]::Pattern, [System.Windows.Automation.ExpandCollapsePattern]::Pattern) {
+        $o = $null
+        if ($e.TryGetCurrentPattern($p, [ref]$o)) { return $e }
+      }
+    }
     Start-Sleep -Milliseconds 500
   }
   throw "UI element not found: '$n'"
@@ -46,6 +53,9 @@ function Invoke-El($e) {
   throw "Element '$($e.Current.Name)' cannot be invoked"
 }
 
+# top-level windows of OUR Word process only (searching the whole desktop hits elevated / other apps)
+function WordWindows { $AE::RootElement.FindAll($TS::Children, (New-Object $PC($AE::ProcessIdProperty, $proc.Id))) }
+
 $proc = Start-Process -FilePath 'WINWORD.EXE' -ArgumentList '/q', "`"$copy`"" -PassThru
 try {
   $t0 = Get-Date
@@ -60,7 +70,10 @@ try {
   Start-Sleep -Seconds 1
   Invoke-El (Find-ByName $win $Menu)
   Start-Sleep -Seconds 1
-  Invoke-El (Find-ByName $AE::RootElement $Item 10)
+  $it = $null; $t1 = Get-Date
+  while (-not $it -and ((Get-Date) - $t1).TotalSeconds -lt 10) { foreach ($top in (WordWindows)) { if (-not $it) { try { $it = Find-ByName $top $Item 1 } catch {} } } }
+  if (-not $it) { throw "menu item not found: $Item" }
+  Invoke-El $it
   "clicked: $Tab > $Menu > $Item"
 
   # The result popup is an Office dialog (WebView). Wait for its close button "Đóng", then read its text.
@@ -69,10 +82,11 @@ try {
   while (-not $dlg -and ((Get-Date) - $t0).TotalSeconds -lt $WaitSec) {
     Start-Sleep -Seconds 2
     if ($Answer -and -not $answered) {
-      $q = $AE::RootElement.FindFirst($TS::Descendants, (New-Object $PC($AE::NameProperty, $Answer)))
+      $q = $null
+      foreach ($top in (WordWindows)) { if (-not $q) { try { $q = Find-ByName $top $Answer 1 } catch {} } }
       if ($q) { Invoke-El $q; $answered = $true; "answered: $Answer"; continue }
     }
-    $dlg = $AE::RootElement.FindFirst($TS::Descendants, (New-Object $PC($AE::NameProperty, 'Đóng')))
+    foreach ($top in (WordWindows)) { if (-not $dlg) { try { $dlg = Find-ByName $top 'Đóng' 1 } catch {} } }
   }
   if ($dlg) {
     $walker = [System.Windows.Automation.TreeWalker]::RawViewWalker
@@ -90,6 +104,10 @@ try {
   Start-Sleep -Seconds 4
   "saved: $copy"
 } finally {
+  # Close Word gracefully: a hard kill can drop the add-in activation (DEVELOPER ADD-INS -> Add has to be redone)
   Start-Sleep -Seconds 1
-  if (-not $proc.HasExited) { Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue }
+  if (-not $proc.HasExited) {
+    [void]$proc.CloseMainWindow()
+    if (-not $proc.WaitForExit(20000)) { Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue }
+  }
 }
