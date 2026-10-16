@@ -94,6 +94,9 @@ async function writeStatic(names) {
   if (left) throw new Error(`Unfilled manifest placeholders: ${left.join(", ")}`);
   await fs.writeFile(path.join(OUT, "manifest.xml"), manifest);
 
+  // Mẫu tài liệu dùng chung (vd. phiếu ZipGrade 50 câu ans50zg.docx — của maintainer)
+  await fs.mkdir(path.join(OUT, "templates"), { recursive: true });
+  for (const f of await fs.readdir(r("assets/templates"))) await fs.copyFile(r("assets/templates", f), path.join(OUT, "templates", f));
   await fs.mkdir(path.join(OUT, "assets"), { recursive: true });
   for (const f of await fs.readdir(r("assets/icons"))) {
     if (f.endsWith(".png")) await fs.copyFile(r("assets/icons", f), path.join(OUT, "assets", f));

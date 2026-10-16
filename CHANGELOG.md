@@ -4,6 +4,13 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.3.0-beta.2] - 2026-10-17
+
+No manifest change.
+
+### Changed
+- **Tô phiếu ZG50** works without picking a file: the ZipGrade 50 template ships with the add-in. A custom template can still be chosen in the pane.
+
 ## [2.3.0] - 2026-10-17
 
 New ribbon item, so the manifest changes: **re-install once** (the **Cập nhật** button or the install command), then restart Word.

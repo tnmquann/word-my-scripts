@@ -53,8 +53,14 @@ function loadTemplate() {
   }
 }
 let zgTemplate = null;
+/** Mẫu mặc định đi kèm add-in (templates/ans50zg.docx trên cùng trang). */
+async function defaultTemplate() {
+  const res = await fetch(new URL("templates/ans50zg.docx", location.href).href);
+  if (!res.ok) throw new Error("Không tải được mẫu phiếu mặc định (" + res.status + ").");
+  return res.arrayBuffer();
+}
 function showTemplate() {
-  $("#zgInfo").textContent = zgTemplate ? "Đã có mẫu phiếu." : "Chưa chọn mẫu phiếu.";
+  $("#zgInfo").textContent = zgTemplate ? "Đang dùng mẫu phiếu bạn đã chọn." : "Đang dùng mẫu phiếu mặc định (ans50zg.docx).";
 }
 async function pickTemplate(file) {
   zgTemplate = await file.arrayBuffer();
@@ -127,7 +133,7 @@ Office.onReady(() => {
   zgTemplate = loadTemplate();
   showTemplate();
   $("#zgFile").addEventListener("change", (e) => e.target.files[0] && pickTemplate(e.target.files[0]));
-  $("#zgRun").addEventListener("click", () => run((ctx) => PL.toPhieuZG50(ctx, $("#zgMade").value, zgTemplate)));
+  $("#zgRun").addEventListener("click", () => run(async (ctx) => PL.toPhieuZG50(ctx, $("#zgMade").value, zgTemplate || (await defaultTemplate()))));
   const g = $("#groups");
   for (let i = 1; i <= 15; i++) {
     const b = document.createElement("button");

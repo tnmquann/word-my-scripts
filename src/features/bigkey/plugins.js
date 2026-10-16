@@ -389,7 +389,7 @@ export function fillZipGradeXml(docXml, answers, made = "") {
  * khai báo), xuất PDF cạnh file đề.
  */
 export async function toPhieuZG50(context, made = "", template = null) {
-  if (!template) return { ok: false, summary: "Chưa chọn file mẫu phiếu ans50zg.docx (trong thư mục plugin TophieuZG50tuDA của BigKey).", details: "" };
+  if (!template) return { ok: false, summary: "Không có mẫu phiếu ZipGrade (ans50zg.docx).", details: "" };
   if (made && !/^[A-E]$/.test(made)) throw new Error("Mã đề phải là một chữ A–E: " + made);
   const P = await loadParas(context);
   const plan = planBlocks(P).filter((b) => b.optFrom >= 0);
