@@ -39,6 +39,8 @@ const ICONS = {
          <path d="M6.8 20.6l1.6 1.6 2.8-3" ${S}/>`,
   // Canh giữa Table: small table between two margin lines
   canhGiuaTable: `<path d="M4 5v22M28 5v22" ${S}/><rect x="9" y="10" width="14" height="12" rx="1" ${S}/><path d="M9 16h14M16 10v12" ${S}/>`,
+  // Chuyển STT Text sang Auto: typed line -> numbered list (arrow)
+  sttTextToAuto: `<path d="M5 8h9M5 13h7" ${S}/><path d="M17 10.5h6M20.5 8l2.5 2.5-2.5 2.5" ${S}/><circle cx="7" cy="22" r="1.5" ${S}/><circle cx="7" cy="28" r="1.5" ${S}/><path d="M12 22h15M12 28h15" ${S}/>`,
   // Equations menu: radical sign
   equations: `<path d="M4 18h4l4 8 7-21h9" ${S}/>`,
   // LaTeX -> Equation: braces, arrow, radical

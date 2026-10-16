@@ -4,6 +4,13 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.3.0] - 2026-10-17
+
+New ribbon item, so the manifest changes: **re-install once** (the **Cập nhật** button or the install command), then restart Word.
+
+### Added
+- **CTPT 2018 → Chuyển STT Text sang Auto**: asks the start number (like *Fix lỗi tab câu hỏi*), removes the typed `Câu N.` labels and puts every question in one automatic list `Câu n.` with a 1 cm hanging indent; auto-numbered questions are skipped; the result is verified.
+
 ## [2.2.0-beta.3] - 2026-10-17
 
 No manifest change.

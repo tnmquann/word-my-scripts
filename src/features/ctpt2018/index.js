@@ -2,8 +2,10 @@
 // Key = <FunctionName> trong manifest; label = tiêu đề hộp thoại kết quả.
 import { taoBangDapAn } from "./taoBangDapAn.js";
 import { canhGiuaTable } from "./canhGiuaTable.js";
+import { sttTextToAuto } from "./sttTextToAuto.js";
 
 export default {
   taoBangDapAn: { label: "Tạo bảng đáp án (CTPT 2018)", run: taoBangDapAn },
   canhGiuaTable: { label: "Canh giữa Table", run: canhGiuaTable },
+  sttTextToAuto: { label: "Chuyển STT Text sang Auto", run: sttTextToAuto },
 };
