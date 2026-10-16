@@ -4,6 +4,14 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.2.0-beta.3] - 2026-10-17
+
+No manifest change.
+
+### Changed
+- **Công cụ BigKey** pane looks like the old BigKey menu: a line icon, a bold name and a short grey description for every tool, icons on the section headers.
+- Installer, updater and SETUP: MY_SCRIPTS is a developer sideload, so Word may need it activated from **Home → Add-ins → Developer Add-ins** in each session (the old "first time only" note was wrong). A persistent setup (shared-folder catalog) is documented as a proposal in SETUP.
+
 ## [2.2.0-beta.2] - 2026-10-17
 
 No manifest change: applies on the next click / next opening of the pane.

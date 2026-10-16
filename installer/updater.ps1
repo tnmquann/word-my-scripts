@@ -96,7 +96,7 @@ try {
     Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue
   }
   Write-Log "updated to $($info.version)"
-  Show-Box "Đã cập nhật MY_SCRIPTS lên v$($info.version).`nMở lại Word để sử dụng.`n`nNếu không thấy tab MY_SCRIPTS: Home > Add-ins > Advanced > DEVELOPER ADD-INS > MY_SCRIPTS > Add." | Out-Null
+  Show-Box "Đã cập nhật MY_SCRIPTS lên v$($info.version).`nMở lại Word để sử dụng.`n`nNếu không thấy tab MY_SCRIPTS: Home > Add-ins > Developer Add-ins > MY_SCRIPTS (có thể phải bấm lại mỗi lần mở Word)." | Out-Null
 } catch {
   Write-Log "error: $($_.Exception.Message)"
   Show-Box "Cập nhật thất bại:`n`n$($_.Exception.Message)" 'OK' 'Error' | Out-Null

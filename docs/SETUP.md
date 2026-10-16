@@ -106,7 +106,7 @@ powershell -ExecutionPolicy Bypass -File installer\install.ps1 -ManifestPath dis
 
 Open Word. The **MY_SCRIPTS** tab appears on the ribbon.
 
-**First run on recent Word builds** (seen on 16.0.20606): Word registers the add-in but may not activate it on its own. If the tab is missing, go to **Home → Add-ins → Advanced** (or *My Add-ins*), open **DEVELOPER ADD-INS**, select **MY_SCRIPTS** and click **Add**. You only need to do this once per machine. The tab then persists across restarts and updates.
+**Activation on recent Word builds** (16.0.20606 – 16.0.20613): the installer registers MY_SCRIPTS as a *developer sideload* (`WEF\Developer`). Word lists it under **Home → Add-ins → Developer Add-ins** but does not activate it automatically: click **MY_SCRIPTS** there to load the tab. The maintainer confirmed (2026-10-17) that this is needed **in every Word session**, not only once. A persistent alternative is a shared-folder catalog (see *Troubleshooting*); it needs a registry change on each machine and has not been adopted yet.
 
 `install.ps1` takes these switches:
 
@@ -257,7 +257,7 @@ Guidelines for command code:
 
 | Symptom | Cause / fix |
 | --- | --- |
-| Tab does not appear | First check **Home → Add-ins → Advanced → DEVELOPER ADD-INS**. If MY_SCRIPTS is listed there, click **Add** (a one-time activation needed on recent Word builds). Otherwise, Word was open during the install. Close all `WINWORD.exe` processes and reopen Word. Check that `HKCU\Software\Microsoft\Office\16.0\WEF\Developer` contains the GUID. |
+| Tab does not appear | First check **Home → Add-ins → Developer Add-ins**. If MY_SCRIPTS is listed there, click it (developer sideloads are not activated automatically, often in every session). The add-in is also unavailable for documents in **Compatibility Mode** (File → Info → Convert). Otherwise, Word was open during the install. Close all `WINWORD.exe` processes and reopen Word. Check that `HKCU\Software\Microsoft\Office\16.0\WEF\Developer` contains the GUID. |
 | Tab appears but buttons do nothing or show an error | The Pages site is unreachable (offline, or Pages not deployed yet). Open `<baseUrl>commands.html` in a browser. |
 | Old behaviour after a deploy | Office has cached the HTML. Close Word, then run `install.ps1 -ClearCache`. |
 | Manifest changes are not picked up | Re-run the installer, which copies the new manifest, then restart Word. If that doesn't help, also use `-ClearCache`. |
@@ -266,3 +266,7 @@ Guidelines for command code:
 | Error `GeneralException` with `errorLocation` | The document contains structures the command did not expect, for example nested tables or content controls. Send the dialog text along with a sample document. |
 
 Undo: every `context.sync()` is recorded in Word's undo stack, so **Ctrl+Z** works, but one command may need several undo steps. Keep a copy of the file before you run any destructive command, such as *Xoá ĐACT ĐGNL* or *Gạch chân đáp án Ngữ Văn*.
+
+### Proposal (not adopted): keep MY_SCRIPTS activated across Word restarts
+
+Developer sideloads (`HKCU\Software\Microsoft\Office\16.0\WEF\Developer`) must be activated from **Developer Add-ins** in each session on recent Word builds. Microsoft's documented alternative is a **shared-folder catalog**: the manifest is copied to a folder, the folder's *network path* is trusted under `HKCU\Software\Microsoft\Office\16.0\WEF\TrustedCatalogs\{GUID}` (`Id` = the GUID, `Url` = `\server\share`, `Flags` = 1), and the user adds MY_SCRIPTS once from **Home → Add-ins → Advanced → SHARED FOLDER**. On a single PC the path can be `\localhost\C$\Users\<user>\AppData\Local\MY_SCRIPTS\catalog` when the account is a local administrator (otherwise a real share is needed). The `WEF\Developer` value must then be removed so the same add-in ID is not registered twice. Microsoft documents network-share deployment as a testing method, and ribbon changes still require re-adding the add-in. It changes the registry on every machine, so it needs the maintainer's approval before the installer adopts it; it has not been verified on the maintainer's Word build yet.

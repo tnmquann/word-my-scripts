@@ -73,5 +73,5 @@ if [ "$CLEAR_CACHE" = 1 ]; then
 fi
 
 printf '\n\033[32mDone.\033[0m Quit Word completely (Cmd+Q) and open it again.\n'
-echo "FIRST TIME ONLY: Home > Add-ins (or Insert > Add-ins > My Add-ins) > DEVELOPER ADD-INS > MY_SCRIPTS."
+echo "If the MY_SCRIPTS tab is missing: Home > Add-ins (or Insert > Add-ins) > Developer Add-ins > MY_SCRIPTS (may be needed after each restart)."
 echo "Desktop tools: tab MY_SCRIPTS+ (MathType tools need MathType for Mac; allow macros if Word asks)."

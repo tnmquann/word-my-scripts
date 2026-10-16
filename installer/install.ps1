@@ -145,6 +145,6 @@ if ($wordRunning) {
   Write-Host 'Open Word: the MY_SCRIPTS tab will appear on the ribbon.'
 }
 Write-Host ''
-Write-Host 'FIRST TIME ONLY: if the MY_SCRIPTS tab is not visible, in Word go to' -ForegroundColor Yellow
-Write-Host '  Home > Add-ins > Advanced (My Add-ins) > DEVELOPER ADD-INS > MY_SCRIPTS > Add' -ForegroundColor Yellow
+Write-Host 'If the MY_SCRIPTS tab is not visible (Word may not activate developer add-ins by itself),' -ForegroundColor Yellow
+Write-Host '  click Home > Add-ins > Developer Add-ins > MY_SCRIPTS (repeat after Word restarts if needed).' -ForegroundColor Yellow
 Write-Host 'The tab then stays on the ribbon.' -ForegroundColor Yellow

@@ -38,8 +38,8 @@ Install
   1. Close Word.
   2. Double-click Install.cmd.
   3. Open Word -> tab "${cfg.tabLabel}".
-     First time only, if the tab is missing: Home > Add-ins > Advanced
-     (My Add-ins) > DEVELOPER ADD-INS > MY_SCRIPTS > Add.
+     If the tab is missing: Home > Add-ins > Developer Add-ins > MY_SCRIPTS.
+     Word may need this again after each restart (developer sideload).
 
 Uninstall
   Double-click Uninstall.cmd, then restart Word.
