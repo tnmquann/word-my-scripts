@@ -4,6 +4,13 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.0.0-beta.4] - 2026-10-16
+
+Code-only hotfix for **Chuẩn hoá BigKey**. It applies on the next click.
+
+### Fixed
+- `GeneralException` at `Document.defaultTabStop` (reported on `test_eng.docx`): setting the default tab stop needs WordApiDesktop 1.4, which some Word builds reject. It is now optional (own step, skipped on error), like turning off line numbering. If a beta.3 run stopped with this error, undo it (Ctrl+Z) or reopen the file, then run the command again.
+
 ## [2.0.0-beta.3] - 2026-10-16
 
 Code-only patch for **Chuẩn hoá BigKey**. It applies on the next click, with no re-install. (The start-number popup needs the Word restart from beta.2.)

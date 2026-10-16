@@ -145,9 +145,22 @@ async function chuanHoa(context, useSelection) {
         ps.topMargin = ps.bottomMargin = ps.leftMargin = ps.rightMargin = 1.5 * CM;
         ps.headerDistance = ps.footerDistance = 1.27 * CM;
         ps.gutter = 0;
-        ps.lineNumbering.isActive = false;
       }
-      context.document.defaultTabStop = 1.5 * CM; // như bản VBA
+      await context.sync();
+      // Không bắt buộc (WordApiDesktop 1.4, một số bản Word báo GeneralException): mỗi mục 1 lần sync riêng,
+      // lỗi thì bỏ qua — không được làm hỏng cả lệnh.
+      const optional = [
+        () => secs.items.forEach((s) => (s.pageSetup.lineNumbering.isActive = false)),
+        () => (context.document.defaultTabStop = 1.5 * CM), // như bản VBA
+      ];
+      for (const set of optional) {
+        try {
+          set();
+          await context.sync();
+        } catch (e) {
+          console.warn("optional page setting skipped", e);
+        }
+      }
     } else lines.push("⚠ Word Web: bỏ qua khổ giấy/lề trang (chỉ Word desktop).");
   }
   await context.sync();
