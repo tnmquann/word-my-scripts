@@ -9,6 +9,7 @@
 // Thay cho bkDoRong của BigKey (đo vị trí thật trên trang — Office JS không có API đo).
 
 import { parseXml, documentBody, bodyParagraphs } from "../dgnl/removeBreakEng.js";
+import { standardPPr, setFont } from "./normalizeXml.js";
 
 const W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 const M = "http://schemas.openxmlformats.org/officeDocument/2006/math";
@@ -167,6 +168,7 @@ function labelRuns(doc, letter, correct) {
       pr.appendChild(u);
     }
     r.appendChild(pr);
+    setFont(doc, r); // nhãn luôn Times New Roman 12, không theo style Normal của tài liệu
     const t = doc.createElementNS(W, "w:t");
     t.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve");
     t.textContent = text;
@@ -184,25 +186,8 @@ function tabRun(doc) {
 
 function paraWithTabs(doc, tabsCm) {
   const p = doc.createElementNS(W, "w:p");
-  const pPr = doc.createElementNS(W, "w:pPr");
-  if (tabsCm.length) {
-    const tabs = doc.createElementNS(W, "w:tabs");
-    for (const cm of tabsCm) {
-      const tab = doc.createElementNS(W, "w:tab");
-      tab.setAttributeNS(W, "w:val", "left");
-      tab.setAttributeNS(W, "w:pos", String(Math.round(cm * CM)));
-      tabs.appendChild(tab);
-    }
-    pPr.appendChild(tabs);
-  }
-  const sp = doc.createElementNS(W, "w:spacing");
-  sp.setAttributeNS(W, "w:before", "0");
-  sp.setAttributeNS(W, "w:after", "0");
-  pPr.appendChild(sp);
-  const ind = doc.createElementNS(W, "w:ind");
-  ind.setAttributeNS(W, "w:left", String(CM));
-  ind.setAttributeNS(W, "w:firstLine", "0");
-  pPr.appendChild(ind);
+  const pPr = standardPPr(doc, { tabsTwip: tabsCm.map((cm) => Math.round(cm * CM)) });
+  setFont(doc, pPr); // dấu ¶ cũng Times New Roman 12 (chiều cao dòng trống)
   p.appendChild(pPr);
   return p;
 }

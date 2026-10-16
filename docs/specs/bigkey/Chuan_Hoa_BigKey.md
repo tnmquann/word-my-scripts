@@ -19,7 +19,12 @@ Bring a multiple-choice exam (questions `Câu N.` with options `A.`–`D.`) to t
 Scope: the whole document, or (vùng chọn) the paragraphs of the selection. An empty selection stops with a message.
 
 1. **Numbering to text**: automatic list numbers outside tables become literal text (`listString` + space), then the paragraph leaves the list.
-2. **Base format** (paragraphs outside tables): style Normal, Times New Roman 12, left indent 1 cm, no space before/after. Whole-document mode on Word desktop also sets every section to A4 portrait, margins 1.5 cm.
+2. **Layout, as the VBA `bkBonDong`** (`normalizeXml.js`). Office JS cannot clear tab stops or *Keep with next* per paragraph, so the paragraphs outside tables are rewritten in OOXML, in chunks of up to 40 consecutive paragraphs, from the end:
+   - paragraph: style Normal, all direct paragraph formatting removed (alignment, line spacing, tab stops, keep with next, borders…), left indent 1 cm, right 0, first line 0, spacing 0, single line spacing; section breaks are kept;
+   - every text run: Times New Roman 12. Bold, italic, underline and colour are kept (the VBA removed bold); equation (OMML) runs keep Cambria Math;
+   - a tab right after `Câu N.` becomes a space; manual page breaks are removed.
+   - If Word rejects a chunk, that chunk gets the same values through Office JS (old tab stops and keep-with-next may remain), and the result says so.
+   Paragraphs in tables only get Times New Roman 12. Whole-document mode on Word desktop also sets every section to A4 portrait, margins 1.5 cm, header/footer 1.27 cm, gutter 0, no line numbering, and the default tab stop to 1.5 cm.
 3. **Options** (`optionLayout.js`): each A–D block (the paragraph starting with `A.` up to the paragraph containing `D.`, at most 4 paragraphs, before *Lời giải*, outside tables) is rebuilt from its OOXML:
    - The block is tokenized into characters (with their run properties), tabs, breaks and inline objects (drawings, VML, OLE/MathType, `m:oMath`).
    - Labels are found strictly (B–D after a tab or line break), with a lenient fallback.
@@ -27,7 +32,7 @@ Scope: the whole document, or (vùng chọn) the paragraphs of the selection. An
    - Layout: every option ≤ 110 pt → 4 per line (tabs at 5.25 / 9.5 / 13.75 cm); ≤ 235 pt → 2 per line (tab at 9.5 cm); otherwise 1 per line.
    - Labels become bold blue `A. `. The correct option (underlined in the source, or the letter of `Chọn X` when nothing is underlined) gets a bold, underlined red letter.
    - Blocks that do not contain A–D in order are skipped and listed in the result.
-4. **Questions**: `Câu N.` becomes `Câu i:` in bold blue, numbered consecutively **from the number of the first question** (the VBA always restarted at 1, which broke exams such as `Câu 31–60` with lead-ins `Questions 31-35`). Question paragraphs get a 1 cm hanging indent. *Lời giải* / *Hướng dẫn giải* become bold blue. `Chọn X` is normalized, highlighted yellow and justified.
+4. **Questions**: `Câu N.` becomes `Câu i:` in bold blue, numbered from 1 like the VBA. When the exam starts at another number (e.g. `Câu 31–60` with lead-ins `Questions 31-35`), a popup asks for the start number (default 1; the second button keeps the exam's own first number). Vùng chọn continues from the first selected question. Question paragraphs get a 1 cm hanging indent. *Lời giải* / *Hướng dẫn giải* become bold blue. `Chọn X` is normalized and highlighted yellow.
 5. **Clean-up**: empty paragraphs are deleted unless they hold a drawing, picture, object, equation or table (the last paragraph of the document is kept). Double spaces are collapsed (up to 5 passes).
 
 **Tables are never converted or changed.** The VBA converted every table to text and crashed on exams that contain tables; this port leaves paragraphs in tables untouched and only reports how many there were.
@@ -55,11 +60,13 @@ Run on a **copy** of a real exam.
 - [ ] An exam with a table (inside the stem or the solution): Chuẩn hoá finishes, the table is unchanged.
 - [ ] Short options with MathType objects → 4 per line; medium → 2 per line; sentences → 1 per line. Objects are kept.
 - [ ] The correct option is red, bold and underlined: from the source underline, or from `Chọn X` when nothing is underlined.
-- [ ] An exam that starts at `Câu 31` keeps 31 as its first number; `Câu 1…` exams are renumbered 1, 2, 3, …
+- [ ] `Câu 1…` exams are renumbered 1, 2, 3, … without a popup; an exam that starts at `Câu 31` asks (Enter = 1, *Giữ từ 31* keeps 31).
+- [ ] Layout matches the old BigKey: centred / 1.15-spaced / keep-with-next paragraphs become left, single, no keep; custom tab stops are gone; every text is Times New Roman 12; bold and italic stay.
+- [ ] Labels `A.`–`D.` are Times New Roman 12 even when the document's Normal style is another font.
 - [ ] Automatic numbering `Câu 1.` (list) is converted to text before renumbering.
 - [ ] Vùng chọn: only the selected questions change; page setup is not touched.
 - [ ] Word on the web: Chuẩn hoá runs and warns that page setup was skipped.
 - [ ] Check lỗi đề on a clean exam: "Không phát hiện lỗi"; a title before Câu 1 only adds a ⚠ line.
 - [ ] Check lỗi đề finds a removed `C.`, a duplicated `B.`, a skipped number, and underline ≠ `Chọn X`; the first faulty question is selected.
 
-Automated: `tests/bigkey-options.mjs` (synthetic layouts) and `tests/bigkey-real.mjs <export.json> [--has-errors]` (real exams exported with `tests/tools/export-docx.ps1`).
+Automated: `tests/bigkey-options.mjs` (synthetic layouts), `tests/bigkey-normalize.mjs [export.json…]` (layout reset) and `tests/bigkey-real.mjs <export.json> [--has-errors]` (real exams exported with `tests/tools/export-docx.ps1`). Visual comparison with the VBA: `tests/tools/run-vba-macro.ps1` (old output) and `tests/tools/bigkey-simulate.mjs` + `render-pdf.ps1` (new output).

@@ -4,6 +4,21 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.0.0-beta.3] - 2026-10-16
+
+Code-only patch for **Chuẩn hoá BigKey**. It applies on the next click, with no re-install. (The start-number popup needs the Word restart from beta.2.)
+
+### Fixed
+- The layout now matches the old BigKey (`bkBonDong`), checked side by side on a real exam (same 7 pages, same line breaks):
+  - every paragraph outside tables loses its direct paragraph formatting: alignment, 1.15/1.08 line spacing, custom tab stops and *Keep with next* are reset; left indent 1 cm, single spacing, no space before/after;
+  - every text is Times New Roman 12, including option labels and tables (equations keep Cambria Math). Bold, italic, underline and colours are kept;
+  - the tab after `Câu N.` becomes a space; manual page breaks are removed; default tab stop 1.5 cm, gutter 0, no line numbering (Word desktop).
+- Option paragraphs no longer inherit the document's Normal style (font, line spacing).
+- `Chọn X` is no longer justified (the old BigKey keeps it left-aligned).
+
+### Changed
+- Numbering starts from 1 again, like the old BigKey. When an exam starts at another number (e.g. Câu 31), a popup asks for the start number.
+
 ## [2.0.0-beta.2] - 2026-10-16
 
 Patch with no manifest change, so no re-install is needed. The new popup field is part of the runtime: **close Word and open it again** once to get it. Until then, the command numbers from 1 as before.
