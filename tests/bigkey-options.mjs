@@ -28,7 +28,10 @@ for (const [name, xml, e] of cases) {
   if (e === null) { check(res === null, name); continue; }
   if (!res) { check(false, name, "got null"); continue; }
   const d = new DOMParser().parseFromString(res.xml, "application/xml");
-  const ps = [...d.getElementsByTagName("w:p")];
+  const all = [...d.getElementsByTagName("w:p")];
+  // last paragraph = empty sentinel that absorbs the destination ¶ in insertOoxml (normalizeXml.sentinelParagraph)
+  check(all.length > 0 && !all[all.length - 1].hasChildNodes(), `${name}: ends with the empty sentinel paragraph`);
+  const ps = all.slice(0, -1);
   const got = { layout: res.layout, correct: res.correct.join(""), paras: ps.length, math: d.getElementsByTagName("m:oMath").length, text: ps.map(textOf) };
   const ok = got.layout === e.layout && got.correct === e.correct && got.paras === e.paras && (!e.math || got.math === e.math) && (!e.text || JSON.stringify(got.text) === JSON.stringify(e.text));
   check(ok, name, JSON.stringify(got));

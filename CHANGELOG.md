@@ -4,6 +4,13 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.0.0-beta.5] - 2026-10-16
+
+Code-only fix for **Chuẩn hoá BigKey**. It applies on the next click.
+
+### Fixed
+- Options laid out on one line (or two) had no tab stops, so B/C/D landed on Word's default 1.27 cm tabs (reported on `test_eng.docx`). When `insertOoxml` replaces paragraphs, Word merges the last inserted paragraph into the old paragraph mark and keeps the old paragraph formatting. Each inserted package now ends with an empty paragraph that absorbs the old mark (it is removed in the clean-up step), so the fixed tab stops apply: 4 per line at 5.25 / 9.5 / 13.75 cm, 2 per line at 9.5 cm, or 1 per line. The same fix applies to the layout reset (the last paragraph of every chunk kept its old formatting).
+
 ## [2.0.0-beta.4] - 2026-10-16
 
 Code-only hotfix for **Chuẩn hoá BigKey**. It applies on the next click.

@@ -104,9 +104,22 @@ export function normalizeParagraph(doc, p) {
   }
 }
 
-/** Chuẩn hoá mọi đoạn (cấp body) của một gói OOXML (flat OPC từ getOoxml). Thuần. */
+/**
+ * Đoạn rỗng "hy sinh" đặt cuối gói OOXML trước khi insertOoxml("Replace"): Word gộp đoạn CUỐI của nội dung
+ * chèn vào dấu ¶ của đoạn đích, và (Office JS) giữ định dạng đoạn CŨ của dấu ¶ đó -> mất tab stop / lề mới
+ * (bug thật 2.0.0-beta.4: phương án A–D không có tab). Đoạn rỗng này nhận dấu ¶ cũ; bước dọn dòng trống xoá nó.
+ */
+export function sentinelParagraph(doc) {
+  return doc.createElementNS(W, "w:p");
+}
+
+/** Chuẩn hoá mọi đoạn (cấp body) của một gói OOXML (flat OPC từ getOoxml), thêm đoạn sentinel cuối. Thuần. */
 export function normalizeParagraphsXml(pkgXml) {
   const doc = parseXml(pkgXml);
-  for (const p of bodyParagraphs(documentBody(doc))) normalizeParagraph(doc, p);
+  const body = documentBody(doc);
+  const ps = bodyParagraphs(body);
+  for (const p of ps) normalizeParagraph(doc, p);
+  const last = ps[ps.length - 1];
+  if (last) last.parentNode.insertBefore(sentinelParagraph(doc), last.nextSibling);
   return new XMLSerializer().serializeToString(doc);
 }

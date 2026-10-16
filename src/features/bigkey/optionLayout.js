@@ -9,7 +9,7 @@
 // Thay cho bkDoRong của BigKey (đo vị trí thật trên trang — Office JS không có API đo).
 
 import { parseXml, documentBody, bodyParagraphs } from "../dgnl/removeBreakEng.js";
-import { standardPPr, setFont } from "./normalizeXml.js";
+import { standardPPr, setFont, sentinelParagraph } from "./normalizeXml.js";
 
 const W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 const M = "http://schemas.openxmlformats.org/officeDocument/2006/math";
@@ -234,6 +234,7 @@ export function rebuildOptionsXml(pkgXml, forceCorrect = "") {
   // thay các đoạn cũ bằng đoạn mới (giữ sectPr nếu có)
   const first = paras[0];
   for (const p of newParas) body.insertBefore(p, first);
+  body.insertBefore(sentinelParagraph(doc), first);
   for (const p of paras) body.removeChild(p);
   return { xml: new XMLSerializer().serializeToString(doc), layout, widths: opts.map((o) => Math.round(o.w)), correct: opts.filter((o) => o.correct).map((o) => o.letter) };
 }
