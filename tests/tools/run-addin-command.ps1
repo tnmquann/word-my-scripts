@@ -9,6 +9,7 @@ param(
   [Parameter(Mandatory)][string]$Menu,
   [Parameter(Mandatory)][string]$Item,
   [string]$Tab = 'MY_SCRIPTS',
+  [string]$Answer,             # button to click if the command asks a question (askUser popup), e.g. "Đánh số"
   [int]$WaitSec = 90
 )
 $ErrorActionPreference = 'Stop'
@@ -63,9 +64,14 @@ try {
   "clicked: $Tab > $Menu > $Item"
 
   # The result popup is an Office dialog (WebView). Wait for its close button "Đóng", then read its text.
-  $dlg = $null; $t0 = Get-Date
+  # A question popup (askUser) shows $Answer instead: click it once and keep waiting for the result.
+  $dlg = $null; $t0 = Get-Date; $answered = $false
   while (-not $dlg -and ((Get-Date) - $t0).TotalSeconds -lt $WaitSec) {
     Start-Sleep -Seconds 2
+    if ($Answer -and -not $answered) {
+      $q = $AE::RootElement.FindFirst($TS::Descendants, (New-Object $PC($AE::NameProperty, $Answer)))
+      if ($q) { Invoke-El $q; $answered = $true; "answered: $Answer"; continue }
+    }
     $dlg = $AE::RootElement.FindFirst($TS::Descendants, (New-Object $PC($AE::NameProperty, 'Đóng')))
   }
   if ($dlg) {

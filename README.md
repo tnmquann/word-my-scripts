@@ -144,7 +144,7 @@ Hovering over any ribbon button shows its full name, the exam format it targets,
 
 ## Requirements
 
-- Word for Windows or Mac (Microsoft 365, or Office 2024 and later). The manifest requires `WordApi 1.4`: Office 2024 or later, Microsoft 365 recommended. Word on the web runs most commands; page setup and question frames need Word desktop and show a warning online. The macOS installer has not been tested yet.
+- Word with WordApi 1.4 (the manifest minimum): Microsoft 365 (recommended), Word 2021 / 2024 perpetual, Word for Windows version 2208 (build 15601.20148) or later, Word for Mac 16.64 or later. Word on the web runs most commands; page setup and question frames need Word desktop and show a warning online. The macOS installer has not been tested yet.
 - MY_SCRIPTS+ (MathType tools): Word desktop with macros, and MathType.
 - Internet access at runtime, because the add-in's web assets are served from GitHub Pages.
 - Development only: Node.js 20 or later and npm.
