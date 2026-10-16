@@ -1,6 +1,6 @@
 {
   "name": "my-scripts-word-addin",
-  "version": "1.4.6",
+  "version": "2.0.0",
   "private": true,
   "description": "MY_SCRIPTS: Word add-in (Office JS) - a growing collection of document automation commands, organized by ribbon group",
   "license": "GPL-3.0-or-later",
@@ -14,11 +14,13 @@
     "validate": "office-addin-manifest validate dist/manifest.xml",
     "icons": "node scripts/make-icons.mjs",
     "release": "node scripts/build.mjs && node scripts/release.mjs",
-    "test": "npm run build && node tests/runtime-smoke.cjs && node tests/equations-batch.mjs && node tests/equations-roundtrip.mjs"
+    "test": "npm run build && node tests/runtime-smoke.cjs && node tests/equations-batch.mjs && node tests/equations-roundtrip.mjs && node tests/bigkey-options.mjs && node tests/bigkey-real.mjs && node tests/xoa-helpers.mjs && node tests/xoa-pane.mjs",
+    "companion": "pwsh -NoProfile -File scripts/build-companion.ps1"
   },
   "devDependencies": {
     "@types/office-js": "^1.0.611",
     "esbuild": "^0.28.2",
+    "jsdom": "^30.1.3",
     "office-addin-dev-certs": "^3.0.1",
     "office-addin-manifest": "^3.0.1",
     "sharp": "^0.35.5"

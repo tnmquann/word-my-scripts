@@ -4,8 +4,10 @@
 import dgnl from "./dgnl/index.js";
 import ctpt2018 from "./ctpt2018/index.js";
 import equations from "./equations/index.js";
+import bigkey from "./bigkey/index.js";
+import xoa from "./xoa/index.js";
 
-const GROUPS = { dgnl, ctpt2018, equations };
+const GROUPS = { dgnl, ctpt2018, equations, bigkey, xoa };
 
 // Bundle mới nhất ghi đè bản trước; runtime luôn đọc window.__MY_SCRIPTS_FEATURES__
 window.__MY_SCRIPTS_FEATURES__ = { groups: GROUPS };

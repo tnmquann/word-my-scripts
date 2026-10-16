@@ -35,9 +35,9 @@ async function scan(context) {
   return { it, blocks };
 }
 
-const blockRange = (it, [a, b]) => it[a].getRange("Whole").expandTo(it[b].getRange("Whole"));
+export const blockRange = (it, [a, b]) => it[a].getRange("Whole").expandTo(it[b].getRange("Whole"));
 
-async function deleteFast(context, it, blocks) {
+export async function deleteFast(context, it, blocks) {
   // Từ cuối lên đầu
   const ranges = blocks
     .slice()
@@ -64,7 +64,7 @@ async function deleteFast(context, it, blocks) {
   return nTables;
 }
 
-async function deleteSlow(context, it, blocks) {
+export async function deleteSlow(context, it, blocks) {
   let ok = 0;
   const fail = [];
   for (let n = blocks.length - 1; n >= 0; n--) {

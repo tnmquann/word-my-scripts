@@ -4,6 +4,28 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.0.0] - 2026-10-16
+
+**v2 beta**: first batch of tools migrated from the old VBA templates (`BigKeyUI.dotm`, `NHOM-WORD-BIEN-SOAN.dotm`). The manifest changes (two new groups and a task pane), so **re-install once** (the **Cập nhật** button or the install command), then restart Word. The remaining tools of `TonNgocMinhQuanProj.dotm` follow in later betas.
+
+### Added
+- Group **Chuẩn hoá BigKey** (from `BigKeyUI.dotm` → *Chuẩn hóa*):
+  - **Chuẩn hoá BigKey (cả đề / vùng chọn)**: numbering to text, Times New Roman 12, A–D options laid out 4/2/1 per line by estimated width (MathType objects and pictures kept), correct option red and underlined, `Câu i:` bold blue, *Lời giải* bold blue, `Chọn X` highlighted, empty lines and double spaces removed. Page setup (A4, 1.5 cm) on Word desktop only.
+  - **Check lỗi đề**: lists every problem at once (duplicate or skipped numbers, missing/duplicate/out-of-order options, missing answer, underline ≠ `Chọn X`, stray pictures) and selects the first faulty question. Text before the first question is a warning only.
+- Group **Xoá cần thiết** (from `NHOM-WORD-BIEN-SOAN.dotm`): **Xoá trích nguồn**, **Xoá lời giải**, **Xoá tác giả**, and **Xoá mức độ, khung…**, a task pane that replaces the old *Xóa mức độ* form: delete questions by level 1–4 (then renumber), delete ID tags and *Phân tích hướng dẫn giải*, replace solutions with n dotted lines, and add or remove question frames (8 border styles, 2 colours, 3 fills; Word desktop only).
+- **MY_SCRIPTS+** tab (companion template `MY_SCRIPTS_Desktop.dotm`, Word desktop, needs MathType): **MathType hoá**, **Lệch MathType**, **Lỗi Equation**, **Lệch Pic-Math**. The installer copies it into the Word Startup folder; the uninstaller removes it.
+- macOS installer and uninstaller (`install.sh`, `uninstall.sh`), published on the site and in the release zip. **Not tested on a Mac yet.**
+- Tests: option layout, real-exam checks from a read-only Word export (`tests/tools/export-docx.ps1`), Xoá helpers, and a companion smoke test against MathType.
+
+### Changed
+- Compared with the VBA versions:
+  - Chuẩn hoá BigKey **no longer converts tables to text** (the VBA crashed on exams with tables). Tables are left as they are.
+  - Question numbers continue from the first question's number instead of restarting at 1 (exams such as `Câu 31–60`).
+  - Xoá lời giải / Xoá mức độ stop at group lead-ins (`Questions 46-52: …`, `Đọc đoạn văn…`), so reading passages are kept.
+  - MathType hoá uses MathType's Toggle TeX instead of `SendKeys`, and no longer removes the spaces inside a formula.
+  - Lệch MathType and Lệch Pic-Math no longer reset the formatting of the surrounding text; Lệch Pic-Math adjusts each picture by its own height.
+- The equations round-trip test runs in jsdom instead of Edge headless.
+
 ## [1.4.6] - 2026-10-15
 
 This release adds a new ribbon group, so the manifest changes: **re-install once** (the **Cập nhật** button or the install command), then restart Word.

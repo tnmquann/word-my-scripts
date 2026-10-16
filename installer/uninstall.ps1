@@ -55,5 +55,12 @@ if (-not (Test-Path $InstallRoot) -or -not (Get-ChildItem $InstallRoot -Filter *
   Remove-Item -Path 'HKCU:\Software\Classes\myscripts' -Recurse -Force -ErrorAction SilentlyContinue
   Remove-Item -LiteralPath (Join-Path $env:LOCALAPPDATA 'MY_SCRIPTS') -Recurse -Force -ErrorAction SilentlyContinue
   Write-Host '==> Removed auto-updater' -ForegroundColor Cyan
+  $startup = (Get-ItemProperty 'HKCU:\Software\Microsoft\Office\16.0\Word\Options' -Name 'STARTUP-PATH' -ErrorAction SilentlyContinue).'STARTUP-PATH'
+  if (-not $startup) { $startup = Join-Path $env:APPDATA 'Microsoft\Word\STARTUP' }
+  $dotm = Join-Path $startup 'MY_SCRIPTS_Desktop.dotm'
+  if (Test-Path $dotm) {
+    try { Remove-Item -LiteralPath $dotm -Force; Write-Host '==> Removed desktop tools (MY_SCRIPTS_Desktop.dotm)' -ForegroundColor Cyan }
+    catch { Write-Warning "Close Word, then delete $dotm" }
+  }
 }
 Write-Host 'Done. Restart Word to remove the MY_SCRIPTS tab.' -ForegroundColor Green

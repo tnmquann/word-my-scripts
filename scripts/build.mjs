@@ -25,6 +25,7 @@ const ENTRIES = {
   commands: "src/runtime/commands.js",
   features: "src/features/index.js", // hot-reloaded per click via version.json "features"
   dialog: "src/ui/dialog/dialog.js",
+  xoa: "src/ui/xoa/xoa.js", // task pane "Xoá mức độ…" (nạp lại mỗi lần mở pane)
 };
 const PAGES = {
   "commands.html": "src/runtime/commands.html",
@@ -32,6 +33,7 @@ const PAGES = {
   "start.html": "src/ui/start/start.html",
   "author.html": "src/ui/author/author.html",
   "update.html": "src/ui/update/update.html",
+  "xoa.html": "src/ui/xoa/xoa.html",
 };
 
 const esbuildOptions = {
@@ -104,6 +106,14 @@ async function writeStatic(names) {
     if (!bom && /[^\x00-\x7f]/.test(text)) throw new Error(`${ps1} must be ASCII-only (it is run via irm | iex)`);
     await fs.writeFile(path.join(OUT, ps1), (bom ? "\uFEFF" : "") + text);
   }
+  // macOS installers (unverified): `curl -fsSL <BASE_URL>install.sh | bash` -> LF line endings, ASCII only
+  for (const sh of ["install.sh", "uninstall.sh"]) {
+    const text = fill(await fs.readFile(r("installer", sh), "utf8"), vars).replace(/\r\n/g, "\n");
+    if (/[^\x00-\x7f]/.test(text)) throw new Error(`${sh} must be ASCII-only`);
+    await fs.writeFile(path.join(OUT, sh), text);
+  }
+  // Companion VBA template (MathType tools), built on Windows by scripts/build-companion.ps1 and committed
+  await fs.copyFile(r("installer", "MY_SCRIPTS_Desktop.dotm"), path.join(OUT, "MY_SCRIPTS_Desktop.dotm"));
   await fs.writeFile(path.join(OUT, ".nojekyll"), "");
   await fs.writeFile(
     path.join(OUT, "version.json"),

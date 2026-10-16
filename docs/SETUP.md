@@ -116,6 +116,20 @@ Open Word. The **MY_SCRIPTS** tab appears on the ribbon.
 | `-ManifestUrl <url>` | Download the manifest from this URL (defaults to the prod Pages URL) |
 | `-ClearCache` | Clear the Office add-in web cache `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` (Word must be closed) |
 | `-NoUpdater` | Do not install the auto-updater (logon check + `myscripts:` protocol) |
+| `-NoDesktopTools` | Do not install `MY_SCRIPTS_Desktop.dotm` (the MathType tools) into the Word Startup folder |
+
+### Desktop tools (MY_SCRIPTS+)
+
+`install.ps1` also copies `MY_SCRIPTS_Desktop.dotm` into Word's Startup folder (Word option `STARTUP-PATH`, default `%APPDATA%\Microsoft\Word\STARTUP`), from next to the script or from the Pages site. Word trusts that folder, so the **MY_SCRIPTS+** tab (MathType tools) loads on the next start without a macro prompt. Word keeps Startup templates open, so the copy fails with a warning while Word is running. Updates replace the file, because the updater re-runs `install.ps1`. See [specs/companion/MathType_Tools.md](specs/companion/MathType_Tools.md).
+
+### macOS (unverified)
+
+```bash
+curl -fsSL https://tnmquann.github.io/word-my-scripts/install.sh | bash      # --clear-cache, --no-desktop-tools
+curl -fsSL https://tnmquann.github.io/word-my-scripts/uninstall.sh | bash
+```
+
+`install.sh` copies the manifest to `~/Library/Containers/com.microsoft.Word/Data/Documents/wef/<id>.manifest.xml` (Word's sideload folder) and the companion template to `~/Library/Group Containers/UBF8T346G9.Office/User Content.localized/Startup.localized/Word/`. The release zip contains both scripts. There is no auto-updater on macOS: code changes are live, and after a release that changes the manifest you run `install.sh` again. These scripts were written without a Mac to test on.
 
 ### Auto-update
 
@@ -160,7 +174,7 @@ What gets removed:
 
 - `HKCU\Software\Microsoft\Office\16.0\WEF\Developer\<add-in GUID>`
 - `%LOCALAPPDATA%\MY_SCRIPTS\manifests\<add-in GUID>.xml`
-- When no MY_SCRIPTS manifest remains: the auto-updater (the `MY_SCRIPTS Updater` Run value, the `HKCU\Software\Classes\myscripts` protocol and the `%LOCALAPPDATA%\MY_SCRIPTS` folder)
+- When no MY_SCRIPTS manifest remains: the auto-updater (the `MY_SCRIPTS Updater` Run value, the `HKCU\Software\Classes\myscripts` protocol and the `%LOCALAPPDATA%\MY_SCRIPTS` folder) and `MY_SCRIPTS_Desktop.dotm` from the Word Startup folder
 
 Manual removal, if the scripts cannot run: delete the registry value above in `regedit`, delete the `%LOCALAPPDATA%\MY_SCRIPTS` folder, and restart Word. To also discard cached web files, delete the contents of `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` while Word is closed. This clears the cache of all web add-ins, which re-download on next use.
 

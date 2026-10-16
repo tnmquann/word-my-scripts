@@ -228,6 +228,156 @@
                   </Items>
                 </Control>
               </Group>
+              <Group id="MyScripts.BigKey.Group">
+                <Label resid="BigKey.Group.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.BigKey.16"/>
+                  <bt:Image size="32" resid="Icon.BigKey.32"/>
+                  <bt:Image size="80" resid="Icon.BigKey.80"/>
+                </Icon>
+                <Control xsi:type="Menu" id="MyScripts.BigKey.Menu">
+                  <Label resid="BigKey.Menu.Label"/>
+                  <Supertip>
+                    <Title resid="BigKey.Title"/>
+                    <Description resid="BigKey.Menu.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.BigKey.16"/>
+                    <bt:Image size="32" resid="Icon.BigKey.32"/>
+                    <bt:Image size="80" resid="Icon.BigKey.80"/>
+                  </Icon>
+                  <Items>
+                    <Item id="MyScripts.BigKey.ChuanHoaBigKeyDe">
+                      <Label resid="ChuanHoaBigKeyDe.Label"/>
+                      <Supertip>
+                        <Title resid="ChuanHoaBigKeyDe.Title"/>
+                        <Description resid="ChuanHoaBigKeyDe.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.ChuanHoaBigKey.16"/>
+                        <bt:Image size="32" resid="Icon.ChuanHoaBigKey.32"/>
+                        <bt:Image size="80" resid="Icon.ChuanHoaBigKey.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>chuanHoaBigKeyDe</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.BigKey.ChuanHoaBigKeyBoiDen">
+                      <Label resid="ChuanHoaBigKeyBoiDen.Label"/>
+                      <Supertip>
+                        <Title resid="ChuanHoaBigKeyBoiDen.Title"/>
+                        <Description resid="ChuanHoaBigKeyBoiDen.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.ChuanHoaBigKey.16"/>
+                        <bt:Image size="32" resid="Icon.ChuanHoaBigKey.32"/>
+                        <bt:Image size="80" resid="Icon.ChuanHoaBigKey.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>chuanHoaBigKeyBoiDen</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.BigKey.CheckLoiDe">
+                      <Label resid="CheckLoiDe.Label"/>
+                      <Supertip>
+                        <Title resid="CheckLoiDe.Title"/>
+                        <Description resid="CheckLoiDe.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.CheckLoiDe.16"/>
+                        <bt:Image size="32" resid="Icon.CheckLoiDe.32"/>
+                        <bt:Image size="80" resid="Icon.CheckLoiDe.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>checkLoiDe</FunctionName>
+                      </Action>
+                    </Item>
+                  </Items>
+                </Control>
+              </Group>
+              <Group id="MyScripts.Xoa.Group">
+                <Label resid="Xoa.Group.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.Xoa.16"/>
+                  <bt:Image size="32" resid="Icon.Xoa.32"/>
+                  <bt:Image size="80" resid="Icon.Xoa.80"/>
+                </Icon>
+                <Control xsi:type="Menu" id="MyScripts.Xoa.Menu">
+                  <Label resid="Xoa.Menu.Label"/>
+                  <Supertip>
+                    <Title resid="Xoa.Title"/>
+                    <Description resid="Xoa.Menu.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.Xoa.16"/>
+                    <bt:Image size="32" resid="Icon.Xoa.32"/>
+                    <bt:Image size="80" resid="Icon.Xoa.80"/>
+                  </Icon>
+                  <Items>
+                    <Item id="MyScripts.Xoa.XoaTrichNguon">
+                      <Label resid="XoaTrichNguon.Label"/>
+                      <Supertip>
+                        <Title resid="XoaTrichNguon.Title"/>
+                        <Description resid="XoaTrichNguon.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.XoaTrichNguon.16"/>
+                        <bt:Image size="32" resid="Icon.XoaTrichNguon.32"/>
+                        <bt:Image size="80" resid="Icon.XoaTrichNguon.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>xoaTrichNguon</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.Xoa.XoaLoiGiai">
+                      <Label resid="XoaLoiGiai.Label"/>
+                      <Supertip>
+                        <Title resid="XoaLoiGiai.Title"/>
+                        <Description resid="XoaLoiGiai.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.XoaLoiGiai.16"/>
+                        <bt:Image size="32" resid="Icon.XoaLoiGiai.32"/>
+                        <bt:Image size="80" resid="Icon.XoaLoiGiai.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>xoaLoiGiai</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.Xoa.XoaTacGia">
+                      <Label resid="XoaTacGia.Label"/>
+                      <Supertip>
+                        <Title resid="XoaTacGia.Title"/>
+                        <Description resid="XoaTacGia.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.XoaTacGia.16"/>
+                        <bt:Image size="32" resid="Icon.XoaTacGia.32"/>
+                        <bt:Image size="80" resid="Icon.XoaTacGia.80"/>
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>xoaTacGia</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="MyScripts.Xoa.XoaMucDo">
+                      <Label resid="XoaMucDo.Label"/>
+                      <Supertip>
+                        <Title resid="XoaMucDo.Title"/>
+                        <Description resid="XoaMucDo.Tip"/>
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.XoaMucDo.16"/>
+                        <bt:Image size="32" resid="Icon.XoaMucDo.32"/>
+                        <bt:Image size="80" resid="Icon.XoaMucDo.80"/>
+                      </Icon>
+                      <Action xsi:type="ShowTaskpane">
+                        <TaskpaneId>MyScripts.Xoa</TaskpaneId>
+                        <SourceLocation resid="Xoa.Url"/>
+                      </Action>
+                    </Item>
+                  </Items>
+                </Control>
+              </Group>
               <Group id="MyScripts.Info.Group">
                 <Label resid="Info.Group.Label"/>
                 <Icon>
@@ -315,10 +465,35 @@
         <bt:Image id="Icon.EquationToLatex.16" DefaultValue="{{BASE_URL}}assets/equationToLatex-16.png"/>
         <bt:Image id="Icon.EquationToLatex.32" DefaultValue="{{BASE_URL}}assets/equationToLatex-32.png"/>
         <bt:Image id="Icon.EquationToLatex.80" DefaultValue="{{BASE_URL}}assets/equationToLatex-80.png"/>
+        <bt:Image id="Icon.BigKey.16" DefaultValue="{{BASE_URL}}assets/bigkey-16.png"/>
+        <bt:Image id="Icon.BigKey.32" DefaultValue="{{BASE_URL}}assets/bigkey-32.png"/>
+        <bt:Image id="Icon.BigKey.80" DefaultValue="{{BASE_URL}}assets/bigkey-80.png"/>
+        <bt:Image id="Icon.ChuanHoaBigKey.16" DefaultValue="{{BASE_URL}}assets/chuanHoaBigKey-16.png"/>
+        <bt:Image id="Icon.ChuanHoaBigKey.32" DefaultValue="{{BASE_URL}}assets/chuanHoaBigKey-32.png"/>
+        <bt:Image id="Icon.ChuanHoaBigKey.80" DefaultValue="{{BASE_URL}}assets/chuanHoaBigKey-80.png"/>
+        <bt:Image id="Icon.CheckLoiDe.16" DefaultValue="{{BASE_URL}}assets/checkLoiDe-16.png"/>
+        <bt:Image id="Icon.CheckLoiDe.32" DefaultValue="{{BASE_URL}}assets/checkLoiDe-32.png"/>
+        <bt:Image id="Icon.CheckLoiDe.80" DefaultValue="{{BASE_URL}}assets/checkLoiDe-80.png"/>
+        <bt:Image id="Icon.Xoa.16" DefaultValue="{{BASE_URL}}assets/xoa-16.png"/>
+        <bt:Image id="Icon.Xoa.32" DefaultValue="{{BASE_URL}}assets/xoa-32.png"/>
+        <bt:Image id="Icon.Xoa.80" DefaultValue="{{BASE_URL}}assets/xoa-80.png"/>
+        <bt:Image id="Icon.XoaTrichNguon.16" DefaultValue="{{BASE_URL}}assets/xoaTrichNguon-16.png"/>
+        <bt:Image id="Icon.XoaTrichNguon.32" DefaultValue="{{BASE_URL}}assets/xoaTrichNguon-32.png"/>
+        <bt:Image id="Icon.XoaTrichNguon.80" DefaultValue="{{BASE_URL}}assets/xoaTrichNguon-80.png"/>
+        <bt:Image id="Icon.XoaLoiGiai.16" DefaultValue="{{BASE_URL}}assets/xoaLoiGiai-16.png"/>
+        <bt:Image id="Icon.XoaLoiGiai.32" DefaultValue="{{BASE_URL}}assets/xoaLoiGiai-32.png"/>
+        <bt:Image id="Icon.XoaLoiGiai.80" DefaultValue="{{BASE_URL}}assets/xoaLoiGiai-80.png"/>
+        <bt:Image id="Icon.XoaTacGia.16" DefaultValue="{{BASE_URL}}assets/xoaTacGia-16.png"/>
+        <bt:Image id="Icon.XoaTacGia.32" DefaultValue="{{BASE_URL}}assets/xoaTacGia-32.png"/>
+        <bt:Image id="Icon.XoaTacGia.80" DefaultValue="{{BASE_URL}}assets/xoaTacGia-80.png"/>
+        <bt:Image id="Icon.XoaMucDo.16" DefaultValue="{{BASE_URL}}assets/xoaMucDo-16.png"/>
+        <bt:Image id="Icon.XoaMucDo.32" DefaultValue="{{BASE_URL}}assets/xoaMucDo-32.png"/>
+        <bt:Image id="Icon.XoaMucDo.80" DefaultValue="{{BASE_URL}}assets/xoaMucDo-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="{{BASE_URL}}commands.html?mv={{VERSION}}"/>
         <bt:Url id="About.Url" DefaultValue="{{BASE_URL}}author.html?from=ribbon"/>
+        <bt:Url id="Xoa.Url" DefaultValue="{{BASE_URL}}xoa.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="Tab.Label" DefaultValue="{{TAB_LABEL}}"/>
@@ -352,6 +527,26 @@
         <bt:String id="LatexToEquation.Title" DefaultValue="Chuyển LaTeX thành equation Word"/>
         <bt:String id="EquationToLatex.Label" DefaultValue="Equation → LaTeX"/>
         <bt:String id="EquationToLatex.Title" DefaultValue="Chuyển equation Word thành LaTeX"/>
+        <bt:String id="BigKey.Group.Label" DefaultValue="Chuẩn hoá BigKey"/>
+        <bt:String id="BigKey.Menu.Label" DefaultValue="Chuẩn hoá BigKey"/>
+        <bt:String id="BigKey.Title" DefaultValue="Chuẩn hoá BigKey — định dạng đề trắc nghiệm A–D"/>
+        <bt:String id="ChuanHoaBigKeyDe.Label" DefaultValue="Chuẩn hoá BigKey (cả đề)"/>
+        <bt:String id="ChuanHoaBigKeyDe.Title" DefaultValue="Chuẩn hoá BigKey — toàn bộ tài liệu"/>
+        <bt:String id="ChuanHoaBigKeyBoiDen.Label" DefaultValue="Chuẩn hoá BigKey (vùng chọn)"/>
+        <bt:String id="ChuanHoaBigKeyBoiDen.Title" DefaultValue="Chuẩn hoá BigKey — chỉ vùng đang bôi đen"/>
+        <bt:String id="CheckLoiDe.Label" DefaultValue="Check lỗi đề"/>
+        <bt:String id="CheckLoiDe.Title" DefaultValue="Check lỗi đề — số câu, phương án, đáp án"/>
+        <bt:String id="Xoa.Group.Label" DefaultValue="Xoá cần thiết"/>
+        <bt:String id="Xoa.Menu.Label" DefaultValue="Xoá cần thiết"/>
+        <bt:String id="Xoa.Title" DefaultValue="Xoá cần thiết — trích nguồn, lời giải, tác giả, mức độ"/>
+        <bt:String id="XoaTrichNguon.Label" DefaultValue="Xoá trích nguồn"/>
+        <bt:String id="XoaTrichNguon.Title" DefaultValue="Xoá trích nguồn / mã ở đầu câu hỏi"/>
+        <bt:String id="XoaLoiGiai.Label" DefaultValue="Xoá lời giải"/>
+        <bt:String id="XoaLoiGiai.Title" DefaultValue="Xoá lời giải của mọi câu"/>
+        <bt:String id="XoaTacGia.Label" DefaultValue="Xoá tác giả"/>
+        <bt:String id="XoaTacGia.Title" DefaultValue="Xoá dòng và cụm &quot;Tác giả&quot;"/>
+        <bt:String id="XoaMucDo.Label" DefaultValue="Xoá mức độ, khung…"/>
+        <bt:String id="XoaMucDo.Title" DefaultValue="Xoá mức độ, ID, dòng chấm, khung (khung bên phải)"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="DGNL.Menu.Tip" DefaultValue="Công cụ cho đề ĐGNL ĐHQG-HCM: chuẩn hoá dòng dẫn Toán, đánh số câu, gạch chân đáp án Ngữ Văn, sửa ngắt dòng Tiếng Anh, xoá đáp án chi tiết."/>
@@ -367,6 +562,15 @@
         <bt:String id="Equations.Menu.Tip" DefaultValue="Chuyển công thức giữa LaTeX ($…$, $…$, \[…\]) và equation Word. Mỗi lệnh hỏi phạm vi: vùng chọn hoặc toàn bộ tài liệu."/>
         <bt:String id="LatexToEquation.Tip" DefaultValue="Dành cho: tài liệu có công thức LaTeX dạng $…$, $…$ hoặc \[…\]. Thay bằng equation Word (inline/display). Hỏi phạm vi: vùng chọn hoặc toàn bộ tài liệu. Cần: LaTeX hợp lệ."/>
         <bt:String id="EquationToLatex.Tip" DefaultValue="Dành cho: tài liệu có equation Word (OMML). Thay bằng LaTeX $…$ (inline) hoặc $…$ (display). Hỏi phạm vi: vùng chọn hoặc toàn bộ. Không hỗ trợ MathType; toàn tài liệu bỏ qua đoạn có hình/field."/>
+        <bt:String id="BigKey.Menu.Tip" DefaultValue="Chuẩn hoá đề trắc nghiệm theo mẫu BigKey (dàn phương án 1/2/4 dòng, đánh số câu, lời giải) và kiểm tra lỗi đề. Bảng trong đề được giữ nguyên."/>
+        <bt:String id="ChuanHoaBigKeyDe.Tip" DefaultValue="Dành cho: đề trắc nghiệm A–D &quot;Câu N.&quot;. Đổi số tự động thành chữ, TNR 12, dàn phương án theo độ rộng, đáp án đỏ gạch chân, highlight &quot;Chọn X&quot;. Giữ nguyên bảng. Cần: đáp án gạch chân hoặc &quot;Chọn X&quot;."/>
+        <bt:String id="ChuanHoaBigKeyBoiDen.Tip" DefaultValue="Dành cho: một phần đề trắc nghiệm A–D. Như Chuẩn hoá BigKey nhưng chỉ xử lý các đoạn trong vùng bôi đen; không đổi khổ giấy. Cần: bôi đen trọn các câu cần chuẩn hoá."/>
+        <bt:String id="CheckLoiDe.Tip" DefaultValue="Dành cho: đề trắc nghiệm trước khi chuẩn hoá. Liệt kê số câu trùng/nhảy, thiếu/trùng/sai thứ tự A–D, thiếu đáp án, gạch chân khác &quot;Chọn X&quot;, hình lạc; chọn sẵn câu lỗi đầu tiên. Không sửa đề."/>
+        <bt:String id="Xoa.Menu.Tip" DefaultValue="Xoá nhanh phần không cần trong đề: trích nguồn, lời giải, tác giả; xoá câu theo mức độ, mã ID, thay lời giải bằng dòng chấm, tạo khung câu hỏi."/>
+        <bt:String id="XoaTrichNguon.Tip" DefaultValue="Dành cho: đề có cụm [mã]/(nguồn) ngay sau &quot;Câu N.&quot;. Xoá các cụm đó ở đầu mỗi câu. Cần: câu hỏi &quot;Câu N.&quot; (gõ tay hoặc tự động)."/>
+        <bt:String id="XoaLoiGiai.Tip" DefaultValue="Dành cho: tạo đề cho học sinh. Xoá từ &quot;Lời giải&quot;/&quot;Hướng dẫn giải&quot; đến trước câu kế tiếp (kể cả bảng, hình), giữ lời dẫn nhóm câu và bài đọc. Có xoá nội dung — nên lưu bản sao."/>
+        <bt:String id="XoaTacGia.Tip" DefaultValue="Dành cho: đề tổng hợp có ghi tác giả. Xoá dòng bắt đầu bằng &quot;Tác giả&quot; và cụm [(Tác giả …)] trong câu. Có xoá nội dung — nên lưu bản sao."/>
+        <bt:String id="XoaMucDo.Tip" DefaultValue="Dành cho: đề có mã ID [2D1-k]. Mở khung bên phải: xoá câu mức 1–4, mã ID, hướng suy luận; thay lời giải bằng dòng chấm; tạo/huỷ khung câu (khung chỉ trên Word desktop)."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

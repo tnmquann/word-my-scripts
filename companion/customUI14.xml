@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Ribbon của MY_SCRIPTS Desktop (template .dotm đặt trong thư mục Startup của Word).
+     Tab riêng: tab VBA không gộp được vào tab MY_SCRIPTS của add-in Office JS. -->
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+  <ribbon>
+    <tabs>
+      <tab id="MyScriptsDesktop" label="MY_SCRIPTS+">
+        <group id="MathTypeTools" label="Công cụ MathType">
+          <button id="MS_MathTypeHoa" label="MathType hoá" size="large" imageMso="EquationInsertGallery"
+                  screentip="MathType hoá — LaTeX thành MathType"
+                  supertip="Dành cho: đề có công thức LaTeX. Đổi $…$, \[…\] trong vùng chọn (chưa chọn: cả tài liệu) thành đối tượng MathType bằng Toggle TeX. Cần: MathType đã cài."
+                  onAction="MS_MathTypeHoa"/>
+          <button id="MS_LechMathType" label="Lệch MathType" size="large" imageMso="EquationRadicalGallery"
+                  screentip="Lệch MathType — căn lại công thức MathType"
+                  supertip="Dành cho: công thức MathType bị nâng/hạ lệch dòng. Đưa vị trí về 0 (vùng chọn hoặc cả tài liệu) rồi mở Format Equations của MathType. Cần: MathType đã cài."
+                  onAction="MS_LechMathType"/>
+          <button id="MS_LoiEquation" label="Lỗi Equation" size="large" imageMso="EquationOptions"
+                  screentip="Lỗi Equation — font Cambria Math"
+                  supertip="Dành cho: equation Word hiển thị sai font sau khi copy. Đặt font Cambria Math cho mọi equation trong tài liệu."
+                  onAction="MS_LoiEquation"/>
+          <button id="MS_LechPicMath" label="Lệch Pic-Math" size="large" imageMso="PicturePositionGallery"
+                  screentip="Lệch Pic-Math — hạ ảnh công thức thẳng dòng"
+                  supertip="Dành cho: ảnh công thức nằm cao hơn dòng chữ. Hạ từng ảnh/MathType trong vùng chọn theo chiều cao của nó; không đổi định dạng chữ. Cần: bôi đen đoạn có ảnh."
+                  onAction="MS_LechPicMath"/>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>

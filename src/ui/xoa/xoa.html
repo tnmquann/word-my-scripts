@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MY_SCRIPTS — Xoá cần thiết</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <!-- Thay form HO_tro ("Xóa mức độ") của NHOM-WORD-BIEN-SOAN.dotm. Logic: src/features/xoa/xoaCanThiet.js -->
+    <style>
+      :root { --fg: #242424; --muted: #616161; --line: #e0e0e0; --accent: #2b579a; --bg: #ffffff; --card: #f7f9fc; --err: #a4262c; --ok: #107c10; }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 12px; font: 13px/1.45 Aptos, "Aptos Display", Arial, sans-serif; color: var(--fg); background: var(--bg); }
+      h2 { font-size: 13px; margin: 14px 0 6px; padding-bottom: 3px; border-bottom: 1px solid var(--line); }
+      h2:first-of-type { margin-top: 0; }
+      label { display: inline-flex; align-items: center; gap: 4px; margin: 2px 10px 2px 0; }
+      .row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0; }
+      button { font: inherit; padding: 5px 10px; border: 1px solid var(--accent); border-radius: 4px; background: var(--accent); color: #fff; cursor: pointer; }
+      button.sec { background: #fff; color: var(--accent); }
+      button:disabled { opacity: 0.5; cursor: default; }
+      select, input[type="number"] { font: inherit; padding: 2px 4px; }
+      input[type="number"] { width: 52px; }
+      .muted { color: var(--muted); font-size: 12px; }
+      .warn { padding: 6px 8px; border-left: 3px solid #c19c00; background: #fff8e1; font-size: 12px; margin: 6px 0; }
+      #status { margin-top: 12px; padding: 8px; border-radius: 4px; background: var(--card); white-space: pre-wrap; min-height: 1.5em; }
+      #status.err { color: var(--err); }
+      #status.ok { color: var(--ok); }
+    </style>
+  </head>
+  <body>
+    <h2>Xoá câu theo mức độ</h2>
+    <div class="muted">Mức lấy từ mã ID cuối câu dạng [2D1-<b>k</b>]. Sau khi xoá, đánh lại số "Câu N." gõ tay.</div>
+    <div class="row">
+      <label><input type="checkbox" name="lv" value="1" />Mức 1</label>
+      <label><input type="checkbox" name="lv" value="2" />Mức 2</label>
+      <label><input type="checkbox" name="lv" value="3" />Mức 3</label>
+      <label><input type="checkbox" name="lv" value="4" />Mức 4</label>
+    </div>
+    <div class="row"><button data-act="mucDo">Xoá các mức đã chọn</button></div>
+
+    <h2>Xoá nội dung</h2>
+    <div class="row">
+      <button class="sec" data-act="loiGiai">Xoá lời giải</button>
+      <button class="sec" data-act="suyLuan">Xoá hướng suy luận</button>
+      <button class="sec" data-act="id">Xoá mã ID</button>
+    </div>
+
+    <h2>Dòng chấm (đề cho học sinh)</h2>
+    <div class="row">
+      <label>Số dòng <input type="number" id="nDots" min="1" max="30" value="7" /></label>
+      <button class="sec" data-act="dots">Thay lời giải bằng dòng chấm</button>
+    </div>
+
+    <h2>Khung câu hỏi</h2>
+    <div id="webWarn" class="warn" hidden>Tạo/Huỷ khung chỉ chạy trên Word desktop (Windows/Mac), không chạy trên Word Online.</div>
+    <div class="row">
+      <label>Kiểu <select id="style"></select></label>
+      <label>Màu viền <select id="color"><option value="#0000FF">Xanh</option><option value="#FF00FF">Hồng</option></select></label>
+      <label>Nền <select id="fill"><option value="#FAF0E2">Vàng nhạt</option><option value="#CCFFCC">Xanh lá nhạt</option><option value="">Không tô</option></select></label>
+    </div>
+    <div class="row">
+      <button class="sec desk" data-act="khung">Tạo khung</button>
+      <button class="sec desk" data-act="huyKhung">Huỷ khung</button>
+    </div>
+
+    <p class="muted">Các lệnh xoá có thể hoàn tác bằng Ctrl+Z, nhưng nên chạy trên bản sao của tài liệu.</p>
+    <div id="status" role="status" aria-live="polite"></div>
+    <script src="{{xoa.js}}"></script>
+  </body>
+</html>

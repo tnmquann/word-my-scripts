@@ -45,6 +45,22 @@ const ICONS = {
   // Equation -> LaTeX: radical, arrow, braces
   equationToLatex: `<path d="M2 18h1.5l2 4 3-11H13" ${S}/>
          <path d="M16 16h5M19 13.5l2.5 2.5L19 18.5" ${S}/><path d="M27 9c1.5 0 2 1 2 3s.5 3 2 4c-1.5 1-2 2-2 4s-.5 3-2 3" ${S}/>`,
+  // Chuẩn hoá BigKey menu: key
+  bigkey: `<circle cx="10" cy="16" r="5" ${S}/><path d="M15 16h13M23 16v4M27 16v3" ${S}/>`,
+  // Chuẩn hoá BigKey: question line + four option columns
+  chuanHoaBigKey: `<path d="M5 8h22" ${S}/><path d="M5 15h4M13 15h4M21 15h4M5 22h4M13 22h4M21 22h4" ${S}/>`,
+  // Check lỗi đề: magnifier over a line
+  checkLoiDe: `<circle cx="14" cy="14" r="7" ${S}/><path d="M19 19l7 7M11 14h6" ${S}/>`,
+  // Xoá cần thiết menu: eraser
+  xoa: `<path d="M18 6l8 8-11 11H9l-4-4z" ${S}/><path d="M12 12l8 8M15 25h12" ${S}/>`,
+  // Xoá trích nguồn: bracket tag struck through
+  xoaTrichNguon: `<path d="M10 8H7v16h3M22 8h3v16h-3" ${S}/><path d="M12 20l8-8" ${S}/>`,
+  // Xoá lời giải: page with lines and a cross
+  xoaLoiGiai: `${page}<path d="M13 16l6 6M19 16l-6 6" ${S}/>`,
+  // Xoá tác giả: person with minus
+  xoaTacGia: `<circle cx="13" cy="11" r="5" ${S}/><path d="M4 27c1.5-5 4.5-7.5 9-7.5 2.2 0 4 .6 5.5 1.7" ${S}/><path d="M21 24h8" ${S}/>`,
+  // Xoá mức độ… (task pane): level bars
+  xoaMucDo: `<path d="M7 26v-6M13 26v-10M19 26v-14M25 26V6" ${S}/>`,
   // Tác giả: person
   author: `<circle cx="16" cy="11" r="5" ${S}/><path d="M6.5 27c1.5-5 5-7.5 9.5-7.5s8 2.5 9.5 7.5" ${S}/>`,
   // Kiểm tra cập nhật: circular arrow

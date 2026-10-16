@@ -13,6 +13,9 @@
     2. manifest.xml next to this script (release package)
     3. -ManifestUrl  (defaults to the published GitHub Pages manifest)
 
+  Also installs MY_SCRIPTS_Desktop.dotm (MathType tools, VBA) into the Word Startup
+  folder, from next to this script or from the same site (skip with -NoDesktopTools).
+
 .EXAMPLE
   .\install.ps1
 .EXAMPLE
@@ -23,7 +26,8 @@ param(
   [string]$ManifestPath,
   [string]$ManifestUrl = '{{BASE_URL}}manifest.xml',
   [switch]$ClearCache,
-  [switch]$NoUpdater
+  [switch]$NoUpdater,
+  [switch]$NoDesktopTools
 )
 
 $ErrorActionPreference = 'Stop'
@@ -94,6 +98,28 @@ if (-not $NoUpdater) {
     Write-Step "Auto-update enabled (logon check + myscripts:update)"
   } catch {
     Write-Warning "Could not set up the auto-updater: $($_.Exception.Message)"
+  }
+}
+
+# ---- 4b. Desktop tools: MY_SCRIPTS_Desktop.dotm in the Word Startup folder (trusted by default) ----
+if (-not $NoDesktopTools) {
+  $startup = (Get-ItemProperty 'HKCU:\Software\Microsoft\Office\16.0\Word\Options' -Name 'STARTUP-PATH' -ErrorAction SilentlyContinue).'STARTUP-PATH'
+  if (-not $startup) { $startup = Join-Path $env:APPDATA 'Microsoft\Word\STARTUP' }
+  $dotmName = 'MY_SCRIPTS_Desktop.dotm'
+  $localDotm = if ($here) { Join-Path $here $dotmName } else { $null }
+  try {
+    New-Item -ItemType Directory -Force -Path $startup | Out-Null
+    $dest = Join-Path $startup $dotmName
+    if ($localDotm -and (Test-Path $localDotm)) {
+      Copy-Item -LiteralPath $localDotm -Destination $dest -Force
+    } else {
+      $base = $ManifestUrl -replace 'manifest\.xml$', ''
+      Invoke-WebRequest -Uri ($base + $dotmName) -OutFile $dest -UseBasicParsing
+    }
+    Write-Step "Desktop tools (MathType) installed: $dest"
+  } catch {
+    # Word keeps Startup templates open: the copy fails while Word is running
+    Write-Warning "Could not install $dotmName (close Word and re-run): $($_.Exception.Message)"
   }
 }
 
