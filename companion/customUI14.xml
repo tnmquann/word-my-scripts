@@ -22,6 +22,31 @@
                   screentip="Lệch Pic-Math — hạ ảnh công thức thẳng dòng"
                   supertip="Dành cho: ảnh công thức nằm cao hơn dòng chữ. Hạ từng ảnh/MathType trong vùng chọn theo chiều cao của nó; không đổi định dạng chữ. Cần: bôi đen đoạn có ảnh."
                   onAction="MS_LechPicMath"/>
+          <menu id="MS_MathColor" label="MathType Color" size="large" imageMso="FontColorPicker"
+                screentip="MathType Color — đổi màu công thức MathType"
+                supertip="Dành cho: công thức MathType. Đổi màu công thức trong vùng chọn (chưa chọn: cả tài liệu) bằng Toggle TeX + \color. Cần: MathType đã cài.">
+            <button id="MS_MathColorBlue" label="Xanh" tag="blue" onAction="MS_MathColor"
+                    screentip="Xanh — tô xanh dương công thức MathType"
+                    supertip="Dành cho: công thức MathType. Tô xanh dương (\color{blue}) công thức trong vùng chọn (chưa chọn: cả tài liệu), thay màu cũ. Cần: MathType đã cài."/>
+            <button id="MS_MathColorRed" label="Đỏ" tag="red" onAction="MS_MathColor"
+                    screentip="Đỏ — tô đỏ công thức MathType"
+                    supertip="Dành cho: công thức MathType. Tô đỏ (\color{red}) công thức trong vùng chọn (chưa chọn: cả tài liệu), thay màu cũ. Cần: MathType đã cài."/>
+            <button id="MS_MathColorPurple" label="Tím" tag="purple" onAction="MS_MathColor"
+                    screentip="Tím — tô tím công thức MathType"
+                    supertip="Dành cho: công thức MathType. Tô tím (\color{purple}) công thức trong vùng chọn (chưa chọn: cả tài liệu), thay màu cũ. Cần: MathType đã cài."/>
+            <button id="MS_MathColorGreen" label="Xanh lá" tag="green" onAction="MS_MathColor"
+                    screentip="Xanh lá — tô xanh lá công thức MathType"
+                    supertip="Dành cho: công thức MathType. Tô xanh lá (\color{green}) công thức trong vùng chọn (chưa chọn: cả tài liệu), thay màu cũ. Cần: MathType đã cài."/>
+            <button id="MS_MathColorMagenta" label="Hồng" tag="magenta" onAction="MS_MathColor"
+                    screentip="Hồng — tô hồng công thức MathType"
+                    supertip="Dành cho: công thức MathType. Tô hồng (\color{magenta}) công thức trong vùng chọn (chưa chọn: cả tài liệu), thay màu cũ. Cần: MathType đã cài."/>
+            <button id="MS_MathColorBlack" label="Đen" tag="black" onAction="MS_MathColor"
+                    screentip="Đen — bỏ màu công thức MathType"
+                    supertip="Dành cho: công thức MathType. Bỏ mọi \color trong công thức ở vùng chọn (chưa chọn: cả tài liệu), về màu đen mặc định. Cần: MathType đã cài."/>
+            <button id="MS_MathColorWhite" label="Trắng" tag="white" onAction="MS_MathColor"
+                    screentip="Trắng — tô trắng (ẩn) công thức MathType"
+                    supertip="Dành cho: công thức MathType. Tô trắng (\color{white}) công thức trong vùng chọn (chưa chọn: cả tài liệu) để ẩn trên nền trắng. Cần: MathType đã cài."/>
+          </menu>
         </group>
       </tab>
     </tabs>

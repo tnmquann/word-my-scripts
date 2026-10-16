@@ -4,6 +4,29 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.1.0] - 2026-10-17
+
+The manifest changes (new pane item, WordApi 1.4), so **re-install once** (the **Cập nhật** button or the install command), then restart Word. The companion template also changes: the installer replaces it (close Word first).
+
+### Added
+- **Công cụ BigKey…** (Chuẩn hoá BigKey ▾): a task pane with the old BigKey *Chuẩn hóa* sub-menus (2020 + 2024 versions):
+  - Chuẩn hoá: Chuẩn hoá màu PA-ĐA-LG, Chèn / Xoá "Câu 0:".
+  - ID: Gắn ID mức độ - nhóm (NB/TH/VD/VDC, nhóm 1–15; jumps to the next question), Ẩn/Hiện ID, Tô màu ID, Xoá ID, Xoá nguồn tác giả.
+  - Phương án: Xuống dòng các phương án, Chấm cuối / Xoá chấm cuối phương án, Chuyển đáp án thành phương án.
+  - Đáp án: Tạo bảng đáp án (10 columns, "MÃ ĐỀ: 001"), Ghi đáp án vào lời giải, Gạch chân đáp án từ bảng đáp án / từ lời giải / highlight đỏ.
+  - Lời giải: Chèn lời giải, Ẩn/Hiện lời giải, Xoá lời giải. Số thứ tự: Đánh số thứ tự (start number field), Chuyển STT Auto sang Text. Hình ảnh: Picture Inline WithText, Căn giữa hình ảnh.
+- **MathType Color** (MY_SCRIPTS+ tab, needs MathType): Xanh, Đỏ, Tím, Xanh lá, Hồng, Đen (remove colour), Trắng — on the selected equations, or all of them.
+
+### Changed
+- Minimum requirement: WordApi 1.4 (Office 2024 or later; Microsoft 365 recommended).
+- Answer tools edit option blocks in place (layout, tab stops and content kept). Unlike the VBA, *Chuyển đáp án thành phương án* no longer removes every underline in the document, and *Gạch chân đáp án highlight đỏ* only looks inside options.
+
+### Fixed
+- Chuẩn hoá BigKey: the last question (or any question split across two chunks) sometimes needed a second run. Chunks are now cut only at question starts, the document's last paragraph is no longer replaced through OOXML, empty leftovers are removed right after each OOXML step, and option detection skips empty paragraphs.
+
+### Not ported
+- *Gắn ID6* and *Gắn Nguồn tác giả* need BigKey's Bank data (`%APPDATA%\BigKey`). *Quét lỗi* is covered by *Check lỗi đề*.
+
 ## [2.0.0-beta.5] - 2026-10-16
 
 Code-only fix for **Chuẩn hoá BigKey**. It applies on the next click.

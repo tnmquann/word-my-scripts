@@ -2,9 +2,9 @@
 
 | | |
 | --- | --- |
-| Ribbon | Tab **MY_SCRIPTS+** → *Công cụ MathType* → **MathType hoá** / **Lệch MathType** / **Lỗi Equation** / **Lệch Pic-Math** |
+| Ribbon | Tab **MY_SCRIPTS+** → *Công cụ MathType* → **MathType hoá** / **Lệch MathType** / **Lỗi Equation** / **Lệch Pic-Math** / **MathType Color ▾** (Xanh, Đỏ, Tím, Xanh lá, Hồng, Đen, Trắng) |
 | File | `installer/MY_SCRIPTS_Desktop.dotm`, built from `companion/MathTools.bas` + `companion/customUI14.xml` by `scripts/build-companion.ps1` |
-| Origin | *Công cụ MathType* group of `NHOM-WORD-BIEN-SOAN.dotm` (`S_MATH.bas`) |
+| Origin | *Công cụ MathType* group of `NHOM-WORD-BIEN-SOAN.dotm` (`S_MATH.bas`); *MathType Color* menu of `BigKeyUI.dotm` (`w_MathTypeColor.bas`) |
 | Platforms | Word desktop for Windows (tested) and Mac (not tested). Not available on Word on the web (no VBA). |
 | Requires | MathType installed and loaded in Word (for MathType hoá and Lệch MathType). |
 
@@ -19,6 +19,7 @@ Office JS cannot call MathType: MathType is a COM/VBA add-in, and OLE equation o
 | MathType hoá | Runs MathType's **Toggle TeX** (`MTCommand_TeXToggle`) on the selection: every `$…$`, `$$…$$`, `\[…\]`, `\(…\)` becomes a MathType object (`Equation.DSMT4`). A selection without delimiters is trimmed and wrapped in `$…$` first. With no selection it asks, then converts the whole document. | The VBA removed every space in the selection (`\alpha x` → `\alphax`), cut it and drove the MathType window with `SendKeys`. Toggle TeX needs no keystrokes, so it also works on Mac. |
 | Lệch MathType | Resets the raised/lowered position (`Font.Position`) of MathType objects in the selection (or the whole document) to 0, then opens MathType's *Format Equations* dialog. | The VBA called `Selection.ClearFormatting`, which also removed bold, colours and paragraph formatting. |
 | Lỗi Equation | Sets the font of every Word equation (OMML) to Cambria Math and reports how many were changed. | Same behaviour, plus a count. |
+| MathType Color ▾ | For each MathType object in the selection (nothing selected, or no MathType in the selection: the whole document): Toggle TeX, remove every `\color{…}` / `\color[model]{…}`, insert `\color{<colour>}` after the opening delimiter (`$`, `$$`, `\[`, `\(`), toggle back. *Đen* only removes the colour. Works from the last equation to the first. | The VBA replaced text in the whole document even when one equation was selected (also colouring `$…$` text that was not MathType), did not remove `\color{white}`, turned `\[…\]` into `$…$`, counted every OLE object as an equation and cleared Undo. |
 | Lệch Pic-Math | Lowers each picture or MathType object in the selection by `-height/2 + 3.5 pt` (height ≥ 14.4 pt) or `-height/2 + 3 pt`, so it sits on the text baseline. | The VBA used the height of the first picture for the whole selection and reset all character formatting of the selection. |
 
 If MathType cannot be called, the command shows *Không gọi được MathType…* instead of failing silently.
@@ -45,6 +46,7 @@ Word must be closed while installing: it keeps Startup templates open.
 - [ ] No selection → confirmation prompt → every delimited formula in the document is converted.
 - [ ] Lệch MathType on a raised MathType object → position 0, then the Format Equations dialog opens; bold text around it keeps its formatting.
 - [ ] Lỗi Equation on equations pasted with another font → Cambria Math.
+- [ ] MathType Color: select one equation → Xanh colours only that one; Đỏ replaces blue; Đen removes the colour; nothing selected → every MathType equation; display equations stay display.
 - [ ] Lệch Pic-Math on a line with a formula picture → the picture sits on the baseline; the text formatting is unchanged.
 - [ ] Without MathType: MathType hoá shows the *Không gọi được MathType* message.
 - [ ] Mac: the MY_SCRIPTS+ tab appears after installing with `install.sh` (unverified).

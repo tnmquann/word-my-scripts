@@ -29,8 +29,12 @@ const child = (el, ns, name) => {
   return null;
 };
 
-/** Tách các đoạn thành chuỗi token: ký tự (kèm rPr), tab, br, hoặc node nguyên khối (hình, công thức). */
-function tokenize(paras) {
+/**
+ * Tách các đoạn thành chuỗi token: ký tự (kèm rPr), tab, br, hoặc node nguyên khối (hình, công thức).
+ * Tham chiếu về node gốc (cho optionTools sửa tại chỗ): run, node (w:t/w:tab/w:br/… gốc), idx (offset UTF-16 trong w:t);
+ * br nối 2 đoạn không có run/node.
+ */
+export function tokenize(paras) {
   const toks = [];
   paras.forEach((p, pi) => {
     if (pi > 0) toks.push({ t: "br" });
@@ -40,22 +44,27 @@ function tokenize(paras) {
         const rPr = child(n, W, "rPr");
         for (let c = n.firstElementChild; c; c = c.nextElementSibling) {
           if (c.namespaceURI !== W) continue;
-          if (c.localName === "t") for (const ch of c.textContent) toks.push({ t: "ch", ch, rPr });
-          else if (c.localName === "tab") toks.push({ t: "tab" });
-          else if (c.localName === "br" && c.getAttributeNS(W, "type") !== "page") toks.push({ t: "br" });
+          if (c.localName === "t") {
+            let idx = 0;
+            for (const ch of c.textContent) {
+              toks.push({ t: "ch", ch, rPr, run: n, node: c, idx });
+              idx += ch.length;
+            }
+          } else if (c.localName === "tab") toks.push({ t: "tab", run: n, node: c });
+          else if (c.localName === "br" && c.getAttributeNS(W, "type") !== "page") toks.push({ t: "br", run: n, node: c });
           else if (c.localName !== "rPr" && !(c.localName === "br")) {
             // drawing / object / pict / sym… : giữ nguyên cả run (chỉ phần này)
             const r = n.cloneNode(false);
             if (rPr) r.appendChild(rPr.cloneNode(true));
             r.appendChild(c.cloneNode(true));
-            toks.push({ t: "node", el: r, w: nodeWidth(c) });
+            toks.push({ t: "node", el: r, w: nodeWidth(c), run: n, node: c });
           }
         }
       } else if (n.namespaceURI === W && /^(bookmarkStart|bookmarkEnd|proofErr|lastRenderedPageBreak)$/.test(n.localName)) {
         continue;
       } else {
         // m:oMath, w:hyperlink, w:fldSimple, w:ins… : giữ nguyên
-        toks.push({ t: "node", el: n.cloneNode(true), w: nodeWidth(n) });
+        toks.push({ t: "node", el: n.cloneNode(true), w: nodeWidth(n), node: n });
       }
     }
   });
@@ -77,7 +86,7 @@ function nodeWidth(n) {
   return tt.length * CHAR_PT;
 }
 
-const isUnderlined = (rPr) => {
+export const isUnderlined = (rPr) => {
   const u = child(rPr, W, "u");
   if (!u) return false;
   const v = u.getAttributeNS(W, "val");
@@ -88,8 +97,9 @@ const isUnderlined = (rPr) => {
  * Tìm 4 nhãn A,B,C,D theo đúng thứ tự (chữ cái + "." hoặc ")").
  * strict: nhãn B–D phải đứng sau tab/xuống dòng (tránh nhầm "điểm B." trong nội dung);
  * không strict: chấp nhận cả sau dấu cách (phương án viết liền "A. 1 B. 2 C. 3 D. 4").
+ * puncts: các dấu sau chữ cái được coi là nhãn (optionTools thêm ":").
  */
-function findLabels(toks, strict) {
+export function findLabels(toks, strict, puncts = ".)") {
   const labels = [];
   let want = 0;
   for (let i = 0; i < toks.length && want < 4; i++) {
@@ -104,14 +114,14 @@ function findLabels(toks, strict) {
     // sau chữ cái: (khoảng trắng)? rồi "." hoặc ")"
     let j = i + 1;
     while (toks[j] && toks[j].t === "ch" && toks[j].ch === " ") j++;
-    if (!toks[j] || toks[j].t !== "ch" || (toks[j].ch !== "." && toks[j].ch !== ")")) continue;
+    if (!toks[j] || toks[j].t !== "ch" || puncts.indexOf(toks[j].ch) < 0) continue;
     labels.push({ letter: tk.ch, start: i, end: j + 1, correct: isUnderlined(tk.rPr) });
     want++;
   }
   return labels.length === 4 ? labels : null;
 }
 
-const isBlank = (tk) => tk.t === "tab" || tk.t === "br" || (tk.t === "ch" && /\s/.test(tk.ch));
+export const isBlank = (tk) => tk.t === "tab" || tk.t === "br" || (tk.t === "ch" && /\s/.test(tk.ch));
 
 /** Dựng các run OOXML từ đoạn token nội dung (gộp ký tự liền nhau cùng rPr). */
 function buildRuns(doc, toks) {

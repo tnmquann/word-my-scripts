@@ -26,6 +26,7 @@ const ENTRIES = {
   features: "src/features/index.js", // hot-reloaded per click via version.json "features"
   dialog: "src/ui/dialog/dialog.js",
   xoa: "src/ui/xoa/xoa.js", // task pane "Xoá mức độ…" (nạp lại mỗi lần mở pane)
+  bigkey: "src/ui/bigkey/bigkey.js", // task pane "Công cụ BigKey"
 };
 const PAGES = {
   "commands.html": "src/runtime/commands.html",
@@ -34,6 +35,7 @@ const PAGES = {
   "author.html": "src/ui/author/author.html",
   "update.html": "src/ui/update/update.html",
   "xoa.html": "src/ui/xoa/xoa.html",
+  "bigkey.html": "src/ui/bigkey/bigkey.html",
 };
 
 const esbuildOptions = {

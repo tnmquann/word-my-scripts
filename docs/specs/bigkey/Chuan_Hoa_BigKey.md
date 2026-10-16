@@ -19,7 +19,7 @@ Bring a multiple-choice exam (questions `Câu N.` with options `A.`–`D.`) to t
 Scope: the whole document, or (vùng chọn) the paragraphs of the selection. An empty selection stops with a message.
 
 1. **Numbering to text**: automatic list numbers outside tables become literal text (`listString` + space), then the paragraph leaves the list.
-2. **Layout, as the VBA `bkBonDong`** (`normalizeXml.js`). Office JS cannot clear tab stops or *Keep with next* per paragraph, so the paragraphs outside tables are rewritten in OOXML, in chunks of up to 40 consecutive paragraphs, from the end:
+2. **Layout, as the VBA `bkBonDong`** (`normalizeXml.js`). Office JS cannot clear tab stops or *Keep with next* per paragraph, so the paragraphs outside tables are rewritten in OOXML, in chunks of about 40 consecutive paragraphs, from the end. A chunk is cut only at the start of a question (never inside an option block), and the document's last paragraph is formatted directly through Office JS (Word cannot replace the final paragraph mark). Each inserted package ends with an empty sentinel paragraph; empty leftovers are removed right after this step and after the option layout (in 2.0.0-beta the last question sometimes needed a second run):
    - paragraph: style Normal, all direct paragraph formatting removed (alignment, line spacing, tab stops, keep with next, borders…), left indent 1 cm, right 0, first line 0, spacing 0, single line spacing; section breaks are kept;
    - every text run: Times New Roman 12. Bold, italic, underline and colour are kept (the VBA removed bold); equation (OMML) runs keep Cambria Math;
    - a tab right after `Câu N.` becomes a space; manual page breaks are removed.

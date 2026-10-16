@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MY_SCRIPTS — Công cụ BigKey</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <!-- Thay các menu con của "Chuẩn hóa" trong BigKeyUI.dotm (Office JS không có menu lồng nhau).
+         Logic: src/features/bigkey/tools.js. Spec: docs/specs/bigkey/BigKey_Tools.md -->
+    <style>
+      :root { --fg: #242424; --muted: #616161; --line: #e0e0e0; --accent: #2b579a; --card: #f7f9fc; --err: #a4262c; --ok: #107c10; }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 12px; font: 13px/1.45 Aptos, "Aptos Display", Arial, sans-serif; color: var(--fg); background: #fff; }
+      details { border-bottom: 1px solid var(--line); padding: 4px 0 8px; }
+      summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+      .col { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+      .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 4px; }
+      .grid.n4 { grid-template-columns: repeat(4, 1fr); }
+      .row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+      button { font: inherit; text-align: left; padding: 5px 8px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--fg); cursor: pointer; }
+      .grid button { text-align: center; padding: 5px 2px; color: var(--accent); border-color: var(--accent); }
+      button:hover { background: var(--card); border-color: var(--accent); }
+      button:disabled { opacity: 0.5; cursor: default; }
+      input[type="number"] { font: inherit; width: 64px; padding: 2px 4px; }
+      .muted { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
+      #status { position: sticky; bottom: 0; margin-top: 10px; padding: 8px; border-radius: 4px; background: var(--card); white-space: pre-wrap; min-height: 1.5em; }
+      #status.err { color: var(--err); }
+      #status.ok { color: var(--ok); }
+    </style>
+  </head>
+  <body>
+    <details open>
+      <summary>Chuẩn hoá</summary>
+      <div class="col">
+        <button data-act="chuanHoaMauPA" title="Nhãn A.–D. đậm xanh, đáp án gạch chân đỏ, A)/A: thành A., Lời giải đậm xanh. Giữ bố cục.">Chuẩn hoá màu PA-ĐA-LG</button>
+        <button data-act="chenCau0" title="Chèn &quot;Câu 0: &quot; ở đầu đoạn tại con trỏ (đánh dấu kết thúc đề).">Chèn "Câu 0:"</button>
+        <button data-act="xoaCau0">Xoá "Câu 0:"</button>
+      </div>
+    </details>
+    <details>
+      <summary>ID</summary>
+      <p class="muted">Gắn mức độ / nhóm: đặt con trỏ vào câu rồi bấm — mã ghi sau "Câu N:" (thay mã cũ) và con trỏ sang câu kế.</p>
+      <div class="grid n4">
+        <button data-tag="[1]" title="Nhận biết">NB</button>
+        <button data-tag="[2]" title="Thông hiểu">TH</button>
+        <button data-tag="[3]" title="Vận dụng">VD</button>
+        <button data-tag="[4]" title="Vận dụng cao">VDC</button>
+      </div>
+      <div class="grid" id="groups"></div>
+      <div class="col">
+        <button data-act="anHienID" title="Ẩn mọi mã ID; bấm lại để hiện toàn bộ chữ ẩn.">Ẩn/Hiện ID</button>
+        <button data-act="toMauID">Tô màu ID (hồng)</button>
+        <button data-act="xoaIDBK">Xoá ID</button>
+        <button data-act="xoaNguonBK" title="Xoá cụm (…) màu xanh lá do BigKey gắn.">Xoá nguồn tác giả</button>
+      </div>
+    </details>
+    <details>
+      <summary>Phương án</summary>
+      <div class="col">
+        <button data-act="xuongDongPA">Xuống dòng các phương án</button>
+        <button data-act="chamCuoiPA">Chấm cuối phương án</button>
+        <button data-act="xoaChamCuoiPA">Xoá chấm cuối phương án</button>
+        <button data-act="chuyenDAThanhPA" title="Bỏ gạch chân / màu đỏ ở chữ cái đáp án.">Chuyển đáp án thành phương án</button>
+      </div>
+    </details>
+    <details>
+      <summary>Đáp án</summary>
+      <div class="col">
+        <button data-act="taoBangKeyBK" title="Bảng 10 cột MÃ ĐỀ: 001 + n.X ở cuối đề (đã có thì ghi đè).">Tạo bảng đáp án</button>
+        <button data-act="ghiDapAnVaoLoiGiai">Ghi đáp án vào lời giải</button>
+        <button data-act="gachChanTuBangKey">Gạch chân đáp án từ bảng đáp án</button>
+        <button data-act="gachChanTuLoiGiai" title="Theo dòng &quot;Chọn X&quot;.">Gạch chân đáp án từ lời giải</button>
+        <button data-act="gachChanHighlightDo" title="Chữ tô sáng trong phương án thành chữ đỏ, phương án đó là đáp án.">Gạch chân đáp án highlight đỏ</button>
+      </div>
+    </details>
+    <details>
+      <summary>Lời giải</summary>
+      <div class="col">
+        <button data-act="chenLoiGiai">Chèn lời giải</button>
+        <button data-act="anHienLoiGiai" title="Ẩn mọi lời giải; bấm lại để hiện toàn bộ chữ ẩn.">Ẩn/Hiện lời giải</button>
+        <button data-act="xoaLoiGiai" title="Xoá từ &quot;Lời giải&quot; đến trước câu kế tiếp. Có xoá nội dung.">Xoá lời giải</button>
+      </div>
+    </details>
+    <details>
+      <summary>Số thứ tự</summary>
+      <div class="row">
+        <label>Bắt đầu từ <input type="number" id="start" min="1" max="9999" value="1" /></label>
+        <button data-act="danhSoThuTu">Đánh số thứ tự</button>
+      </div>
+      <div class="col"><button data-act="sttAutoToText">Chuyển STT Auto sang Text</button></div>
+    </details>
+    <details>
+      <summary>Hình ảnh</summary>
+      <div class="col">
+        <button data-act="pictureInline" class="desk" title="Chỉ Word desktop.">Picture Inline WithText</button>
+        <button data-act="canGiuaHinh">Căn giữa hình ảnh</button>
+      </div>
+    </details>
+    <p class="muted">Có thể hoàn tác bằng Ctrl+Z, nhưng nên chạy trên bản sao của tài liệu.</p>
+    <div id="status" role="status" aria-live="polite"></div>
+    <script src="{{bigkey.js}}"></script>
+  </body>
+</html>

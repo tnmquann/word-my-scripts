@@ -38,8 +38,11 @@ export function planBlocks(P) {
       const t = full(P[i]);
       if (item.lg < 0 && reLG.test(t)) item.lg = i;
       if (item.lg < 0 && item.optFrom < 0 && reA.test(t)) {
-        for (let j = i; j < Math.min(end, i + 4); j++) {
+        // tối đa 4 đoạn có chữ (đoạn trống/chỉ có hình không tính — bỏ sót câu khi có dòng trống chen giữa)
+        for (let j = i, seen = 0; j < end && seen < 4; j++) {
           if (P[j].inTable || reLG.test(full(P[j]))) break;
+          if (!P[j].text.trim()) continue;
+          seen++;
           if (reD.test(full(P[j]))) {
             item.optFrom = i;
             item.optTo = j;
@@ -57,7 +60,41 @@ export function planBlocks(P) {
   });
 }
 
-async function loadParas(context, scopeRange) {
+/** Đánh số tự động -> chữ (listString + " "), bỏ khỏi danh sách. withTables: cả đoạn trong bảng. Trả về số đoạn. */
+export async function listToText(context, P, withTables = false) {
+  let n = 0;
+  for (const x of P) {
+    if ((x.inTable && !withTables) || !x.list) continue;
+    x.p.getRange("Start").insertText(x.list + " ", "Before");
+    x.p.detachFromList();
+    n++;
+  }
+  if (n) await context.sync();
+  return n;
+}
+
+/**
+ * Xoá đoạn trống ngoài bảng (không chứa hình/công thức/đối tượng/bảng), trừ đoạn cuối tài liệu.
+ * Gọi ngay sau mỗi bước insertOoxml: đoạn sentinel còn lại nằm giữa các phương án làm bước sau bỏ sót câu.
+ */
+async function dropEmpty(context, scope, useSelection) {
+  const P = await loadParas(context, scope);
+  const empties = P.filter((x) => !x.inTable && x.text.trim() === "");
+  if (!empties.length) return 0;
+  const eox = empties.map((x) => x.p.getOoxml());
+  await context.sync();
+  let n = 0;
+  empties.forEach((x, k) => {
+    if (/<w:drawing|<w:pict|<w:object|<m:oMath|<w:tbl/.test(eox[k].value)) return;
+    if (P.indexOf(x) === P.length - 1 && !useSelection) return; // đoạn cuối tài liệu không xoá được
+    x.p.delete();
+    n++;
+  });
+  if (n) await context.sync();
+  return n;
+}
+
+export async function loadParas(context, scopeRange) {
   const ps = scopeRange ? scopeRange.paragraphs : context.document.body.paragraphs;
   ps.load("items/text,items/isListItem,items/tableNestingLevel");
   await context.sync();
@@ -84,28 +121,39 @@ async function chuanHoa(context, useSelection) {
 
   // 1) đánh số tự động -> chữ (ngoài bảng)
   let P = await loadParas(context, scope);
-  let nList = 0;
-  for (const x of P) {
-    if (x.inTable || !x.list) continue;
-    x.p.getRange("Start").insertText(x.list + " ", "Before");
-    x.p.detachFromList();
-    nList++;
-  }
-  if (nList) await context.sync();
+  const nList = await listToText(context, P);
 
   // 2) bố cục đoạn như bản VBA (normalizeXml.js): OOXML theo cụm đoạn liền nhau ngoài bảng, từ cuối lên đầu.
   //    Cụm không ghi được OOXML -> đặt bằng Office JS (thiếu: xoá tab stop, keep with next).
   P = await loadParas(context, scope);
+  // Cụm chỉ cắt ở đầu một câu hỏi (không cắt đôi khối phương án), tối đa ~CHUNK đoạn.
+  // Đoạn cuối cùng KHÔNG đi qua OOXML: Word không thay được dấu ¶ cuối tài liệu (bản beta: câu cuối phải chạy 2 lần).
+  const isQ = (i) => reQ.test(((P[i].list ? P[i].list + " " : "") + P[i].text).normalize("NFC"));
   const chunks = [];
-  for (let i = 0; i < P.length; i++) {
+  for (let i = 0; i < P.length - 1; i++) {
     if (P[i].inTable) continue;
     const last = chunks[chunks.length - 1];
-    if (last && last[1] === i - 1 && i - last[0] < CHUNK) last[1] = i;
+    const full = last && i - last[0] >= CHUNK && (isQ(i) || i - last[0] >= 3 * CHUNK);
+    if (last && last[1] === i - 1 && !full) last[1] = i;
     else chunks.push([i, i]);
   }
+  const direct = (p) => {
+    p.styleBuiltIn = "Normal";
+    p.font.name = "Times New Roman";
+    p.font.size = 12;
+    p.alignment = "Left";
+    p.lineSpacing = 12; // Office JS: điểm, UI chia 12 -> giãn dòng đơn
+    p.leftIndent = CM;
+    p.firstLineIndent = 0;
+    p.rightIndent = 0;
+    p.spaceBefore = 0;
+    p.spaceAfter = 0;
+  };
   const cRanges = chunks.map(([a, b]) => P[a].p.getRange("Whole").expandTo(P[b].p.getRange("Whole")));
   const cXml = cRanges.map((r) => r.getOoxml());
   for (const x of P) if (x.inTable) (x.p.font.name = "Times New Roman"), (x.p.font.size = 12); // bảng: chỉ font
+  const tail = P[P.length - 1];
+  if (tail && !tail.inTable) direct(tail.p);
   await context.sync();
   let nFallback = 0;
   for (let k = chunks.length - 1; k >= 0; k--) {
@@ -115,23 +163,12 @@ async function chuanHoa(context, useSelection) {
     } catch (e) {
       console.warn("normalize chunk failed, fallback", chunks[k], e);
       nFallback++;
-      for (let i = chunks[k][0]; i <= chunks[k][1]; i++) {
-        const p = P[i].p;
-        p.styleBuiltIn = "Normal";
-        p.font.name = "Times New Roman";
-        p.font.size = 12;
-        p.alignment = "Left";
-        p.lineSpacing = 12; // Office JS: điểm, UI chia 12 -> giãn dòng đơn
-        p.leftIndent = CM;
-        p.firstLineIndent = 0;
-        p.rightIndent = 0;
-        p.spaceBefore = 0;
-        p.spaceAfter = 0;
-      }
+      for (let i = chunks[k][0]; i <= chunks[k][1]; i++) direct(P[i].p);
       await context.sync();
     }
   }
   if (nFallback) lines.push(`⚠ ${nFallback} cụm đoạn định dạng bằng cách dự phòng (có thể còn tab stop / keep with next cũ).`);
+  const nEmpty2 = await dropEmpty(context, scope, useSelection); // sentinel của các cụm
   if (!useSelection) {
     if (desktop) {
       const secs = context.document.sections;
@@ -184,6 +221,7 @@ async function chuanHoa(context, useSelection) {
     laid++;
   }
   if (laid) await context.sync();
+  const nEmpty3 = laid ? await dropEmpty(context, scope, useSelection) : 0; // sentinel của các khối phương án
 
   // 4) đánh số câu, Lời giải, Chọn X (đọc lại sau khi dàn phương án)
   P = await loadParas(context, scope);
@@ -240,18 +278,7 @@ async function chuanHoa(context, useSelection) {
   await context.sync();
 
   // 5) dọn: dòng trống (không chứa hình/công thức/đối tượng), khoảng trắng kép
-  P = await loadParas(context, scope);
-  const empties = P.filter((x) => !x.inTable && x.text.trim() === "");
-  const eox = empties.map((x) => x.p.getOoxml());
-  if (empties.length) await context.sync();
-  let nEmpty = 0;
-  empties.forEach((x, k) => {
-    if (/<w:drawing|<w:pict|<w:object|<m:oMath|<w:tbl/.test(eox[k].value)) return;
-    if (P.indexOf(x) === P.length - 1 && !useSelection) return; // đoạn cuối tài liệu không xoá được
-    x.p.delete();
-    nEmpty++;
-  });
-  if (nEmpty) await context.sync();
+  const nEmpty = nEmpty2 + nEmpty3 + (await dropEmpty(context, scope, useSelection));
   const target = scope || context.document.body;
   for (let pass = 0; pass < 5; pass++) {
     const dbl = target.search("  ", { matchCase: true });
@@ -262,6 +289,7 @@ async function chuanHoa(context, useSelection) {
     await context.sync();
   }
 
+  P = await loadParas(context, scope);
   const nTables = P.filter((x) => x.inTable).length;
   lines.unshift(
     `Chuẩn hoá ${plan.length} câu${useSelection ? " (vùng chọn)" : ""}.`,

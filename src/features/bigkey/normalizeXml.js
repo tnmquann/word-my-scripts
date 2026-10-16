@@ -14,7 +14,7 @@ export const FONT = "Times New Roman";
 export const HALF_PT = "24"; // 12 pt
 
 // Thứ tự phần tử con của w:rPr theo schema (Word từ chối rPr sai thứ tự khi insertOoxml)
-const RPR_ORDER = ["rStyle", "rFonts", "b", "bCs", "i", "iCs", "caps", "smallCaps", "strike", "dstrike", "outline", "shadow",
+export const RPR_ORDER = ["rStyle", "rFonts", "b", "bCs", "i", "iCs", "caps", "smallCaps", "strike", "dstrike", "outline", "shadow",
   "emboss", "imprint", "noProof", "snapToGrid", "vanish", "webHidden", "color", "spacing", "w", "kern", "position", "sz",
   "szCs", "highlight", "u", "effect", "bdr", "shd", "fitText", "vertAlign", "rtl", "cs", "em", "lang", "eastAsianLayout",
   "specVanish", "oMath"];
@@ -27,7 +27,7 @@ const el = (doc, name, attrs = {}) => {
 const kids = (e, name) => [...e.childNodes].filter((n) => n.nodeType === 1 && n.namespaceURI === W && (!name || n.localName === name));
 
 /** Chèn child vào rPr đúng vị trí theo RPR_ORDER. */
-function putInRPr(rPr, node) {
+export function putInRPr(rPr, node) {
   const rank = RPR_ORDER.indexOf(node.localName);
   const after = kids(rPr).find((c) => RPR_ORDER.indexOf(c.localName) > rank);
   rPr.insertBefore(node, after || null);

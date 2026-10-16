@@ -9,7 +9,7 @@ MY_SCRIPTS is a personal collection of Word automation commands, delivered as an
 | **ĐGNL** | Clean-up tools for exam documents of the Vietnam National University Ho Chi Minh City Academic Competency Test (V-ACT). *ĐGNL* is the Vietnamese abbreviation for this test. | [src/features/dgnl/](src/features/dgnl/) | [docs/specs/dgnl/](docs/specs/dgnl/) |
 | **CTPT 2018** | Tools for exams that follow the 2018 General Education Curriculum (*Chương trình GDPT 2018*): parts for multiple choice, true/false, short answer and essay. | [src/features/ctpt2018/](src/features/ctpt2018/) | [docs/specs/ctpt_2018/](docs/specs/ctpt_2018/) |
 | **Equations** | Convert between LaTeX (`$…$`, `$$…$$`, `\[…\]`) and native Word equations (OMML), in either the selection or the whole document. | [src/features/equations/](src/features/equations/) | [docs/specs/equations/](docs/specs/equations/) |
-| **Chuẩn hoá BigKey** | Formats multiple-choice exams in the BigKey house style (options laid out 1/2/4 per line by width, numbering, solutions) and checks an exam for structural errors. Tables are left unchanged. Ported from `BigKeyUI.dotm`. | [src/features/bigkey/](src/features/bigkey/) | [docs/specs/bigkey/](docs/specs/bigkey/) |
+| **Chuẩn hoá BigKey** | Formats multiple-choice exams in the BigKey house style (options laid out 1/2/4 per line by width, numbering, solutions) and checks an exam for structural errors. Tables are left unchanged. A task pane, *Công cụ BigKey*, holds the old sub-menus: answer colours, ID tags, options, answer key, solutions, numbering, pictures. Ported from `BigKeyUI.dotm` (2020 + 2024). | [src/features/bigkey/](src/features/bigkey/) | [docs/specs/bigkey/](docs/specs/bigkey/) |
 | **Xoá cần thiết** | Deletes sources, solutions and author lines; a task pane deletes questions by level and ID tags, replaces solutions with dotted lines, and frames questions. Ported from `NHOM-WORD-BIEN-SOAN.dotm`. | [src/features/xoa/](src/features/xoa/), [src/ui/xoa/](src/ui/xoa/) | [docs/specs/xoa/](docs/specs/xoa/) |
 | **MY_SCRIPTS+** (VBA, desktop) | *Công cụ MathType*: LaTeX → MathType via Toggle TeX, MathType and picture baseline fixes, Cambria Math for equations. Needs MathType. | [companion/](companion/) | [docs/specs/companion/](docs/specs/companion/) |
 | **Thông tin** | *Tác giả*: task pane with author information from the GitHub profile, the version and the tool list. *Kiểm tra cập nhật*: checks for a newer version and launches the updater. | [src/ui/author/](src/ui/author/), [src/runtime/update.js](src/runtime/update.js) | [docs/SETUP.md, Auto-update](docs/SETUP.md#auto-update) |
@@ -34,6 +34,8 @@ MY_SCRIPTS (tab)
 │   └── Chuẩn hoá BigKey ▾ (menu button)
 │       ├── Chuẩn hoá BigKey (cả đề)     → chuanHoaBigKeyDe
 │       ├── Chuẩn hoá BigKey (vùng chọn) → chuanHoaBigKeyBoiDen
+│       ├── Check lỗi đề                 → checkLoiDe
+│       └── Công cụ BigKey…              → task pane bigkey.html (ID, phương án, đáp án, lời giải, STT, hình ảnh)
 │       └── Check lỗi đề                 → checkLoiDe
 ├── Xoá cần thiết (group)
 │   └── Xoá cần thiết ▾ (menu button)
@@ -113,6 +115,7 @@ Generated folders, which git ignores: `dist/` (prod build), `dist-dev/` (dev bui
 ### Chuẩn hoá BigKey
 
 - [Chuan_Hoa_BigKey.md](docs/specs/bigkey/Chuan_Hoa_BigKey.md): BigKey formatting (option layout by estimated width, numbering, solutions; tables untouched) and *Check lỗi đề*.
+- [BigKey_Tools.md](docs/specs/bigkey/BigKey_Tools.md): the *Công cụ BigKey* task pane (the old *Chuẩn hóa* sub-menus).
 
 ### Xoá cần thiết
 
@@ -129,6 +132,7 @@ Generated folders, which git ignores: `dist/` (prod build), `dist-dev/` (dev bui
 - `equations-batch.mjs`: the batched LaTeX → Equation driver against a mock Word API;
 - `equations-roundtrip.mjs`: LaTeX → OMML → LaTeX (jsdom);
 - `bigkey-options.mjs`: option layout on synthetic blocks;
+- `bigkey-normalize.mjs`, `bigkey-optiontools.mjs`, `bigkey-registry.mjs`, `bigkey-pane.mjs`: BigKey layout reset, option-block edits, command/pane wiring;
 - `bigkey-real.mjs`: Chuẩn hoá BigKey and Check lỗi đề on a real exam exported by `tests/tools/export-docx.ps1` (skipped without an export);
 - `xoa-helpers.mjs`: block finding and tag helpers of Xoá cần thiết.
 
@@ -138,7 +142,7 @@ Hovering over any ribbon button shows its full name, the exam format it targets,
 
 ## Requirements
 
-- Word for Windows or Mac (Microsoft 365, or Word 2019 and later). The manifest requires `WordApi 1.3`. Word on the web runs most commands; page setup and question frames need Word desktop and show a warning online. The macOS installer has not been tested yet.
+- Word for Windows or Mac (Microsoft 365, or Office 2024 and later). The manifest requires `WordApi 1.4`: Office 2024 or later, Microsoft 365 recommended. Word on the web runs most commands; page setup and question frames need Word desktop and show a warning online. The macOS installer has not been tested yet.
 - MY_SCRIPTS+ (MathType tools): Word desktop with macros, and MathType.
 - Internet access at runtime, because the add-in's web assets are served from GitHub Pages.
 - Development only: Node.js 20 or later and npm.

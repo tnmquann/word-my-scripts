@@ -44,6 +44,23 @@ try {
   Check ($shapes[0].Range.Font.Position -eq $want) 'Lech Pic-Math: position from own height' "(h=$h pos=$($shapes[0].Range.Font.Position) want=$want)"
   Check ($doc.Range(0, 3).Font.Bold -eq -1 -and $doc.Range(0, 3).Font.Position -eq 0) 'Lech Pic-Math: text formatting kept'
 
+  # MathType Color: blue, then red (old \color replaced), then black (colour removed); read back via Toggle TeX
+  function TeXOf { $doc.InlineShapes(1).Select(); [void]$word.Run('MTCommand_TeXToggle'); $t = $word.Selection.Text; [void]$word.Run('MTCommand_TeXToggle'); $t }
+  $n = $word.Run('MathColorRange', $doc.Content, 'blue'); $t = TeXOf
+  Check ($n -eq 1 -and ([regex]::Matches($t, '\\color\{blue\}').Count -eq 1)) 'MathType Color: blue applied once' "(n=$n tex=$t)"
+  $n = $word.Run('MathColorRange', $doc.Content, 'red'); $t = TeXOf
+  Check ($n -eq 1 -and $t -notmatch 'blue' -and ([regex]::Matches($t, '\\color').Count -eq 1)) 'MathType Color: red replaces blue' "(tex=$t)"
+  $n = $word.Run('MathColorRange', $doc.Content, ''); $t = TeXOf
+  Check ($n -eq 1 -and $t -notmatch '\\color' -and $doc.InlineShapes.Count -eq 1) 'MathType Color: black removes colour' "(tex=$t)"
+  # several equations (inline + display), processed end -> start
+  $doc.Content.InsertAfter(' va $y$ \[z+1\]'); $r = $doc.Content; $r.Start = $r.End - 16; $r.Select(); [void]$word.Run('MTCommand_TeXToggle')
+  $n = $word.Run('MathColorRange', $doc.Content, 'magenta')
+  $doc.Content.Select(); [void]$word.Run('MTCommand_TeXToggle'); $t = $doc.Content.Text; $doc.Content.Select(); [void]$word.Run('MTCommand_TeXToggle')
+  Check ($n -eq 3 -and [regex]::Matches($t, '\\color\{magenta\}').Count -eq 3 -and $t -match '\\\[\\color\{magenta\}z') 'MathType Color: 3 equations, display kept' "(n=$n text=$($t.Trim()))"
+  $c = $word.Run('ColorTeX', '\[\color[rgb]{1,0,0}x\color{red}\]', 'green')
+  Check ($c -eq '\[\color{green}x\]') 'MathType Color: ColorTeX display + [rgb]' "($c)"
+  $shapes = @($doc.InlineShapes)
+
   # Lệch MathType (last: it leaves MathType's Format Equations dialog open, Word is killed afterwards)
   $doc.Content.Select()
   [void](Start-ThreadJob { param($w) try { $w.Run('LechMathType') } catch {} } -ArgumentList $word)

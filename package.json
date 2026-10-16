@@ -1,6 +1,6 @@
 {
   "name": "my-scripts-word-addin",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "description": "MY_SCRIPTS: Word add-in (Office JS) - a growing collection of document automation commands, organized by ribbon group",
   "license": "GPL-3.0-or-later",
@@ -14,7 +14,7 @@
     "validate": "office-addin-manifest validate dist/manifest.xml",
     "icons": "node scripts/make-icons.mjs",
     "release": "node scripts/build.mjs && node scripts/release.mjs",
-    "test": "npm run build && node tests/runtime-smoke.cjs && node tests/equations-batch.mjs && node tests/equations-roundtrip.mjs && node tests/bigkey-options.mjs && node tests/bigkey-normalize.mjs && node tests/bigkey-real.mjs && node tests/xoa-helpers.mjs && node tests/xoa-pane.mjs && node tests/dialog-input.mjs",
+    "test": "npm run build && node tests/runtime-smoke.cjs && node tests/equations-batch.mjs && node tests/equations-roundtrip.mjs && node tests/bigkey-options.mjs && node tests/bigkey-normalize.mjs && node tests/bigkey-optiontools.mjs && node tests/bigkey-registry.mjs && node tests/bigkey-pane.mjs && node tests/bigkey-real.mjs && node tests/xoa-helpers.mjs && node tests/xoa-pane.mjs && node tests/dialog-input.mjs",
     "companion": "pwsh -NoProfile -File scripts/build-companion.ps1"
   },
   "devDependencies": {

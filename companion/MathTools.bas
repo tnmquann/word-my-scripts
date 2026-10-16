@@ -27,6 +27,11 @@ Public Sub MS_LechPicMath(ByVal control As IRibbonControl)
     LechPicMath
 End Sub
 
+' menu MathType Color: tag của nút = tên màu TeX (black = bỏ màu)
+Public Sub MS_MathColor(ByVal control As IRibbonControl)
+    MathColor control.Tag
+End Sub
+
 ' ---------------------------------------------------------------- MathType hoá
 ' Bản cũ: xoá MỌI dấu cách trong vùng chọn (hỏng "\alpha x" -> "\alphax"), Cut rồi SendKeys vào cửa sổ MathType.
 ' Bản này: dùng lệnh Toggle TeX của MathType (MTCommand_TeXToggle) — đổi mọi $…$, $$…$$, \[…\], \(…\) trong
@@ -103,6 +108,72 @@ Public Sub LechPicMath()
     Next
     If n = 0 Then MsgBox "Vùng chọn không có ảnh / công thức nào.", vbExclamation, APP_TITLE
 End Sub
+
+' ---------------------------------------------------------------- MathType Color
+' Port từ menu MathType Color của BigKey (w_MathTypeColor.bas, Trương Minh Sang). Mỗi công thức: Toggle TeX ->
+' bỏ mọi \color{…} -> chèn \color{màu} sau dấu mở ($, $$, \[, \() -> Toggle TeX lại. Đen = chỉ bỏ màu.
+' Phạm vi: các MathType trong vùng chọn; vùng chọn không có MathType (hoặc chưa chọn) -> cả tài liệu.
+' Bản cũ: Find/Replace trên CẢ tài liệu (tô màu cả $…$ chưa là MathType, cả khi chỉ chọn một công thức),
+' không bỏ \color{white}, đổi \[…\] thành $…$, đếm mọi đối tượng OLE là công thức, gọi UndoClear.
+Public Sub MathColor(ByVal mau As String)
+    Dim n As Long, t As Single
+    t = Timer
+    If mau = "black" Then mau = ""
+    Application.ScreenUpdating = False
+    If Selection.Type <> wdSelectionIP Then n = MathColorRange(Selection.Range, mau)
+    If n = 0 Then
+        n = MathColorRange(ActiveDocument.Content, mau)
+        Application.ScreenUpdating = True
+        If n = 0 Then
+            MsgBox "Không có công thức MathType nào để đổi màu.", vbExclamation, APP_TITLE
+        ElseIf n > 0 Then
+            Selection.HomeKey wdStory
+            MsgBox "Đã đổi màu " & n & " công thức MathType (" & Format(Timer - t, "0.0") & " giây).", vbInformation, APP_TITLE
+        End If
+    End If
+    Application.ScreenUpdating = True
+End Sub
+
+' Đổi màu mọi MathType trong r; trả về số công thức, -1 nếu không gọi được MathType.
+' Không có MsgBox (trừ lỗi MathType) -> test gọi thẳng qua Application.Run.
+Public Function MathColorRange(ByVal r As Range, ByVal mau As String) As Long
+    Dim eq As New Collection, s As InlineShape, i As Long, t As String, p As Long
+    For Each s In r.InlineShapes
+        If IsMathType(s) Then eq.Add s
+    Next
+    For i = eq.Count To 1 Step -1   ' từ cuối lên: các công thức phía trước không bị dời
+        eq(i).Select
+        If Not RunMathType("MTCommand_TeXToggle") Then MathColorRange = -1: Exit Function
+        ' sau Toggle TeX, Selection là đúng đoạn TeX vừa tạo
+        p = Selection.Start
+        t = ColorTeX(Selection.Text, mau)
+        Selection.Range.Text = t
+        ActiveDocument.Range(p, p + Len(t)).Select
+        If Not RunMathType("MTCommand_TeXToggle") Then MathColorRange = -1: Exit Function
+        MathColorRange = MathColorRange + 1
+    Next
+End Function
+
+' TeX của một công thức: bỏ mọi \color{…} / \color[model]{…}, rồi chèn \color{mau} sau dấu mở.
+Public Function ColorTeX(ByVal t As String, ByVal mau As String) As String
+    Dim i As Long, j As Long, k As Long
+    i = InStr(t, "\color")
+    Do While i > 0
+        j = i + 6
+        If Mid$(t, j, 1) = "[" Then j = InStr(j, t, "]") + 1
+        k = 0
+        If j > 1 And Mid$(t, j, 1) = "{" Then k = InStr(j, t, "}")
+        If k > 0 Then t = Left$(t, i - 1) & Mid$(t, k + 1) Else i = i + 1
+        i = InStr(i, t, "\color")
+    Loop
+    If mau = "" Then
+    ElseIf Left$(t, 2) = "$$" Or Left$(t, 2) = "\[" Or Left$(t, 2) = "\(" Then
+        t = Left$(t, 2) & "\color{" & mau & "}" & Mid$(t, 3)
+    ElseIf Left$(t, 1) = "$" Then
+        t = "$\color{" & mau & "}" & Mid$(t, 2)
+    End If
+    ColorTeX = t
+End Function
 
 ' ---------------------------------------------------------------- helpers
 
