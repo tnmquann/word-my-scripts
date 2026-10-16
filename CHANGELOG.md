@@ -4,6 +4,13 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.2.0] - 2026-10-17
+
+New ribbon item, so the manifest changes: **re-install once** (the **Cập nhật** button or the install command), then restart Word.
+
+### Added
+- **CTPT 2018 → Canh giữa Table**: centres every table in the document between the margins (the table itself, not the text in its cells). Nested tables are centred in their cell; a table wider than the margins is fitted to the page (Word desktop).
+
 ## [2.1.0-beta.2] - 2026-10-17
 
 No manifest change: the commands apply on the next click and the pane on its next opening.

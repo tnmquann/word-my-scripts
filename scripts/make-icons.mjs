@@ -37,6 +37,8 @@ const ICONS = {
   // Tạo bảng đáp án: answer grid with a check in the first answer cell
   taoBangDapAn: `<rect x="5" y="7" width="22" height="18" rx="2" ${S}/><path d="M5 16h22M12.5 7v18M19.5 7v18" ${S}/>
          <path d="M6.8 20.6l1.6 1.6 2.8-3" ${S}/>`,
+  // Canh giữa Table: small table between two margin lines
+  canhGiuaTable: `<path d="M4 5v22M28 5v22" ${S}/><rect x="9" y="10" width="14" height="12" rx="1" ${S}/><path d="M9 16h14M16 10v12" ${S}/>`,
   // Equations menu: radical sign
   equations: `<path d="M4 18h4l4 8 7-21h9" ${S}/>`,
   // LaTeX -> Equation: braces, arrow, radical

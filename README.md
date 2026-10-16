@@ -25,7 +25,8 @@ MY_SCRIPTS (tab)
         └── Xoá ĐACT ĐGNL              → xoaDactDgnl
 ├── CTPT 2018 (group)
 │   └── CTPT 2018 ▾ (menu button)
-│       └── Tạo bảng đáp án (CTPT 2018) → taoBangDapAn
+│       ├── Tạo bảng đáp án (CTPT 2018) → taoBangDapAn
+│       └── Canh giữa Table             → canhGiuaTable
 ├── Equations (group)
 │   └── Equations ▾ (menu button)       each asks: Vùng chọn / Toàn bộ tài liệu / Huỷ
 │       ├── LaTeX → Equation            → latexToEquation
@@ -106,6 +107,7 @@ Generated folders, which git ignores: `dist/` (prod build), `dist-dev/` (dev bui
 
 ### CTPT 2018
 
+- [Canh_Giua_Table.md](docs/specs/ctpt_2018/Canh_Giua_Table.md): centres every table between the margins (whole table, not the cell text); too-wide tables are fitted.
 - [Tao_Bang_Dap_An.md](docs/specs/ctpt_2018/Tao_Bang_Dap_An.md): extracts the answers of every part (multiple choice, true/false, short answer, essay), validates the question numbering, and fills the answer-key tables, creating missing tables at the cursor.
 
 ### Equations
