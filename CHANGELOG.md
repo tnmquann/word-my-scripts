@@ -4,6 +4,14 @@ All notable changes to MY_SCRIPTS are documented here. The format follows [Keep 
 
 Releases are published as GitHub pre-releases, tagged `vX.Y.Z-beta.N`. The release workflow uses the matching `## [X.Y.Z]` section of this file as the release notes.
 
+## [2.0.0-beta.2] - 2026-10-16
+
+Patch with no manifest change, so no re-install is needed. The new popup field is part of the runtime: **close Word and open it again** once to get it. Until then, the command numbers from 1 as before.
+
+### Changed
+- **Fix lỗi tab câu hỏi** asks which number to start from before it changes anything. The popup shows how many questions it found and the current first number; the default is 1. **Huỷ** leaves the document unchanged.
+- Popups can now contain a number field (`askUser` with `input`). Enter confirms.
+
 ## [2.0.0] - 2026-10-16
 
 **v2 beta**: first batch of tools migrated from the old VBA templates (`BigKeyUI.dotm`, `NHOM-WORD-BIEN-SOAN.dotm`). The manifest changes (two new groups and a task pane), so **re-install once** (the **Cập nhật** button or the install command), then restart Word. The remaining tools of `TonNgocMinhQuanProj.dotm` follow in later betas.

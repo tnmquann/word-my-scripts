@@ -139,15 +139,17 @@ function showResult({ title, summary, details, ok, seconds, update }) {
 
 /**
  * Hỏi người dùng giữa lúc chạy lệnh (thay cho confirm/alert — không hiện được trong ribbon command).
- * @param {{title: string, lines: string[], buttons: string[]}} opts  nút đầu tiên là nút chính
+ * @param {{title: string, lines: string[], buttons: string[], input?: {label: string, value: string|number}}} opts
+ *   nút đầu tiên là nút chính; input = ô nhập số (khi có, trả về { button, value })
  * @returns {Promise<string>} tên nút được bấm; bấm X hoặc không mở được dialog -> nút cuối cùng (an toàn)
  */
-export async function askUser({ title, lines, buttons }) {
+export async function askUser({ title, lines, buttons, input }) {
   const msg = await openDialog(
-    { t: title, m: clip(lines.join("\n"), 1500), s: "warn", b: buttons },
+    { t: title, m: clip(lines.join("\n"), 1500), s: "warn", b: buttons, i: input || null },
     ASK_SIZE
   );
-  if (msg && msg.indexOf("btn:") === 0) return msg.slice(4);
-  return buttons[buttons.length - 1];
+  // có ô nhập: dialog gửi "btn:<nút>\n<giá trị>" -> trả về { button, value }
+  const [btn, value] = msg && msg.indexOf("btn:") === 0 ? msg.slice(4).split("\n") : [buttons[buttons.length - 1], undefined];
+  return input ? { button: btn, value: value === undefined ? String(input.value) : value } : btn;
 }
 

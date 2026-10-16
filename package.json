@@ -14,7 +14,7 @@
     "validate": "office-addin-manifest validate dist/manifest.xml",
     "icons": "node scripts/make-icons.mjs",
     "release": "node scripts/build.mjs && node scripts/release.mjs",
-    "test": "npm run build && node tests/runtime-smoke.cjs && node tests/equations-batch.mjs && node tests/equations-roundtrip.mjs && node tests/bigkey-options.mjs && node tests/bigkey-real.mjs && node tests/xoa-helpers.mjs && node tests/xoa-pane.mjs",
+    "test": "npm run build && node tests/runtime-smoke.cjs && node tests/equations-batch.mjs && node tests/equations-roundtrip.mjs && node tests/bigkey-options.mjs && node tests/bigkey-real.mjs && node tests/xoa-helpers.mjs && node tests/xoa-pane.mjs && node tests/dialog-input.mjs",
     "companion": "pwsh -NoProfile -File scripts/build-companion.ps1"
   },
   "devDependencies": {

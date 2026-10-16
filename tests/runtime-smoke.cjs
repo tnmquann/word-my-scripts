@@ -81,6 +81,12 @@ vm.runInContext(fs.readFileSync(path.join(dist, commandsJs), "utf8"), ctx);
   assert.strictEqual(await ask(opts), "Tiếp tục");
   reply = null;
   assert.strictEqual(await ask(opts), "Dừng lại", "X must return the last button");
+  // number input: "btn:<name>\n<value>" -> { button, value }; X -> last button + default value
+  const optsIn = { ...opts, input: { label: "Bắt đầu từ", value: 1 } };
+  reply = "btn:Tiếp tục\n31";
+  assert.strictEqual(JSON.stringify(await ask(optsIn)), JSON.stringify({ button: "Tiếp tục", value: "31" }));
+  reply = null;
+  assert.strictEqual(JSON.stringify(await ask(optsIn)), JSON.stringify({ button: "Dừng lại", value: "1" }), "X with input");
   console.log("askUser: PASS");
 })().catch((e) => {
   console.error("FAIL:", e.message);

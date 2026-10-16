@@ -29,6 +29,7 @@ A paragraph is a **question line** when:
 
 ## Operations
 
+0. **Ask for the start number.** Before anything changes, a popup (`askUser` with a number field, default 1) shows how many questions were found and the current first number. **Đánh số** continues; **Huỷ** or closing the popup returns `Đã huỷ, tài liệu không thay đổi.` A value that is not an integer from 1 to 9999 stops with an error. With an older runtime (Word not restarted since 2.0.0-beta.2) there is no field and numbering starts at 1.
 1. **Merge.** The *main list* is the list of the first question line. Every question line in another list is moved into it. All of them are detached first, the batch is synced, and then each is attached with `attachToList(mainId, 0)` at level 0.
 2. **Layout.** Every question line is set to:
 
@@ -38,8 +39,8 @@ A paragraph is a **question line** when:
    | `leftIndent` | `49.6 pt` (1.75 cm) |
    | `firstLineIndent` | `-49.6 pt` (hanging indent) |
 
-3. **Renumber.** `mainList.setLevelStartingNumber(0, 1)`.
-4. **Verify.** The command reloads `listString` for every question line and checks that the numbers are exactly `1, 2, …, N`.
+3. **Renumber.** `mainList.setLevelStartingNumber(0, start)`.
+4. **Verify.** The command reloads `listString` for every question line and checks that the numbers are exactly `start, start+1, …, start+N-1`.
 
 ## Configuration
 
@@ -49,7 +50,7 @@ A paragraph is a **question line** when:
 
 ## Output
 
-`Đã xử lý N câu (gộp M câu vào danh sách chính).` followed by either `Số câu liên tục 1 → N.` or a warning that lists up to 10 positions where the numbering breaks, shown as `#position→actual`.
+`Đã xử lý N câu (gộp M câu vào danh sách chính).` followed by either `Số câu liên tục start → start+N-1.` or a warning that lists up to 10 positions where the numbering breaks, shown as `#position→actual`.
 
 ## Limitations
 
@@ -61,4 +62,6 @@ A paragraph is a **question line** when:
 - [ ] A file whose numbering restarts at 1 in the middle ends up numbered continuously 1…N.
 - [ ] The tab between `Câu N.` and the text has the same width on every line.
 - [ ] A `(1)`/`(2)` list inside a question keeps its own numbering.
+- [ ] The popup shows the question count; entering 31 numbers the questions 31, 32, …; Enter confirms.
+- [ ] Huỷ (or closing the popup) leaves the document unchanged; entering 0 or a blank value shows an error and changes nothing.
 - [ ] A second run reports `gộp 0 câu` and `Số câu liên tục`.

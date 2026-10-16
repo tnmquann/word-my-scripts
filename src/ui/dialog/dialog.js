@@ -19,6 +19,19 @@ function render(data) {
 
   // Câu hỏi (askUser): thay nút "Đóng" bằng các nút được yêu cầu; nút đầu tiên là nút chính
   const buttons = Array.isArray(data.b) ? data.b : data.b ? String(data.b).split("|") : null;
+  // Ô nhập số (askUser có input): giá trị gửi kèm sau tên nút: "btn:<nút>\n<giá trị>"
+  let field = null;
+  if (data.i && typeof data.i === "object") {
+    const wrap = document.createElement("label");
+    wrap.id = "ask";
+    wrap.textContent = data.i.label || "";
+    field = document.createElement("input");
+    field.type = "number";
+    field.min = "1";
+    field.value = data.i.value != null ? String(data.i.value) : "";
+    wrap.appendChild(field);
+    $("body").appendChild(wrap);
+  }
   if (buttons && buttons.length) {
     const footer = $("close").parentNode;
     footer.textContent = "";
@@ -27,9 +40,10 @@ function render(data) {
       btn.type = "button";
       btn.textContent = name;
       if (i === 0) btn.className = "primary";
-      btn.addEventListener("click", () => Office.context.ui.messageParent("btn:" + name));
+      btn.addEventListener("click", () => Office.context.ui.messageParent("btn:" + name + (field ? "\n" + field.value.trim() : "")));
       footer.appendChild(btn);
     });
+    if (field) field.addEventListener("keydown", (e) => e.key === "Enter" && footer.firstChild.click());
   }
 
   $("lines").textContent = "";
@@ -48,8 +62,9 @@ function render(data) {
     $("updText").textContent = `Có phiên bản mới v${data.u}`;
   }
   $("root").style.visibility = "visible";
-  const first = document.querySelector("footer button");
+  const first = field || document.querySelector("footer button");
   if (first) first.focus();
+  if (field) field.select();
 }
 
 const q = new URLSearchParams(location.search);
